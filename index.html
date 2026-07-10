@@ -42,7 +42,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI'
 .lang-card-sub{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;opacity:0.7}
 .mic-dot{font-size:12px;opacity:0;transition:opacity 0.3s;text-align:center;margin-top:2px}
 .mic-dot.visible{opacity:1}
-.arrow-btn{width:40px;height:56px;border-radius:12px;background:var(--blue-light);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--blue);transition:transform 0.4s ease;font-weight:900}
+.arrow-btn{width:52px;height:90px;border-radius:14px;background:var(--blue-light);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:48px;color:var(--blue);transition:transform 0.4s ease;font-weight:900;line-height:1}
 .arrow-btn.reversed{transform:rotate(180deg)}
 .arrow-btn.disabled{opacity:0.2;cursor:default;pointer-events:none}
 
@@ -209,7 +209,7 @@ input:focus{border-color:var(--blue)}
     <div>
       <div class="lang-card to-lang" id="lang-top-card" ontouchstart="startLP('changeLangTo')" ontouchend="cancelLP()" ontouchcancel="cancelLP()" onmousedown="startLP('changeLangTo')" onmouseup="cancelLP()" onmouseleave="cancelLP()">
         <div class="lang-card-code" id="lang-top">MK</div>
-        <div class="lang-card-sub">Cible</div>
+        <div class="lang-card-sub" id="lang-sub-top">Cible</div>
       </div>
       <div class="mic-dot" id="mic-top">🎤</div>
     </div>
@@ -220,7 +220,7 @@ input:focus{border-color:var(--blue)}
       <div class="mic-dot" id="mic-bottom">🎤</div>
       <div class="lang-card from-lang" id="lang-bottom-card" ontouchstart="startLP('changeLangFrom')" ontouchend="cancelLP()" ontouchcancel="cancelLP()" onmousedown="startLP('changeLangFrom')" onmouseup="cancelLP()" onmouseleave="cancelLP()">
         <div class="lang-card-code" id="lang-bottom">FR</div>
-        <div class="lang-card-sub">Source</div>
+        <div class="lang-card-sub" id="lang-sub-bot">Source</div>
       </div>
     </div>
   </div>
@@ -238,6 +238,12 @@ input:focus{border-color:var(--blue)}
           <button onclick="submitTextLesson()" style="background:linear-gradient(135deg,#00C48C,#00A878);border:none;border-radius:10px;color:white;font-weight:700;font-size:15px;padding:10px 14px;cursor:pointer">→</button>
         </div>
       </div>
+    </div>
+
+    <!-- AIDE (screen 0 seulement) -->
+    <div id="help-zone" style="display:none;flex-direction:column;align-items:center;gap:4px;width:100%;padding:0 8px">
+      <div id="help-lang" style="font-size:11px;color:var(--muted);text-align:center;font-weight:600;background:var(--blue-light);border-radius:10px;padding:5px 12px;width:100%"></div>
+      <div id="help-arrow" style="font-size:11px;color:var(--muted);text-align:center;font-weight:600;background:var(--neutral-light);border-radius:10px;padding:5px 12px;width:100%"></div>
     </div>
 
     <!-- CERCLE -->
@@ -282,7 +288,7 @@ input:focus{border-color:var(--blue)}
     <div class="conversation-zone">
       <div style="display:flex;align-items:center;gap:8px;justify-content:center">
         <div class="status-tag waiting" id="status-pill"></div>
-        <button class="fin-btn" id="fin-btn" onclick="confirmEnd()">⏹ Fin</button>
+        <button class="fin-btn" id="fin-btn" onclick="confirmEnd()"><span id="fin-btn-label">Exit</span></button>
       </div>
       <div class="action-row" id="conv-action-row"></div>
     </div>
@@ -330,25 +336,25 @@ input:focus{border-color:var(--blue)}
 <div class="overlay" id="ov-setup" style="display:none">
   <div class="overlay-card">
     <button class="overlay-close" onclick="hideOv('ov-setup')">×</button>
-    <div class="overlay-title">⚙ Paramètres</div>
+    <div class="overlay-title" id="settings-title">⚙ Settings</div>
     <div class="setting-row">
-      <div class="setting-label">Clé API Google</div>
+      <div class="setting-label" id="label-apikey">Google API Key</div>
       <input type="password" id="api-key-input" placeholder="AIzaSy…">
     </div>
     <div class="setting-row">
-      <div class="setting-label">Langue de l'interface</div>
+      <div class="setting-label" id="label-uilang">Interface language</div>
       <button onclick="setUILang('fr')" id="ulang-fr" class="lang-btn">🇫🇷 Français</button>
       <button onclick="setUILang('en')" id="ulang-en" class="lang-btn">🇬🇧 English</button>
       <button onclick="setUILang('mk')" id="ulang-mk" class="lang-btn">🇲🇰 Македонски</button>
       <button onclick="setUILang('es')" id="ulang-es" class="lang-btn">🇪🇸 Español</button>
       <button onclick="setUILang('de')" id="ulang-de" class="lang-btn">🇩🇪 Deutsch</button>
     </div>
-    <button class="setting-btn" onclick="saveApiKey()">Enregistrer la clé</button>
+    <button class="setting-btn" id="btn-savekey" onclick="saveApiKey()">Save key</button>
     <div id="api-status" style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center"></div>
     <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-      <div class="setting-label">Voix MK disponibles</div>
-      <div id="voice-list" style="font-size:13px;color:var(--muted);margin-bottom:8px">Appuyez pour scanner…</div>
-      <button class="setting-btn" style="background:linear-gradient(135deg,#1565C0,#0D47A1)" onclick="scanVoices()">🔍 Scanner les voix MK</button>
+      <div class="setting-label" id="label-voices">Available MK voices</div>
+      <div id="voice-list" style="font-size:13px;color:var(--muted);margin-bottom:8px"></div>
+      <button class="setting-btn" id="btn-scanvoices" style="background:linear-gradient(135deg,#1565C0,#0D47A1)" onclick="scanVoices()">🔍 Scan MK voices</button>
     </div>
     <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
       <div class="setting-label">GPS</div>
@@ -368,10 +374,10 @@ input:focus{border-color:var(--blue)}
 <div class="overlay" id="ov-contact" style="display:none">
   <div class="overlay-card">
     <button class="overlay-close" onclick="hideOv('ov-contact')">×</button>
-    <div class="overlay-title">Interlocuteur</div>
+    <div class="overlay-title" id="contact-title">Contact</div>
     <div id="contact-list"></div>
     <div style="display:flex;gap:8px;margin-top:12px">
-      <input type="text" id="new-contact-input" placeholder="Nouveau nom…">
+      <input type="text" id="new-contact-input" placeholder="New name…" id="new-contact-ph">
       <button class="setting-btn" style="width:auto;padding:10px 16px;margin:0" onclick="addNewContact()">+</button>
     </div>
   </div>
@@ -380,13 +386,13 @@ input:focus{border-color:var(--blue)}
 <div class="overlay" id="ov-save-lesson" style="display:none">
   <div class="overlay-card">
     <button class="overlay-close" onclick="hideOv('ov-save-lesson')">×</button>
-    <div class="overlay-title">💾 Sauvegarder la leçon</div>
+    <div class="overlay-title" id="save-lesson-title">💾 Save lesson</div>
     <div class="setting-row">
-      <div class="setting-label">Nom de la leçon</div>
-      <input type="text" id="lesson-name-input" placeholder="Ma leçon…">
+      <div class="setting-label" id="label-lessonname">Lesson name</div>
+      <input type="text" id="lesson-name-input" placeholder="My lesson…">
     </div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:12px">📅 <span id="lesson-date"></span></div>
-    <button class="setting-btn" onclick="confirmSaveLesson()">💾 Sauvegarder</button>
+    <button class="setting-btn" id="btn-savelesson" onclick="confirmSaveLesson()">💾 Save</button>
   </div>
 </div>
 
@@ -399,27 +405,27 @@ const API_BASE = 'https://makedoo-server-production.up.railway.app';
 // ── State ──────────────────────────────────────────────────────
 const S={
   mode:'exchange',
-  langFrom:'fr',langTo:'mk',uiLang:'fr',
-  interlocutor:'Inconnu',location:'…',
+  langFrom:'en',langTo:'mk',uiLang:'en',
+  interlocutor:'Unknown',location:'…',
   direction:'AB',currentSpeaker:'A',
   screen:0,listening:false,
   lastTranslation:null,lastTranslationLang:null,lastOriginal:null,
   currentExchanges:[],
-  journal:JSON.parse(localStorage.getItem('mk_journal')||'[]'),
-  lessons:JSON.parse(localStorage.getItem('mk_lessons')||'[]'),
-  contacts:JSON.parse(localStorage.getItem('mk_contacts')||JSON.stringify([{id:1,name:'Olivija',lang:'mk'}])),
+  journal:JSON.parse(localStorage.getItem('mk_v3_journal')||'[]'),
+  lessons:JSON.parse(localStorage.getItem('mk_v3_lessons')||'[]'),
+  contacts:JSON.parse(localStorage.getItem('mk_v3_contacts')||JSON.stringify([{id:1,name:'Olivija',lang:'mk'}])),
   lpTimer:null,langPickerTarget:null,ignoreTap:false,reviewOpen:false,
-  selectedVoiceURI:localStorage.getItem('makedoo_voice_uri')||null,
-  selectedVoiceLang:localStorage.getItem('makedoo_voice_lang')||null,
+  selectedVoiceURI:localStorage.getItem('makedoo_v3_voice_uri')||null,
+  selectedVoiceLang:localStorage.getItem('makedoo_v3_voice_lang')||null,
 };
 
 // ── i18n ───────────────────────────────────────────────────────
 const I18N={
-  fr:{conv:'Conversations',lessons:'Leçons',waiting:'En attente de conversation',waitingLesson:'En attente de leçon',startConv:'Démarrer la conversation',startLesson:'Démarrer la leçon',inProgress:'Conversation en cours',lessonProgress:'Leçon en cours',ended:'Conversation terminée',lessonEnded:'Leçon terminée',clickStop:'Clic pour arrêter',repeat:'Répéter',resume:'Poursuivre',save:'Sauvegarder',exit:'Fin',replace:'Remplacer',oralTrans:'Traduction orale',clickTalk:'Clic pour parler',youFirst:'Vous parlez en premier',theyFirst:' parle en premier',keyOk:'✓ Clé enregistrée',learnSoon:'Mode Apprentissage bientôt !',myLang:'Ma langue',transLang:'Langue de traduction',exchanges:'échange(s)',noConv:'Aucune conversation',noLesson:'Aucune leçon',selectConv:'Sélectionner une conversation',selectLesson:'Sélectionner une leçon',review:'Réviser',rename:'Renommer',export:'Exporter MP3',delete:'Supprimer',listen:'Écouter',stop:'Arrêter',unknown:'Inconnu',choosePhrase:'Choisir une phrase'},
-  en:{conv:'Conversations',lessons:'Lessons',waiting:'Waiting for conversation',waitingLesson:'Waiting for lesson',startConv:'Start conversation',startLesson:'Start lesson',inProgress:'Conversation in progress',lessonProgress:'Lesson in progress',ended:'Conversation ended',lessonEnded:'Lesson ended',clickStop:'Click to stop',repeat:'Repeat',resume:'Continue',save:'Save',exit:'Exit',replace:'Replace',oralTrans:'Oral translation',clickTalk:'Click to speak',youFirst:'You speak first',theyFirst:' speaks first',keyOk:'✓ Key saved',learnSoon:'Learning mode soon!',myLang:'My language',transLang:'Translation language',exchanges:'exchange(s)',noConv:'No conversations',noLesson:'No lessons',selectConv:'Select a conversation',selectLesson:'Select a lesson',review:'Review',rename:'Rename',export:'Export MP3',delete:'Delete',listen:'Listen',stop:'Stop',unknown:'Unknown',startLesson2:'Start lesson'},
-  mk:{conv:'Разговори',lessons:'Лекции',waiting:'Чекање разговор',waitingLesson:'Чекање лекција',startConv:'Започни разговор',startLesson:'Започни лекција',inProgress:'Разговор во тек',lessonProgress:'Лекција во тек',ended:'Разговорот завршен',lessonEnded:'Лекцијата завршена',clickStop:'Клик за стопирање',repeat:'Повтори',resume:'Продолжи',save:'Зачувај',exit:'Излез',replace:'Замени',oralTrans:'Устен превод',clickTalk:'Клик за зборување',youFirst:'Вие зборувате прво',theyFirst:' зборува прво',keyOk:'✓ Зачувано',learnSoon:'Режим учење наскоро!',myLang:'Мојот јазик',transLang:'Јазик на превод',exchanges:'размена(и)',noConv:'Нема разговори',noLesson:'Нема лекции',selectConv:'Изберете разговор',selectLesson:'Изберете лекција',review:'Прегледај',rename:'Преименувај',export:'Извоз MP3',delete:'Избриши',listen:'Слушај',stop:'Стопирај',unknown:'Непознат',startLesson2:'Започни лекција'},
-  es:{conv:'Conversaciones',lessons:'Lecciones',waiting:'Esperando',waitingLesson:'Esperando lección',startConv:'Iniciar conversación',startLesson:'Iniciar lección',inProgress:'En curso',lessonProgress:'Lección en curso',ended:'Terminada',lessonEnded:'Lección terminada',clickStop:'Clic para detener',repeat:'Repetir',resume:'Continuar',save:'Guardar',exit:'Salir',replace:'Reemplazar',oralTrans:'Traducción oral',clickTalk:'Clic para hablar',youFirst:'Usted habla primero',theyFirst:' habla primero',keyOk:'✓ Guardado',learnSoon:'¡Modo aprendizaje pronto!',myLang:'Mi idioma',transLang:'Idioma traducción',exchanges:'intercambio(s)',noConv:'Sin conversaciones',noLesson:'Sin lecciones',selectConv:'Seleccionar conversación',selectLesson:'Seleccionar lección',review:'Revisar',rename:'Renombrar',export:'Exportar MP3',delete:'Eliminar',listen:'Escuchar',stop:'Parar',unknown:'Desconocido',startLesson2:'Iniciar lección'},
-  de:{conv:'Gespräche',lessons:'Lektionen',waiting:'Warte',waitingLesson:'Warte auf Lektion',startConv:'Gespräch starten',startLesson:'Lektion starten',inProgress:'Läuft',lessonProgress:'Lektion läuft',ended:'Beendet',lessonEnded:'Lektion beendet',clickStop:'Klick zum Stoppen',repeat:'Wiederholen',resume:'Fortfahren',save:'Speichern',exit:'Beenden',replace:'Ersetzen',oralTrans:'Mündliche Übersetzung',clickTalk:'Klick zum Sprechen',youFirst:'Sie sprechen zuerst',theyFirst:' spricht zuerst',keyOk:'✓ Gespeichert',learnSoon:'Lernmodus bald!',myLang:'Meine Sprache',transLang:'Übersetzungssprache',exchanges:'Austausch',noConv:'Keine Gespräche',noLesson:'Keine Lektionen',selectConv:'Gespräch auswählen',selectLesson:'Lektion auswählen',review:'Überprüfen',rename:'Umbenennen',export:'MP3 Export',delete:'Löschen',listen:'Anhören',stop:'Stoppen',unknown:'Unbekannt',startLesson2:'Lektion starten'},
+  fr:{conv:'Conversations',lessons:'Leçons',waiting:'En attente de conversation',waitingLesson:'En attente de leçon',startConv:'Démarrer la conversation',startLesson:'Démarrer la leçon',inProgress:'Conversation en cours',lessonProgress:'Leçon en cours',ended:'Conversation terminée',lessonEnded:'Leçon terminée',clickStop:'Clic pour arrêter',repeat:'Répéter',resume:'Poursuivre',save:'Sauvegarder',exit:'Sortir',longPressLang:'Pression longue pour changer de langue',clickArrow:'Cliquez sur la flèche pour changer d\'interlocuteur',replace:'Remplacer',oralTrans:'Traduction orale',clickTalk:'Clic pour parler',youFirst:'Vous parlez en premier',theyFirst:' parle en premier',keyOk:'✓ Clé enregistrée',learnSoon:'Mode Apprentissage bientôt !',myLang:'Ma langue',transLang:'Langue de traduction',exchanges:'échange(s)',noConv:'Aucune conversation',noLesson:'Aucune leçon',selectConv:'Sélectionner une conversation',selectLesson:'Sélectionner une leçon',review:'Réviser',rename:'Renommer',export:'Exporter MP3',delete:'Supprimer',listen:'Écouter',stop:'Arrêter',unknown:'Inconnu',choosePhrase:'Choisir une phrase',target:'Cible',source:'Source',settings:'⚙ Paramètres',apiKeyLabel:'Clé API Google',uiLangLabel:"Langue de l'interface",saveKey:'Enregistrer la clé',voicesLabel:'Voix MK disponibles',scanVoices:'🔍 Scanner les voix MK',scanPrompt:'Appuyez pour scanner…',noVoices:'Aucune voix MK trouvée',newContact:'Nouveau nom…',exitNoSave:'Sortir sans sauvegarder ?',deleteConfirm:'Supprimer ?',sttError:'Parole non reconnue',sttFail:'Erreur STT',micError:'Microphone non accessible',tagline:'Speak · Translate · Learn',skip:'Skip ›',exitBtn:'✕ Exit',lesonTitle:'💾 Save lesson',lessonName:'Lesson name',lessonPlaceholder:'My lesson…',contactTitle:'Contact',convTitle:'Conversations',lessonTitle2:'Lessons'},
+  en:{conv:'Conversations',lessons:'Lessons',waiting:'Waiting for conversation',waitingLesson:'Waiting for lesson',startConv:'Start conversation',startLesson:'Start lesson',inProgress:'Conversation in progress',lessonProgress:'Lesson in progress',ended:'Conversation ended',lessonEnded:'Lesson ended',clickStop:'Click to stop',repeat:'Repeat',resume:'Continue',save:'Save',exit:'Exit',longPressLang:'Long press to change language',clickArrow:'Click the arrow to change contact',replace:'Replace',oralTrans:'Oral translation',clickTalk:'Click to speak',youFirst:'You speak first',theyFirst:' speaks first',keyOk:'✓ Key saved',learnSoon:'Learning mode soon!',myLang:'My language',transLang:'Translation language',exchanges:'exchange(s)',noConv:'No conversations',noLesson:'No lessons',selectConv:'Select a conversation',selectLesson:'Select a lesson',review:'Review',rename:'Rename',export:'Export MP3',delete:'Delete',listen:'Listen',stop:'Stop',unknown:'Unknown',startLesson2:'Start lesson',target:'Target',source:'Source',settings:'⚙ Settings',apiKeyLabel:'Google API Key',uiLangLabel:'Interface language',saveKey:'Save key',voicesLabel:'Available MK voices',scanVoices:'🔍 Scan MK voices',scanPrompt:'Tap to scan…',noVoices:'No MK voice found',newContact:'New name…',exitNoSave:'Exit without saving?',deleteConfirm:'Delete?',sttError:'Speech not recognized',sttFail:'STT Error',micError:'Microphone not accessible',tagline:'Speak · Translate · Learn',skip:'Skip ›',exitBtn:'✕ Exit',lessonTitle:'💾 Save lesson',lessonName:'Lesson name',lessonPlaceholder:'My lesson…',contactTitle:'Contact',convTitle:'Conversations',lessonTitle2:'Lessons'},
+  mk:{conv:'Разговори',lessons:'Лекции',waiting:'Чекање разговор',waitingLesson:'Чекање лекција',startConv:'Започни разговор',startLesson:'Започни лекција',inProgress:'Разговор во тек',lessonProgress:'Лекција во тек',ended:'Разговорот завршен',lessonEnded:'Лекцијата завршена',clickStop:'Клик за стопирање',repeat:'Повтори',resume:'Продолжи',save:'Зачувај',exit:'Излез',longPressLang:'Долго притискање за промена на јазик',clickArrow:'Кликнете на стрелката за промена на соговорник',replace:'Замени',oralTrans:'Устен превод',clickTalk:'Клик за зборување',youFirst:'Вие зборувате прво',theyFirst:' зборува прво',keyOk:'✓ Зачувано',learnSoon:'Режим учење наскоро!',myLang:'Мојот јазик',transLang:'Јазик на превод',exchanges:'размена(и)',noConv:'Нема разговори',noLesson:'Нема лекции',selectConv:'Изберете разговор',selectLesson:'Изберете лекција',review:'Прегледај',rename:'Преименувај',export:'Извоз MP3',delete:'Избриши',listen:'Слушај',stop:'Стопирај',unknown:'Непознат',startLesson2:'Започни лекција',target:'Цел',source:'Извор',settings:'⚙ Поставки',apiKeyLabel:'Google API Клуч',uiLangLabel:'Јазик на интерфејс',saveKey:'Зачувај',voicesLabel:'МК гласови',scanVoices:'🔍 Скенирај гласови',scanPrompt:'Притиснете за скенирање…',noVoices:'Нема МК глас',newContact:'Ново ime…',exitNoSave:'Излез без зачувување?',deleteConfirm:'Избриши?',sttError:'Говорот не е препознаен',sttFail:'Грешка STT',micError:'Микрофонот не е достапен',tagline:'Зборувај · Преведи · Учи',skip:'Прескокни ›',exitBtn:'✕ Излез',lessonTitle:'💾 Зачувај лекција',lessonName:'Ime на лекцијата',lessonPlaceholder:'Моја лекција…',contactTitle:'Соговорник',convTitle:'Разговори',lessonTitle2:'Лекции'},
+  es:{conv:'Conversaciones',lessons:'Lecciones',waiting:'Esperando',waitingLesson:'Esperando lección',startConv:'Iniciar conversación',startLesson:'Iniciar lección',inProgress:'En curso',lessonProgress:'Lección en curso',ended:'Terminada',lessonEnded:'Lección terminada',clickStop:'Clic para detener',repeat:'Repetir',resume:'Continuar',save:'Guardar',exit:'Salir',longPressLang:'Mantén pulsado para cambiar idioma',clickArrow:'Pulsa la flecha para cambiar interlocutor',replace:'Reemplazar',oralTrans:'Traducción oral',clickTalk:'Clic para hablar',youFirst:'Usted habla primero',theyFirst:' habla primero',keyOk:'✓ Guardado',learnSoon:'¡Modo aprendizaje pronto!',myLang:'Mi idioma',transLang:'Idioma traducción',exchanges:'intercambio(s)',noConv:'Sin conversaciones',noLesson:'Sin lecciones',selectConv:'Seleccionar conversación',selectLesson:'Seleccionar lección',review:'Revisar',rename:'Renombrar',export:'Exportar MP3',delete:'Eliminar',listen:'Escuchar',stop:'Parar',unknown:'Desconocido',startLesson2:'Iniciar lección',target:'Destino',source:'Origen',settings:'⚙ Ajustes',apiKeyLabel:'Clave API Google',uiLangLabel:'Idioma interfaz',saveKey:'Guardar clave',voicesLabel:'Voces MK disponibles',scanVoices:'🔍 Buscar voces MK',scanPrompt:'Toca para buscar…',noVoices:'Sin voz MK',newContact:'Nuevo nombre…',exitNoSave:'¿Salir sin guardar?',deleteConfirm:'¿Eliminar?',sttError:'Voz no reconocida',sttFail:'Error STT',micError:'Micrófono no accesible',tagline:'Habla · Traduce · Aprende',skip:'Omitir ›',exitBtn:'✕ Salir',lessonTitle:'💾 Guardar lección',lessonName:'Nombre de lección',lessonPlaceholder:'Mi lección…',contactTitle:'Interlocutor',convTitle:'Conversaciones',lessonTitle2:'Lecciones'},
+  de:{conv:'Gespräche',lessons:'Lektionen',waiting:'Warte',waitingLesson:'Warte auf Lektion',startConv:'Gespräch starten',startLesson:'Lektion starten',inProgress:'Läuft',lessonProgress:'Lektion läuft',ended:'Beendet',lessonEnded:'Lektion beendet',clickStop:'Klick zum Stoppen',repeat:'Wiederholen',resume:'Fortfahren',save:'Speichern',exit:'Beenden',longPressLang:'Lang drücken zum Sprachwechsel',clickArrow:'Pfeil klicken zum Partnerwechsel',replace:'Ersetzen',oralTrans:'Mündliche Übersetzung',clickTalk:'Klick zum Sprechen',youFirst:'Sie sprechen zuerst',theyFirst:' spricht zuerst',keyOk:'✓ Gespeichert',learnSoon:'Lernmodus bald!',myLang:'Meine Sprache',transLang:'Übersetzungssprache',exchanges:'Austausch',noConv:'Keine Gespräche',noLesson:'Keine Lektionen',selectConv:'Gespräch auswählen',selectLesson:'Lektion auswählen',review:'Überprüfen',rename:'Umbenennen',export:'MP3 Export',delete:'Löschen',listen:'Anhören',stop:'Stoppen',unknown:'Unbekannt',startLesson2:'Lektion starten',target:'Ziel',source:'Quelle',settings:'⚙ Einstellungen',apiKeyLabel:'Google API-Schlüssel',uiLangLabel:'Oberflächensprache',saveKey:'Schlüssel speichern',voicesLabel:'MK-Stimmen verfügbar',scanVoices:'🔍 MK-Stimmen suchen',scanPrompt:'Zum Scannen tippen…',noVoices:'Keine MK-Stimme gefunden',newContact:'Neuer Name…',exitNoSave:'Ohne Speichern beenden?',deleteConfirm:'Löschen?',sttError:'Sprache nicht erkannt',sttFail:'STT-Fehler',micError:'Mikrofon nicht zugänglich',tagline:'Sprechen · Übersetzen · Lernen',skip:'Überspringen ›',exitBtn:'✕ Beenden',lessonTitle:'💾 Lektion speichern',lessonName:'Lektionsname',lessonPlaceholder:'Meine Lektion…',contactTitle:'Gesprächspartner',convTitle:'Gespräche',lessonTitle2:'Lektionen'},
 };
 function t(k){return(I18N[S.uiLang]||I18N.fr)[k]||k}
 const isLearn=()=>S.mode==='learn';
@@ -435,10 +441,15 @@ const LANGS=[
 ];
 
 // ── Init ───────────────────────────────────────────────────────
-const storedKey=localStorage.getItem('makedoo_apikey');
+const storedKey=localStorage.getItem('makedoo_v3_apikey');
 if(storedKey){document.getElementById('api-key-input').value=storedKey;document.getElementById('api-status').textContent='✓';document.getElementById('api-status').style.color='var(--accent)'}
-const storedUILang=localStorage.getItem('makedoo_uilang');
-if(storedUILang)S.uiLang=storedUILang;
+// Restaurer les langues — AVANT tout rendu
+const storedLangFrom=localStorage.getItem('makedoo_v3_langFrom');
+const storedLangTo=localStorage.getItem('makedoo_v3_langTo');
+const storedUILang=localStorage.getItem('makedoo_v3_uilang');
+if(storedLangFrom)S.langFrom=storedLangFrom;
+if(storedLangTo)S.langTo=storedLangTo;
+S.uiLang=storedUILang||'en'; // Anglais par défaut si première ouverture
 
 navigator.geolocation&&navigator.geolocation.getCurrentPosition(async pos=>{
   try{const r=await fetch('https://nominatim.openstreetmap.org/reverse?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude+'&format=json');const d=await r.json();S.location=(d.display_name||'').split(',').slice(0,2).join(', ')}catch{S.location='Position obtenue'}
@@ -537,6 +548,16 @@ function renderScreen(){
   if(showPanel)textPanel.classList.add('visible');
   else textPanel.classList.remove('visible');
 
+  // Zone d'aide — screen 0 uniquement
+  const helpZone=document.getElementById('help-zone');
+  const helpLang=document.getElementById('help-lang');
+  const helpArrow=document.getElementById('help-arrow');
+  if(helpZone){
+    helpZone.style.display=S.screen===0?'flex':'none';
+    if(helpLang)helpLang.textContent=t('longPressLang');
+    if(helpArrow)helpArrow.textContent=isLearn()?'':t('clickArrow');
+  }
+
   // Zone texte (mode learn, screens 0 et 1)
   if(textZone)textZone.className='text-input-zone'+(learn&&S.screen>=1?' visible':'');
 
@@ -588,7 +609,7 @@ function renderScreen(){
       status.textContent=t('clickTalk');
       pill.className=(learn?'status-tag learn':'status-tag active');
       pill.textContent='💬 '+inProgress;
-      convActions.innerHTML='<button class="action-btn blue solid" onclick="doSave()">'+t('save')+'</button><button class="action-btn danger" onclick="doExitConv()">'+t('exit')+'</button>';
+      convActions.innerHTML='<button class="action-btn primary" onclick="doSave()">'+t('save')+'</button><button class="action-btn danger" onclick="doExitConv()">'+t('exit')+'</button>';
       if(finBtn)finBtn.style.display='none';
     }
 
@@ -617,12 +638,12 @@ function endSession(){
 }
 function confirmEnd(){endSession()}
 function doExitLesson(){
-  if(confirm(S.uiLang==='fr'?'Sortir sans sauvegarder ?':S.uiLang==='en'?'Exit without saving?':S.uiLang==='mk'?'Излез без зачувување?':'¿Salir sin guardar?')){
+  if(confirm(t('exitNoSave'))){
     S.currentExchanges=[];setScreen(0);
   }
 }
 function doExitConv(){
-  if(confirm(S.uiLang==='fr'?'Sortir sans sauvegarder ?':S.uiLang==='en'?'Exit without saving?':S.uiLang==='mk'?'Излез без зачувување?':'¿Salir sin guardar?')){
+  if(confirm(t('exitNoSave'))){
     if(S.listening){if(recognition)recognition.abort();if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();S.listening=false;}
     S.currentExchanges=[];setScreen(0);
   }
@@ -678,7 +699,7 @@ function doReplaceSelected(){
 function doSave(){
   if(S.currentExchanges.length>0){
     S.journal.unshift({id:Date.now(),date:new Date().toISOString().split('T')[0],location:S.location,interlocutor:S.interlocutor,langFrom:S.langFrom,langTo:S.langTo,count:S.currentExchanges.length,exchanges:[...S.currentExchanges]});
-    localStorage.setItem('mk_journal',JSON.stringify(S.journal));
+    localStorage.setItem('mk_v3_journal',JSON.stringify(S.journal));
   }
   S.currentExchanges=[];setScreen(0);showToast('💾 '+t('save'));
 }
@@ -690,7 +711,7 @@ function doSaveLesson(){
 function confirmSaveLesson(){
   const name=document.getElementById('lesson-name-input').value.trim()||('Leçon '+new Date().toLocaleDateString());
   S.lessons.unshift({id:Date.now(),name,date:new Date().toISOString().split('T')[0],langFrom:S.langFrom,langTo:S.langTo,count:S.currentExchanges.length,exchanges:[...S.currentExchanges]});
-  localStorage.setItem('mk_lessons',JSON.stringify(S.lessons));
+  localStorage.setItem('mk_v3_lessons',JSON.stringify(S.lessons));
   hideOv('ov-save-lesson');
   S.currentExchanges=[];setScreen(0);showToast('💾 '+name);
 }
@@ -752,12 +773,12 @@ async function startCloudSTT(fromLang,toLang,recogLang){
           const text=data.transcript||'';
           if(text)finishListening(text,fromLang,toLang);
           else{if(hgC)hgC.style.opacity='0';if(micC)micC.style.opacity='1';setScreen(1);}
-        }catch(e){showToast('Erreur STT');setScreen(S.currentExchanges.length>0?2:0)}
+        }catch(e){showToast(t('sttFail'));setScreen(S.currentExchanges.length>0?2:0)}
       };
       reader.readAsDataURL(blob);
     };
     mediaRecorder.start();
-  }catch(e){showToast('Microphone non accessible');S.listening=false;setScreen(0)}
+  }catch(e){showToast(t('micError'));S.listening=false;setScreen(0)}
 }
 
 function stopListening(){
@@ -880,7 +901,7 @@ function renderConvScreen(){
   document.getElementById('cs-list').innerHTML=data.length===0
     ?'<div style="color:var(--muted);text-align:center;padding:24px">'+(convViewMode?t('noLesson'):t('noConv'))+'</div>'
     :data.map((e,i)=>'<div class="cs-item'+(selectedEntry&&selectedEntry.id===e.id?' selected':'')+'" ontouchend="selectEntry('+i+')" onclick="selectEntry('+i+')">'
-      +'<div style="font-weight:700;font-size:14px">'+(convViewMode?'📖 '+(e.name||'Leçon'):'👤 '+e.interlocutor)+'</div>'
+      +'<div style="font-weight:700;font-size:14px">'+(convViewMode?'📖 '+(e.name||t('lessons')):'👤 '+e.interlocutor)+'</div>'
       +'<div style="font-size:11px;color:var(--muted);margin-top:3px">📅 '+new Date(e.date).toLocaleDateString()+' · '+(e.langFrom||'').toUpperCase()+'→'+(e.langTo||'').toUpperCase()+' · '+e.count+' '+t('exchanges')+'</div>'
       +'</div>').join('');
 }
@@ -928,15 +949,15 @@ function renameLesson(){
   if(!newName||newName===selectedEntry.name)return;
   selectedEntry.name=newName;
   const idx=S.lessons.findIndex(l=>l.id===selectedEntry.id);
-  if(idx>=0){S.lessons[idx].name=newName;localStorage.setItem('mk_lessons',JSON.stringify(S.lessons))}
+  if(idx>=0){S.lessons[idx].name=newName;localStorage.setItem('mk_v3_lessons',JSON.stringify(S.lessons))}
   showToast('✓ '+newName);renderConvScreen();
 }
 
 function deleteEntry(){
   if(!selectedEntry)return;
-  if(!confirm('Supprimer ?'))return;
-  if(convViewMode){S.lessons=S.lessons.filter(e=>e.id!==selectedEntry.id);localStorage.setItem('mk_lessons',JSON.stringify(S.lessons))}
-  else{S.journal=S.journal.filter(e=>e.id!==selectedEntry.id);localStorage.setItem('mk_journal',JSON.stringify(S.journal))}
+  if(!confirm(t('deleteConfirm')))return;
+  if(convViewMode){S.lessons=S.lessons.filter(e=>e.id!==selectedEntry.id);localStorage.setItem('mk_v3_lessons',JSON.stringify(S.lessons))}
+  else{S.journal=S.journal.filter(e=>e.id!==selectedEntry.id);localStorage.setItem('mk_v3_journal',JSON.stringify(S.journal))}
   selectedEntry=null;renderConvScreen();showToast('🗑 Supprimé');
 }
 
@@ -959,7 +980,7 @@ async function listenEntry(){
 
 async function exportEntry(){
   if(!selectedEntry)return;
-  const key=localStorage.getItem('makedoo_apikey');
+  const key=localStorage.getItem('makedoo_v3_apikey');
   if(!key){showToast('Clé API requise');return}
   const btn=document.getElementById('cs-export')||document.querySelector('[onclick="exportEntry()"]');
   if(btn)btn.textContent='⏳…';
@@ -991,26 +1012,53 @@ function openLangPicker(target){
   document.getElementById('lang-list').innerHTML=LANGS.map(l=>'<div class="list-item'+(( target==='from'&&l.code===S.langFrom)||(target==='to'&&l.code===S.langTo)?' selected':'')+'" onclick="selectLang(\''+l.code+'\')">'+l.flag+' '+l.label+'</div>').join('');
   showOv('ov-lang');
 }
-function selectLang(code){if(S.langPickerTarget==='from')S.langFrom=code;else S.langTo=code;updateDisplay();hideOv('ov-lang')}
+function selectLang(code){
+  if(S.langPickerTarget==='from'){
+    S.langFrom=code;
+    localStorage.setItem('makedoo_v3_langFrom',code);
+    // La langue de l'interface suit la langue de l'utilisateur
+    const supported=['fr','en','mk','es','de'];
+    if(supported.includes(code)){
+      S.uiLang=code;
+      localStorage.setItem('makedoo_v3_uilang',code);
+    }
+    updateUILabels();
+    renderScreen();
+  } else {
+    S.langTo=code;
+    localStorage.setItem('makedoo_v3_langTo',code);
+  }
+  updateDisplay();
+  hideOv('ov-lang');
+}
 
 // ── Contact picker ─────────────────────────────────────────────
 async function showContactPicker(){
   if('contacts' in navigator&&'ContactsManager' in window){
-    try{const contacts=await navigator.contacts.select(['name'],{multiple:false});if(contacts.length>0){const name=contacts[0].name&&contacts[0].name[0]||t('unknown');if(!S.contacts.find(c=>c.name===name)){S.contacts.push({id:Date.now(),name,lang:S.langTo});localStorage.setItem('mk_contacts',JSON.stringify(S.contacts))}selectContact(name);return}}catch(e){}
+    try{const contacts=await navigator.contacts.select(['name'],{multiple:false});if(contacts.length>0){const name=contacts[0].name&&contacts[0].name[0]||t('unknown');if(!S.contacts.find(c=>c.name===name)){S.contacts.push({id:Date.now(),name,lang:S.langTo});localStorage.setItem('mk_v3_contacts',JSON.stringify(S.contacts))}selectContact(name);return}}catch(e){}
   }
   document.getElementById('contact-list').innerHTML=[{id:0,name:t('unknown')},...S.contacts].map(c=>'<div class="list-item'+(c.name===S.interlocutor?' selected':'')+'" onclick="selectContact(\''+c.name+'\')">'+c.name+'</div>').join('');
   showOv('ov-contact');
 }
 function selectContact(name){S.interlocutor=name;updateDisplay();hideOv('ov-contact')}
-function addNewContact(){const i=document.getElementById('new-contact-input');const name=i.value.trim();if(!name)return;if(!S.contacts.find(c=>c.name===name)){S.contacts.push({id:Date.now(),name,lang:S.langTo});localStorage.setItem('mk_contacts',JSON.stringify(S.contacts))}selectContact(name);i.value=''}
+function addNewContact(){const i=document.getElementById('new-contact-input');const name=i.value.trim();if(!name)return;if(!S.contacts.find(c=>c.name===name)){S.contacts.push({id:Date.now(),name,lang:S.langTo});localStorage.setItem('mk_v3_contacts',JSON.stringify(S.contacts))}selectContact(name);i.value=''}
 
 // ── Settings ───────────────────────────────────────────────────
-function saveApiKey(){const key=document.getElementById('api-key-input').value.trim();if(!key)return;localStorage.setItem('makedoo_apikey',key);document.getElementById('api-status').textContent=t('keyOk');document.getElementById('api-status').style.color='var(--accent)';setTimeout(()=>hideOv('ov-setup'),700)}
+function saveApiKey(){const key=document.getElementById('api-key-input').value.trim();if(!key)return;localStorage.setItem('makedoo_v3_apikey',key);document.getElementById('api-status').textContent=t('keyOk');document.getElementById('api-status').style.color='var(--accent)';setTimeout(()=>hideOv('ov-setup'),700)}
 
 function setUILang(lang){
-  S.uiLang=lang;localStorage.setItem('makedoo_uilang',lang);
+  S.uiLang=lang;localStorage.setItem('makedoo_v3_uilang',lang);
   ['fr','en','mk','es','de'].forEach(l=>{const b=document.getElementById('ulang-'+l);if(b)b.classList.toggle('sel',l===lang)});
-  updateUILabels();renderScreen();updateDisplay();
+  updateUILabels();
+  renderScreen();
+  updateDisplay();
+  // Textes HTML statiques
+  const scanBtn=document.querySelector('[onclick="scanVoices()"]');
+  if(scanBtn)scanBtn.textContent=t('scanVoices');
+  const saveKeyBtn=document.querySelector('[onclick="saveApiKey()"]');
+  if(saveKeyBtn)saveKeyBtn.textContent=t('saveKey');
+  const vl=document.getElementById('voice-list');
+  if(vl&&vl.children.length===0)vl.textContent=t('scanPrompt');
 }
 
 function scanVoices(){
@@ -1018,7 +1066,7 @@ function scanVoices(){
   const doScan=()=>{
     const all=speechSynthesis.getVoices();
     const mk=all.filter(v=>v.lang.startsWith('mk')||v.lang.startsWith('hr')||v.lang.startsWith('sr'));
-    if(mk.length===0){listEl.innerHTML='<div style="color:#E53935">Aucune voix MK/proche trouvée</div>';return}
+    if(mk.length===0){listEl.innerHTML='<div style="color:#E53935">'+t('noVoices')+'</div>';return}
     listEl.innerHTML=mk.map(v=>'<div style="background:#F0F4F8;border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;border:1.5px solid '+(S.selectedVoiceURI===v.voiceURI?'var(--learn)':'var(--border)')+'" onclick="testVoice(\''+v.voiceURI.replace(/'/g,"\\'")+'\',' +'\''+v.lang+'\',\''+v.name.replace(/'/g,"\\'")+'\')"><div style="font-weight:700;font-size:13px">'+v.name+'</div><div style="font-size:11px;color:var(--muted)">'+v.lang+' · '+(v.localService?'🟢 Local':'🌐 Réseau')+'</div><div style="font-size:11px;color:var(--learn)">▶ Appuyer pour tester</div></div>').join('');
   };
   if(speechSynthesis.getVoices().length>0)doScan();else{speechSynthesis.onvoiceschanged=doScan;setTimeout(doScan,1500)}
@@ -1031,7 +1079,7 @@ function testVoice(uri,lang,name){
   if(voice)utt.voice=voice;utt.lang=lang;utt.rate=0.85;
   window.speechSynthesis.speak(utt);
   S.selectedVoiceURI=uri;S.selectedVoiceLang=lang;
-  localStorage.setItem('makedoo_voice_uri',uri);localStorage.setItem('makedoo_voice_lang',lang);
+  localStorage.setItem('makedoo_v3_voice_uri',uri);localStorage.setItem('makedoo_v3_voice_lang',lang);
   showToast('✓ '+name);scanVoices();
 }
 
@@ -1040,13 +1088,55 @@ function updateDisplay(){
   const lf=LANGS.find(l=>l.code===S.langFrom);const lt=LANGS.find(l=>l.code===S.langTo);
   document.getElementById('lang-top').textContent=lt?lt.display:S.langTo.toUpperCase();
   document.getElementById('lang-bottom').textContent=lf?lf.display:S.langFrom.toUpperCase();
-  document.getElementById('name-display').textContent=S.interlocutor;
+  const nameBtn=document.getElementById('name-display');
+  if(nameBtn)nameBtn.textContent='👤 '+(S.interlocutor==='Unknown'||S.interlocutor==='Inconnu'?t('unknown'):S.interlocutor);
 }
 
 function updateUILabels(){
+  // Mode buttons
   document.getElementById('btn-top-center').textContent=isLearn()?t('lessons'):t('conv');
-  document.getElementById('btn-exchange').textContent=S.uiLang==='fr'?'Échange':S.uiLang==='mk'?'Размена':S.uiLang==='es'?'Intercambio':S.uiLang==='de'?'Austausch':'Exchange';
-  document.getElementById('btn-learn').textContent=S.uiLang==='fr'?'Apprentissage':S.uiLang==='mk'?'Учење':S.uiLang==='es'?'Aprendizaje':S.uiLang==='de'?'Lernen':'Learning';
+  const exchLabels={fr:'Échange',mk:'Размена',es:'Intercambio',de:'Austausch',en:'Exchange'};
+  const learnLabels={fr:'Apprentissage',mk:'Учење',es:'Aprendizaje',de:'Lernen',en:'Learning'};
+  document.getElementById('btn-exchange').textContent=exchLabels[S.uiLang]||'Exchange';
+  document.getElementById('btn-learn').textContent=learnLabels[S.uiLang]||'Learning';
+  // Lang card sub labels
+  const lsTop=document.getElementById('lang-sub-top');
+  const lsBot=document.getElementById('lang-sub-bot');
+  if(lsTop)lsTop.textContent=t('target');
+  if(lsBot)lsBot.textContent=t('source');
+  // Help text
+  const helpLang=document.getElementById('help-lang');
+  const helpArrow=document.getElementById('help-arrow');
+  if(helpLang)helpLang.textContent=t('longPressLang');
+  if(helpArrow)helpArrow.textContent=isLearn()?'':t('clickArrow');
+  // Fin/Exit button
+  const finLabel=document.getElementById('fin-btn-label');
+  if(finLabel)finLabel.textContent=t('exit');
+  // Conv screen exit button
+  const exitBtn=document.querySelector('#conv-screen .cs-btn');
+  if(exitBtn)exitBtn.textContent=t('exitBtn');
+  // Voice list prompt if empty/default
+  const vl=document.getElementById('voice-list');
+  if(vl&&vl.children.length===0)vl.textContent=t('scanPrompt');
+  // Settings overlay
+  const st=document.getElementById('settings-title');if(st)st.textContent=t('settings');
+  const la=document.getElementById('label-apikey');if(la)la.textContent=t('apiKeyLabel');
+  const lu=document.getElementById('label-uilang');if(lu)lu.textContent=t('uiLangLabel');
+  const bs=document.getElementById('btn-savekey');if(bs)bs.textContent=t('saveKey');
+  const lv=document.getElementById('label-voices');if(lv)lv.textContent=t('voicesLabel');
+  const bsv=document.getElementById('btn-scanvoices');if(bsv)bsv.textContent=t('scanVoices');
+  // Save lesson overlay
+  const slt=document.getElementById('save-lesson-title');if(slt)slt.textContent='💾 '+t('save');
+  const ll=document.getElementById('label-lessonname');if(ll)ll.textContent=t('lessonName')||'Lesson name';
+  const bsl=document.getElementById('btn-savelesson');if(bsl)bsl.textContent='💾 '+t('save');
+  // Contact overlay
+  const ct=document.getElementById('contact-title');if(ct)ct.textContent=t('interlocutor')||t('contactTitle');
+  // New contact placeholder
+  const ncp=document.getElementById('new-contact-ph');if(ncp)ncp.placeholder=t('newContact');
+  // Splash tagline
+  const tl=document.getElementById('splash-tagline');if(tl)tl.textContent=t('tagline');
+  const sk=document.getElementById('splash-skip');if(sk)sk.textContent=t('skip');
+  // UI lang buttons highlight
   ['fr','en','mk','es','de'].forEach(l=>{const b=document.getElementById('ulang-'+l);if(b)b.classList.toggle('sel',l===S.uiLang)});
 }
 
@@ -1092,8 +1182,10 @@ function hideSplash(){
     if(arcBot)arcBot.classList.add('fast');
   },2200);
 
-  // Hide splash
+  // Hide splash — garanti même si erreur JS
   setTimeout(hideSplash, 3500);
+  // Sécurité absolue
+  window.onerror=function(){hideSplash();return false};
 })();
 
 </script>
