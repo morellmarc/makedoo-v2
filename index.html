@@ -50,13 +50,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI'
 .center-zone{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:10px 8px;position:relative}
 
 /* Intervention zone */
-.intervention-zone{display:flex;flex-direction:column;align-items:center;gap:6px;min-height:52px;justify-content:center;width:100%}
+.intervention-zone{display:flex;flex-direction:column;align-items:center;gap:6px;min-height:60px;justify-content:center;width:100%}
 .intervention-label{font-size:11px;font-weight:700;opacity:0;transition:opacity 0.3s;border-radius:10px;padding:5px 14px;letter-spacing:0.3px;text-align:center}
 .intervention-label.visible{opacity:1}
 .action-row{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
 
 /* Circle */
-.circle-area{display:flex;flex-direction:column;align-items:center;gap:10px}
 .circle-outer{position:relative;width:190px;height:190px;display:flex;align-items:center;justify-content:center}
 .circle-bg{position:absolute;inset:-6px;border-radius:50%;background:conic-gradient(from 0deg,rgba(245,166,35,0.15),rgba(229,57,53,0.1),rgba(245,166,35,0.15));filter:blur(10px)}
 .circle-card{width:190px;height:190px;border-radius:50%;background:var(--surface);box-shadow:0 8px 32px rgba(74,108,247,0.1),0 2px 8px rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:center;position:relative;border:1.5px solid var(--border)}
@@ -71,9 +70,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI'
 .arc-bottom{animation:cw 6s linear infinite;transform-origin:95px 95px}
 .arc-top.fast,.arc-bottom.fast{animation-duration:1s}
 
-/* Conversation zone */
-.conversation-zone{display:flex;flex-direction:column;align-items:center;gap:8px;min-height:68px;justify-content:center;width:100%}
-.status-tag{border-radius:10px;padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:0.3px;text-align:center}
+/* Centre — cercle absolument positionné */
+.center-zone{flex:1;display:block;position:relative;padding:4px 8px}
+.intervention-zone{position:absolute;top:0;left:0;right:0;min-height:68px;display:flex;flex-direction:column;align-items:center;gap:6px;justify-content:center;overflow:visible;background:var(--bg);z-index:20;padding:4px 8px}
+.circle-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:8px}
+.conversation-zone{position:absolute;bottom:0;left:0;right:0;min-height:120px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;justify-content:center;background:var(--bg);z-index:10}
+.status-tag{border-radius:10px;padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:0.3px;text-align:center;min-height:28px;display:inline-block}
 .status-tag.active{color:var(--green-text);background:var(--green-light)}
 .status-tag.learn{color:var(--blue-text);background:var(--blue-light)}
 .status-tag.waiting{color:var(--muted);background:var(--neutral-light)}
@@ -102,10 +104,10 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI'
 .fin-btn{display:none;background:var(--red-light);border:none;border-radius:12px;color:var(--red-text);font-size:12px;font-weight:700;padding:7px 16px;cursor:pointer;font-family:inherit}
 
 /* ── TEXT PANEL ── */
-.text-panel{width:100%;border:1.5px solid #C7D5FF;border-radius:14px;overflow:hidden;background:var(--surface);display:none;flex-direction:column;max-height:200px;box-shadow:0 2px 12px rgba(74,108,247,0.08)}
+.text-panel{position:absolute;top:68px;left:0;right:0;bottom:125px;z-index:5;border:1.5px solid #C7D5FF;overflow:hidden;background:var(--surface);display:none;flex-direction:column;box-shadow:0 2px 12px rgba(74,108,247,0.08)}
 .text-panel.visible{display:flex}
-.text-panel-top{flex:1;padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);line-height:1.5;overflow-y:auto;min-height:70px}
-.text-panel-bot{flex:1;padding:8px 12px;font-size:13px;color:var(--blue-text);font-weight:600;line-height:1.5;overflow-y:auto;min-height:70px;background:#F8F9FF}
+.text-panel-top{flex:1;padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);line-height:1.5;overflow-y:auto;min-height:0}
+.text-panel-bot{flex:1;padding:8px 12px;font-size:13px;color:var(--blue-text);font-weight:600;line-height:1.5;overflow-y:auto;min-height:0;background:#F8F9FF}
 .tp-lang{font-size:9px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
 
 /* ── TEXT INPUT ── */
@@ -239,16 +241,18 @@ input:focus{border-color:var(--blue)}
     <div class="intervention-zone">
       <div class="intervention-label" id="intervention-label"></div>
       <div class="action-row" id="action-row"></div>
-      <div class="text-input-zone" id="text-input-zone">
-        <div style="display:flex;gap:6px;align-items:center">
-          <input type="text" id="text-lesson-input" placeholder="Tapez votre phrase…" style="flex:1">
-          <button onclick="submitTextLesson()" style="background:linear-gradient(135deg,#00C48C,#00A878);border:none;border-radius:10px;color:white;font-weight:700;font-size:15px;padding:10px 14px;cursor:pointer">→</button>
-        </div>
+    </div>
+
+    <!-- SAISIE TEXTE SOLO -->
+    <div class="text-input-zone" id="text-input-zone" style="position:absolute;top:72px;left:8px;right:8px;z-index:20;background:var(--bg);padding:4px 0">
+      <div style="display:flex;gap:6px;align-items:center">
+        <input type="text" id="text-lesson-input" placeholder="Tapez votre phrase…" style="flex:1">
+        <button onclick="submitTextLesson()" style="background:linear-gradient(135deg,#00C48C,#00A878);border:none;border-radius:10px;color:white;font-weight:700;font-size:15px;padding:10px 14px;cursor:pointer">→</button>
       </div>
     </div>
 
     <!-- AIDE (screen 0 seulement) -->
-    <div id="help-zone" style="display:none;flex-direction:column;align-items:center;gap:4px;width:100%;padding:0 8px">
+    <div id="help-zone" style="display:none;flex-direction:column;align-items:center;gap:4px;width:100%;padding:0 8px;min-height:60px;justify-content:center">
       <div id="help-lang" style="font-size:11px;color:var(--muted);text-align:center;font-weight:600;background:var(--blue-light);border-radius:10px;padding:5px 12px;width:100%"></div>
       <div id="help-arrow" style="font-size:11px;color:var(--muted);text-align:center;font-weight:600;background:var(--neutral-light);border-radius:10px;padding:5px 12px;width:100%"></div>
     </div>
@@ -293,11 +297,11 @@ input:focus{border-color:var(--blue)}
 
     <!-- ZONE BASSE -->
     <div class="conversation-zone">
-      <div style="display:flex;align-items:center;gap:8px;justify-content:center">
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center;flex-shrink:0">
         <div class="status-tag waiting" id="status-pill"></div>
         <button class="fin-btn" id="fin-btn" onclick="confirmEnd()"><span id="fin-btn-label">Exit</span></button>
       </div>
-      <div class="action-row" id="conv-action-row"></div>
+      <div class="action-row" id="conv-action-row" style="flex-shrink:0"></div>
     </div>
 
   </div>
@@ -333,8 +337,8 @@ input:focus{border-color:var(--blue)}
 
 <!-- MODE BAR -->
 <div class="mode-bar" id="mode-bar">
-  <button class="mode-btn active-exchange" id="btn-exchange" onclick="setMode('exchange')">Échange</button>
-  <button class="mode-btn" id="btn-learn" onclick="setMode('learn')">Apprentissage</button>
+  <button class="mode-btn active-exchange" id="btn-exchange" onclick="setMode('exchange')">DUO</button>
+  <button class="mode-btn" id="btn-learn" onclick="setMode('learn')">SOLO</button>
 </div>
 <div class="nav-spacer" id="nav-spacer"></div>
 <div class="toast" id="toast"></div>
@@ -390,6 +394,17 @@ input:focus{border-color:var(--blue)}
   </div>
 </div>
 
+<div class="overlay" id="ov-confirm-exit" style="display:none">
+  <div class="overlay-card" style="text-align:center;max-width:280px">
+    <div class="overlay-title" style="text-align:center">⚠️</div>
+    <p id="confirm-exit-msg" style="color:var(--muted);font-size:14px;margin-bottom:20px"></p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="action-btn neutral" onclick="cancelExit()" id="btn-cancel-exit">Cancel</button>
+      <button class="action-btn red" onclick="isLearn()?doConfirmedExit():doConfirmedExitConv()" id="btn-confirm-exit">Exit</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="ov-save-conv" style="display:none">
   <div class="overlay-card">
     <button class="overlay-close" onclick="hideOv('ov-save-conv')">×</button>
@@ -441,11 +456,11 @@ const S={
 
 // ── i18n ───────────────────────────────────────────────────────
 const I18N={
-  fr:{conv:'Conversations',lessons:'Leçons',waiting:'En attente de conversation',waitingLesson:'En attente de leçon',startConv:'Démarrer la conversation',startLesson:'Démarrer la leçon',inProgress:'Conversation en cours',lessonProgress:'Leçon en cours',ended:'Conversation terminée',lessonEnded:'Leçon terminée',clickStop:'Clic pour arrêter',repeat:'Répéter',resume:'Poursuivre',save:'Sauvegarder',exit:'Sortir',longPressLang:'Pression longue pour changer de langue',clickArrow:'Cliquez sur la flèche pour changer d\'interlocuteur',replace:'Remplacer',oralTrans:'Traduction orale',clickTalk:'Clic pour parler',youFirst:'Vous parlez en premier',theyFirst:' parle en premier',keyOk:'✓ Clé enregistrée',learnSoon:'Mode Apprentissage bientôt !',myLang:'Ma langue',transLang:'Langue de traduction',exchanges:'échange(s)',noConv:'Aucune conversation',noLesson:'Aucune leçon',selectConv:'Sélectionner une conversation',selectLesson:'Sélectionner une leçon',review:'Réviser',rename:'Renommer',export:'Exporter MP3',delete:'Supprimer',listen:'Écouter',stop:'Arrêter',unknown:'Inconnu',choosePhrase:'Choisir une phrase',target:'Cible',source:'Source',settings:'⚙ Paramètres',apiKeyLabel:'Clé API Google',uiLangLabel:"Langue de l'interface",saveKey:'Enregistrer la clé',voicesLabel:'Voix MK disponibles',scanVoices:'🔍 Scanner les voix MK',scanPrompt:'Appuyez pour scanner…',noVoices:'Aucune voix MK trouvée',newContact:'Nouveau nom…',exitNoSave:'Sortir sans sauvegarder ?',deleteConfirm:'Supprimer ?',sttError:'Parole non reconnue',sttFail:'Erreur STT',micError:'Microphone non accessible',tagline:'Speak · Translate · Learn',skip:'Skip ›',exitBtn:'✕ Exit',lesonTitle:'💾 Save lesson',lessonName:'Lesson name',lessonPlaceholder:'My lesson…',contactTitle:'Contact',convTitle:'Conversations',lessonTitle2:'Leçons',saveConvTitle:'💾 Sauvegarder la conversation',convNameLabel:'Nom de la conversation',convPlaceholder:'Ma conversation…',saveConvBtn:'💾 Sauvegarder'},
-  en:{conv:'Conversations',lessons:'Lessons',waiting:'Waiting for conversation',waitingLesson:'Waiting for lesson',startConv:'Start conversation',startLesson:'Start lesson',inProgress:'Conversation in progress',lessonProgress:'Lesson in progress',ended:'Conversation ended',lessonEnded:'Lesson ended',clickStop:'Click to stop',repeat:'Repeat',resume:'Continue',save:'Save',exit:'Exit',longPressLang:'Long press to change language',clickArrow:'Click the arrow to change contact',replace:'Replace',oralTrans:'Oral translation',clickTalk:'Click to speak',youFirst:'You speak first',theyFirst:' speaks first',keyOk:'✓ Key saved',learnSoon:'Learning mode soon!',myLang:'My language',transLang:'Translation language',exchanges:'exchange(s)',noConv:'No conversations',noLesson:'No lessons',selectConv:'Select a conversation',selectLesson:'Select a lesson',review:'Review',rename:'Rename',export:'Export MP3',delete:'Delete',listen:'Listen',stop:'Stop',unknown:'Unknown',startLesson2:'Start lesson',target:'Target',source:'Source',settings:'⚙ Settings',apiKeyLabel:'Google API Key',uiLangLabel:'Interface language',saveKey:'Save key',voicesLabel:'Available MK voices',scanVoices:'🔍 Scan MK voices',scanPrompt:'Tap to scan…',noVoices:'No MK voice found',newContact:'New name…',exitNoSave:'Exit without saving?',deleteConfirm:'Delete?',sttError:'Speech not recognized',sttFail:'STT Error',micError:'Microphone not accessible',tagline:'Speak · Translate · Learn',skip:'Skip ›',exitBtn:'✕ Exit',lessonTitle:'💾 Save lesson',lessonName:'Lesson name',lessonPlaceholder:'My lesson…',contactTitle:'Contact',convTitle:'Conversations',lessonTitle2:'Lessons',saveConvTitle:'💾 Save conversation',convNameLabel:'Conversation name',convPlaceholder:'My conversation…',saveConvBtn:'💾 Save'},
-  mk:{conv:'Разговори',lessons:'Лекции',waiting:'Чекање разговор',waitingLesson:'Чекање лекција',startConv:'Започни разговор',startLesson:'Започни лекција',inProgress:'Разговор во тек',lessonProgress:'Лекција во тек',ended:'Разговорот завршен',lessonEnded:'Лекцијата завршена',clickStop:'Клик за стопирање',repeat:'Повтори',resume:'Продолжи',save:'Зачувај',exit:'Излез',longPressLang:'Долго притискање за промена на јазик',clickArrow:'Кликнете на стрелката за промена на соговорник',replace:'Замени',oralTrans:'Устен превод',clickTalk:'Клик за зборување',youFirst:'Вие зборувате прво',theyFirst:' зборува прво',keyOk:'✓ Зачувано',learnSoon:'Режим учење наскоро!',myLang:'Мојот јазик',transLang:'Јазик на превод',exchanges:'размена(и)',noConv:'Нема разговори',noLesson:'Нема лекции',selectConv:'Изберете разговор',selectLesson:'Изберете лекција',review:'Прегледај',rename:'Преименувај',export:'Извоз MP3',delete:'Избриши',listen:'Слушај',stop:'Стопирај',unknown:'Непознат',startLesson2:'Започни лекција',target:'Цел',source:'Извор',settings:'⚙ Поставки',apiKeyLabel:'Google API Клуч',uiLangLabel:'Јазик на интерфејс',saveKey:'Зачувај',voicesLabel:'МК гласови',scanVoices:'🔍 Скенирај гласови',scanPrompt:'Притиснете за скенирање…',noVoices:'Нема МК глас',newContact:'Ново ime…',exitNoSave:'Излез без зачувување?',deleteConfirm:'Избриши?',sttError:'Говорот не е препознаен',sttFail:'Грешка STT',micError:'Микрофонот не е достапен',tagline:'Зборувај · Преведи · Учи',skip:'Прескокни ›',exitBtn:'✕ Излез',lessonTitle:'💾 Зачувај лекција',lessonName:'Ime на лекцијата',lessonPlaceholder:'Моја лекција…',contactTitle:'Соговорник',convTitle:'Разговори',lessonTitle2:'Лекции',saveConvTitle:'💾 Зачувај разговор',convNameLabel:'Ime на разговорот',convPlaceholder:'Мојот разговор…',saveConvBtn:'💾 Зачувај'},
-  es:{conv:'Conversaciones',lessons:'Lecciones',waiting:'Esperando',waitingLesson:'Esperando lección',startConv:'Iniciar conversación',startLesson:'Iniciar lección',inProgress:'En curso',lessonProgress:'Lección en curso',ended:'Terminada',lessonEnded:'Lección terminada',clickStop:'Clic para detener',repeat:'Repetir',resume:'Continuar',save:'Guardar',exit:'Salir',longPressLang:'Mantén pulsado para cambiar idioma',clickArrow:'Pulsa la flecha para cambiar interlocutor',replace:'Reemplazar',oralTrans:'Traducción oral',clickTalk:'Clic para hablar',youFirst:'Usted habla primero',theyFirst:' habla primero',keyOk:'✓ Guardado',learnSoon:'¡Modo aprendizaje pronto!',myLang:'Mi idioma',transLang:'Idioma traducción',exchanges:'intercambio(s)',noConv:'Sin conversaciones',noLesson:'Sin lecciones',selectConv:'Seleccionar conversación',selectLesson:'Seleccionar lección',review:'Revisar',rename:'Renombrar',export:'Exportar MP3',delete:'Eliminar',listen:'Escuchar',stop:'Parar',unknown:'Desconocido',startLesson2:'Iniciar lección',target:'Destino',source:'Origen',settings:'⚙ Ajustes',apiKeyLabel:'Clave API Google',uiLangLabel:'Idioma interfaz',saveKey:'Guardar clave',voicesLabel:'Voces MK disponibles',scanVoices:'🔍 Buscar voces MK',scanPrompt:'Toca para buscar…',noVoices:'Sin voz MK',newContact:'Nuevo nombre…',exitNoSave:'¿Salir sin guardar?',deleteConfirm:'¿Eliminar?',sttError:'Voz no reconocida',sttFail:'Error STT',micError:'Micrófono no accesible',tagline:'Habla · Traduce · Aprende',skip:'Omitir ›',exitBtn:'✕ Salir',lessonTitle:'💾 Guardar lección',lessonName:'Nombre de lección',lessonPlaceholder:'Mi lección…',contactTitle:'Interlocutor',convTitle:'Conversaciones',lessonTitle2:'Lecciones',saveConvTitle:'💾 Guardar conversación',convNameLabel:'Nombre conversación',convPlaceholder:'Mi conversación…',saveConvBtn:'💾 Guardar'},
-  de:{conv:'Gespräche',lessons:'Lektionen',waiting:'Warte',waitingLesson:'Warte auf Lektion',startConv:'Gespräch starten',startLesson:'Lektion starten',inProgress:'Läuft',lessonProgress:'Lektion läuft',ended:'Beendet',lessonEnded:'Lektion beendet',clickStop:'Klick zum Stoppen',repeat:'Wiederholen',resume:'Fortfahren',save:'Speichern',exit:'Beenden',longPressLang:'Lang drücken zum Sprachwechsel',clickArrow:'Pfeil klicken zum Partnerwechsel',replace:'Ersetzen',oralTrans:'Mündliche Übersetzung',clickTalk:'Klick zum Sprechen',youFirst:'Sie sprechen zuerst',theyFirst:' spricht zuerst',keyOk:'✓ Gespeichert',learnSoon:'Lernmodus bald!',myLang:'Meine Sprache',transLang:'Übersetzungssprache',exchanges:'Austausch',noConv:'Keine Gespräche',noLesson:'Keine Lektionen',selectConv:'Gespräch auswählen',selectLesson:'Lektion auswählen',review:'Überprüfen',rename:'Umbenennen',export:'MP3 Export',delete:'Löschen',listen:'Anhören',stop:'Stoppen',unknown:'Unbekannt',startLesson2:'Lektion starten',target:'Ziel',source:'Quelle',settings:'⚙ Einstellungen',apiKeyLabel:'Google API-Schlüssel',uiLangLabel:'Oberflächensprache',saveKey:'Schlüssel speichern',voicesLabel:'MK-Stimmen verfügbar',scanVoices:'🔍 MK-Stimmen suchen',scanPrompt:'Zum Scannen tippen…',noVoices:'Keine MK-Stimme gefunden',newContact:'Neuer Name…',exitNoSave:'Ohne Speichern beenden?',deleteConfirm:'Löschen?',sttError:'Sprache nicht erkannt',sttFail:'STT-Fehler',micError:'Mikrofon nicht zugänglich',tagline:'Sprechen · Übersetzen · Lernen',skip:'Überspringen ›',exitBtn:'✕ Beenden',lessonTitle:'💾 Lektion speichern',lessonName:'Lektionsname',lessonPlaceholder:'Meine Lektion…',contactTitle:'Gesprächspartner',convTitle:'Gespräche',lessonTitle2:'Lektionen',saveConvTitle:'💾 Gespräch speichern',convNameLabel:'Gesprächsname',convPlaceholder:'Mein Gespräch…',saveConvBtn:'💾 Speichern'},
+  fr:{conv:'Conversations',lessons:'Sessions',waiting:'En attente de conversation',waitingLesson:'En attente de session',startConv:'Démarrer la conversation',startLesson:'Démarrer la session',inProgress:'Conversation en cours',lessonProgress:'Session en cours',ended:'Conversation terminée',lessonEnded:'Session terminée',clickStop:'Clic pour arrêter',repeat:'Répéter',resume:'Poursuivre',save:'Sauvegarder',exit:'Sortir',longPressLang:'Pression longue pour changer de langue',clickArrow:'Cliquez sur la flèche pour changer d\'interlocuteur',replace:'Remplacer',oralTrans:'Traduction orale',clickTalk:'Clic pour parler',youFirst:'Vous parlez en premier',theyFirst:' parle en premier',keyOk:'✓ Clé enregistrée',learnSoon:'Mode Apprentissage bientôt !',myLang:'Ma langue',transLang:'Langue de traduction',exchanges:'échange(s)',noConv:'Aucune conversation',noLesson:'Aucune session',selectConv:'Sélectionner une conversation',selectLesson:'Sélectionner une session',review:'Réviser',rename:'Renommer',export:'Exporter MP3',delete:'Supprimer',listen:'Écouter',stop:'Arrêter',unknown:'Inconnu',choosePhrase:'Choisir une phrase',target:'Cible',source:'Source',settings:'⚙ Paramètres',apiKeyLabel:'Clé API Google',uiLangLabel:"Langue de l'interface",saveKey:'Enregistrer la clé',voicesLabel:'Voix MK disponibles',scanVoices:'🔍 Scanner les voix MK',scanPrompt:'Appuyez pour scanner…',noVoices:'Aucune voix MK trouvée',newContact:'Nouveau nom…',exitNoSave:'Sortir sans sauvegarder ?',deleteConfirm:'Supprimer ?',sttError:'Parole non reconnue',sttFail:'Erreur STT',micError:'Microphone non accessible',tagline:'Speak · Translate · Learn',skip:'Skip ›',exitBtn:'✕ Exit',lesonTitle:'💾 Save lesson',lessonName:'Lesson name',lessonPlaceholder:'My lesson…',contactTitle:'Contact',convTitle:'Conversations',lessonTitle2:'Sessions',saveConvTitle:'💾 Sauvegarder la conversation',convNameLabel:'Nom de la conversation',convPlaceholder:'Ma conversation…',saveConvBtn:'💾 Sauvegarder'},
+  en:{conv:'Conversations',lessons:'Sessions',waiting:'Waiting for conversation',waitingLesson:'Waiting for session',startConv:'Start conversation',startLesson:'Start session',inProgress:'Conversation in progress',lessonProgress:'Session in progress',ended:'Conversation ended',lessonEnded:'Session ended',clickStop:'Click to stop',repeat:'Repeat',resume:'Continue',save:'Save',exit:'Exit',longPressLang:'Long press to change language',clickArrow:'Click the arrow to change the speaker',replace:'Replace',oralTrans:'Oral translation',clickTalk:'Click to speak',youFirst:'You speak first',theyFirst:' speaks first',keyOk:'✓ Key saved',learnSoon:'Learning mode soon!',myLang:'My language',transLang:'Translation language',exchanges:'exchange(s)',noConv:'No conversations',noLesson:'No sessions',selectConv:'Select a conversation',selectLesson:'Select a session',review:'Review',rename:'Rename',export:'Export MP3',delete:'Delete',listen:'Listen',stop:'Stop',unknown:'Unknown',startLesson2:'Start lesson',target:'Target',source:'Source',settings:'⚙ Settings',apiKeyLabel:'Google API Key',uiLangLabel:'Interface language',saveKey:'Save key',voicesLabel:'Available MK voices',scanVoices:'🔍 Scan MK voices',scanPrompt:'Tap to scan…',noVoices:'No MK voice found',newContact:'New name…',exitNoSave:'Exit without saving?',deleteConfirm:'Delete?',sttError:'Speech not recognized',sttFail:'STT Error',micError:'Microphone not accessible',tagline:'Speak · Translate · Learn',skip:'Skip ›',exitBtn:'✕ Exit',lessonTitle:'💾 Save session',lessonName:'Lesson name',lessonPlaceholder:'My lesson…',contactTitle:'Contact',convTitle:'Conversations',lessonTitle2:'Sessions',saveConvTitle:'💾 Save conversation',convNameLabel:'Conversation name',convPlaceholder:'My conversation…',saveConvBtn:'💾 Save'},
+  mk:{conv:'Разговори',lessons:'Sessions',waiting:'Чекање разговор',waitingLesson:'Чекање session',startConv:'Започни разговор',startLesson:'Започни session',inProgress:'Разговор во тек',lessonProgress:'Session во тек',ended:'Разговорот завршен',lessonEnded:'Session завршена',clickStop:'Клик за стопирање',repeat:'Повтори',resume:'Продолжи',save:'Зачувај',exit:'Излез',longPressLang:'Долго притискање за промена на јазик',clickArrow:'Кликнете на стрелката за промена на соговорник',replace:'Замени',oralTrans:'Устен превод',clickTalk:'Клик за зборување',youFirst:'Вие зборувате прво',theyFirst:' зборува прво',keyOk:'✓ Зачувано',learnSoon:'Режим учење наскоро!',myLang:'Мојот јазик',transLang:'Јазик на превод',exchanges:'размена(и)',noConv:'Нема разговори',noLesson:'Нема sessions',selectConv:'Изберете разговор',selectLesson:'Изберете session',review:'Прегледај',rename:'Преименувај',export:'Извоз MP3',delete:'Избриши',listen:'Слушај',stop:'Стопирај',unknown:'Непознат',startLesson2:'Започни лекција',target:'Цел',source:'Извор',settings:'⚙ Поставки',apiKeyLabel:'Google API Клуч',uiLangLabel:'Јазик на интерфејс',saveKey:'Зачувај',voicesLabel:'МК гласови',scanVoices:'🔍 Скенирај гласови',scanPrompt:'Притиснете за скенирање…',noVoices:'Нема МК глас',newContact:'Ново ime…',exitNoSave:'Излез без зачувување?',deleteConfirm:'Избриши?',sttError:'Говорот не е препознаен',sttFail:'Грешка STT',micError:'Микрофонот не е достапен',tagline:'Зборувај · Преведи · Учи',skip:'Прескокни ›',exitBtn:'✕ Излез',lessonTitle:'💾 Зачувај лекција',lessonName:'Ime на лекцијата',lessonPlaceholder:'Моја лекција…',contactTitle:'Соговорник',convTitle:'Разговори',lessonTitle2:'Sessions',saveConvTitle:'💾 Зачувај разговор',convNameLabel:'Ime на разговорот',convPlaceholder:'Мојот разговор…',saveConvBtn:'💾 Зачувај'},
+  es:{conv:'Conversaciones',lessons:'Sessions',waiting:'Esperando',waitingLesson:'Esperando session',startConv:'Iniciar conversación',startLesson:'Iniciar session',inProgress:'En curso',lessonProgress:'Session en curso',ended:'Terminada',lessonEnded:'Session terminada',clickStop:'Clic para detener',repeat:'Repetir',resume:'Continuar',save:'Guardar',exit:'Salir',longPressLang:'Mantén pulsado para cambiar idioma',clickArrow:'Pulsa la flecha para cambiar interlocutor',replace:'Reemplazar',oralTrans:'Traducción oral',clickTalk:'Clic para hablar',youFirst:'Usted habla primero',theyFirst:' habla primero',keyOk:'✓ Guardado',learnSoon:'¡Modo aprendizaje pronto!',myLang:'Mi idioma',transLang:'Idioma traducción',exchanges:'intercambio(s)',noConv:'Sin conversaciones',noLesson:'Sin sessions',selectConv:'Seleccionar conversación',selectLesson:'Seleccionar session',review:'Revisar',rename:'Renombrar',export:'Exportar MP3',delete:'Eliminar',listen:'Escuchar',stop:'Parar',unknown:'Desconocido',startLesson2:'Iniciar lección',target:'Destino',source:'Origen',settings:'⚙ Ajustes',apiKeyLabel:'Clave API Google',uiLangLabel:'Idioma interfaz',saveKey:'Guardar clave',voicesLabel:'Voces MK disponibles',scanVoices:'🔍 Buscar voces MK',scanPrompt:'Toca para buscar…',noVoices:'Sin voz MK',newContact:'Nuevo nombre…',exitNoSave:'¿Salir sin guardar?',deleteConfirm:'¿Eliminar?',sttError:'Voz no reconocida',sttFail:'Error STT',micError:'Micrófono no accesible',tagline:'Habla · Traduce · Aprende',skip:'Omitir ›',exitBtn:'✕ Salir',lessonTitle:'💾 Guardar lección',lessonName:'Nombre de lección',lessonPlaceholder:'Mi lección…',contactTitle:'Interlocutor',convTitle:'Conversaciones',lessonTitle2:'Sessions',saveConvTitle:'💾 Guardar conversación',convNameLabel:'Nombre conversación',convPlaceholder:'Mi conversación…',saveConvBtn:'💾 Guardar'},
+  de:{conv:'Gespräche',lessons:'Sessions',waiting:'Warte',waitingLesson:'Warte auf Session',startConv:'Gespräch starten',startLesson:'Session starten',inProgress:'Läuft',lessonProgress:'Session läuft',ended:'Beendet',lessonEnded:'Session beendet',clickStop:'Klick zum Stoppen',repeat:'Wiederholen',resume:'Fortfahren',save:'Speichern',exit:'Beenden',longPressLang:'Lang drücken zum Sprachwechsel',clickArrow:'Pfeil klicken zum Partnerwechsel',replace:'Ersetzen',oralTrans:'Mündliche Übersetzung',clickTalk:'Klick zum Sprechen',youFirst:'Sie sprechen zuerst',theyFirst:' spricht zuerst',keyOk:'✓ Gespeichert',learnSoon:'Lernmodus bald!',myLang:'Meine Sprache',transLang:'Übersetzungssprache',exchanges:'Austausch',noConv:'Keine Gespräche',noLesson:'Keine Sessions',selectConv:'Gespräch auswählen',selectLesson:'Session auswählen',review:'Überprüfen',rename:'Umbenennen',export:'MP3 Export',delete:'Löschen',listen:'Anhören',stop:'Stoppen',unknown:'Unbekannt',startLesson2:'Lektion starten',target:'Ziel',source:'Quelle',settings:'⚙ Einstellungen',apiKeyLabel:'Google API-Schlüssel',uiLangLabel:'Oberflächensprache',saveKey:'Schlüssel speichern',voicesLabel:'MK-Stimmen verfügbar',scanVoices:'🔍 MK-Stimmen suchen',scanPrompt:'Zum Scannen tippen…',noVoices:'Keine MK-Stimme gefunden',newContact:'Neuer Name…',exitNoSave:'Ohne Speichern beenden?',deleteConfirm:'Löschen?',sttError:'Sprache nicht erkannt',sttFail:'STT-Fehler',micError:'Mikrofon nicht zugänglich',tagline:'Sprechen · Übersetzen · Lernen',skip:'Überspringen ›',exitBtn:'✕ Beenden',lessonTitle:'💾 Lektion speichern',lessonName:'Lektionsname',lessonPlaceholder:'Meine Lektion…',contactTitle:'Gesprächspartner',convTitle:'Gespräche',lessonTitle2:'Sessions',saveConvTitle:'💾 Gespräch speichern',convNameLabel:'Gesprächsname',convPlaceholder:'Mein Gespräch…',saveConvBtn:'💾 Speichern'},
 };
 function t(k){return(I18N[S.uiLang]||I18N.fr)[k]||k}
 const isLearn=()=>S.mode==='learn';
@@ -568,9 +583,9 @@ function renderScreen(){
 
   // Cercle ou panneau texte
   const showPanel=learn&&(S.screen===2||S.screen===3);
-  circleContainer.style.display=showPanel?'none':'flex';
-  if(showPanel)textPanel.classList.add('visible');
-  else textPanel.classList.remove('visible');
+  if(circleContainer)circleContainer.style.visibility=showPanel?'hidden':'visible';
+  if(showPanel&&textPanel)textPanel.classList.add('visible');
+  else if(textPanel)textPanel.classList.remove('visible');
 
   // Zone d'aide — screen 0 uniquement
   const helpZone=document.getElementById('help-zone');
@@ -592,7 +607,10 @@ function renderScreen(){
   }
 
   // Zone texte (mode learn, screens 0 et 1)
-  if(textZone)textZone.className='text-input-zone'+(learn&&S.screen>=1?' visible':'');
+  if(textZone){
+    const show=learn&&S.screen===1;
+    textZone.style.display=show?'block':'none';
+  }
 
   if(S.screen===0){
     status.textContent='';
@@ -603,10 +621,11 @@ function renderScreen(){
     status.textContent=t('clickTalk');
     pill.className=(learn?'status-tag learn':'status-tag active');
     pill.textContent='💬 '+inProgress;
-    if(!learn&&S.currentExchanges.length>0){
-      convActions.innerHTML='<button class="action-btn primary" onclick="doSave()">'+t('save')+'</button><button class="action-btn danger" onclick="doExitConv()">'+t('exit')+'</button>';
+    if(!learn){
+      convActions.innerHTML=(S.currentExchanges.length>0?'<button class="action-btn blue solid" onclick="doSave()">'+t('save')+'</button>':'')+'<button class="action-btn red" onclick="doExitConv()">'+t('exit')+'</button>';
     }
-    if(finBtn)finBtn.style.display=learn?'inline-flex':'none';
+    // SOLO : Exit visible seulement si 0 échange (démarrage par erreur)
+    if(finBtn)finBtn.style.display=(learn&&S.currentExchanges.length===0)?'inline-flex':'none';
 
   }else if(S.screen===1&&S.listening){
     if(arcTop)arcTop.classList.add('fast');
@@ -616,10 +635,11 @@ function renderScreen(){
     status.textContent=t('clickStop');
     pill.className=(learn?'status-tag learn':'status-tag active');
     pill.textContent='💬 '+inProgress;
-    if(!learn&&S.currentExchanges.length>0){
-      convActions.innerHTML='<button class="action-btn primary" onclick="doSave()">'+t('save')+'</button><button class="action-btn danger" onclick="doExitConv()">'+t('exit')+'</button>';
+    if(!learn){
+      convActions.innerHTML=(S.currentExchanges.length>0?'<button class="action-btn blue solid" onclick="doSave()">'+t('save')+'</button>':'')+'<button class="action-btn red" onclick="doExitConv()">'+t('exit')+'</button>';
     }
-    if(finBtn)finBtn.style.display=learn?'inline-flex':'none';
+    // Masquer Exit pendant l'enregistrement en SOLO
+    if(finBtn)finBtn.style.display='none';
     updateMicIndicators();
 
   }else if(S.screen===2){
@@ -633,7 +653,7 @@ function renderScreen(){
       pill.className=(learn?'status-tag learn':'status-tag active');
       
       pill.textContent='💬 '+inProgress;
-      convActions.innerHTML='<button class="action-btn green solid" onclick="doResume()">'+t('resume')+'</button><button class="action-btn learn" onclick="doSaveLesson()">'+t('save')+'</button><button class="action-btn danger" onclick="doExitLesson()">'+t('exit')+'</button>';
+      convActions.innerHTML='<button class="action-btn green solid" onclick="doResume()">'+t('resume')+'</button><button class="action-btn learn" onclick="doSaveLesson()">'+t('save')+'</button><button class="action-btn red" onclick="confirmEnd()">'+t('exit')+'</button>';
     }else{
       intLabel.textContent='🔊 '+t('oralTrans');
       intLabel.classList.add('visible');
@@ -650,7 +670,7 @@ function renderScreen(){
     // Screen 3 only used for learn save dialog now
     if(learn){
       pill.className='status-tag warning';pill.textContent=t('lessonEnded');
-      convActions.innerHTML='<button class="action-btn learn" onclick="doResume()">'+t('resume')+'</button><button class="action-btn learn primary" onclick="doSaveLesson()">'+t('save')+'</button><button class="action-btn danger" onclick="doExitLesson()">'+t('exit')+'</button>';
+      convActions.innerHTML='<button class="action-btn learn" onclick="doResume()">'+t('resume')+'</button><button class="action-btn learn primary" onclick="doSaveLesson()">'+t('save')+'</button><button class="action-btn red" onclick="confirmEnd()">'+t('exit')+'</button>';
     }
   }
   updateUILabels();
@@ -669,21 +689,74 @@ function endSession(){
   if(S.listening){if(recognition)recognition.abort();if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();S.listening=false}
   setScreen(3);
 }
-function confirmEnd(){endSession()}
-function doExitLesson(){
-  if(confirm(t('exitNoSave'))){
-    S.currentExchanges=[];setScreen(0);
+function confirmEnd(){
+  if(S.currentExchanges.length===0){
+    if(S.listening){if(recognition)recognition.abort();if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();S.listening=false;}
+    setScreen(0);
+  } else {
+    document.getElementById('confirm-exit-msg').textContent=t('exitNoSave');
+    document.getElementById('btn-confirm-exit').textContent=t('exit');
+    document.getElementById('btn-cancel-exit').textContent=t('resume');
+    showOv('ov-confirm-exit');
   }
+}
+function doConfirmedExit(){
+  hideOv('ov-confirm-exit');
+  if(S.listening){if(recognition)recognition.abort();if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();S.listening=false;}
+  // Réinitialiser et retourner à l'écran 0
+  S.currentExchanges=[];
+  S.lastOriginal=null;
+  selectedPhraseIdx=-1;
+  selectedPhraseIdxs.clear();
+  const textPanel=document.getElementById('text-panel');
+  const cc=document.getElementById('circle-container');
+  if(textPanel)textPanel.classList.remove('visible');
+  if(cc)cc.style.visibility='visible';
+  document.getElementById('tp-text-orig').innerHTML='';
+  document.getElementById('tp-text-trans').innerHTML='';
+  setScreen(0);
+}
+function cancelExit(){hideOv('ov-confirm-exit');}
+function doExitLesson(){
+  S.currentExchanges=[];
+  S.lastOriginal=null;
+  selectedPhraseIdx=-1;
+  selectedPhraseIdxs.clear();
+  // Réinitialiser le panneau texte
+  const oe=document.getElementById('tp-text-orig');
+  const te=document.getElementById('tp-text-trans');
+  if(oe)oe.innerHTML='';
+  if(te)te.innerHTML='';
+  // Cacher le panneau texte et montrer le cercle
+  const textPanel=document.getElementById('text-panel');
+  const cc=document.getElementById('circle-container');
+  if(textPanel)textPanel.classList.remove('visible');
+  if(cc)cc.style.visibility='visible';
+  setScreen(0);
 }
 function doExitConv(){
-  if(confirm(t('exitNoSave'))){
+  if(S.currentExchanges.length===0){
     if(S.listening){if(recognition)recognition.abort();if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();S.listening=false;}
     S.currentExchanges=[];setScreen(0);
+  } else {
+    document.getElementById('confirm-exit-msg').textContent=t('exitNoSave');
+    document.getElementById('btn-confirm-exit').textContent=t('exit');
+    document.getElementById('btn-cancel-exit').textContent=t('resume');
+    showOv('ov-confirm-exit');
   }
 }
+function doConfirmedExitConv(){
+  hideOv('ov-confirm-exit');
+  if(S.listening){if(recognition)recognition.abort();if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();S.listening=false;}
+  S.currentExchanges=[];setScreen(0);
+}
 function doResume(){
-  // En mode apprentissage, Poursuivre = nouvelle phrase → efface la mémoire
-  if(isLearn())S.lastOriginal=null;
+  // En mode SOLO, Poursuivre = nouvelle phrase → efface la mémoire et le champ
+  if(isLearn()){
+    S.lastOriginal=null;
+    const input=document.getElementById('text-lesson-input');
+    if(input)input.value='';
+  }
   setScreen(1);
 }
 function doReplace(){if(S.currentExchanges.length>0)S.currentExchanges.pop();setScreen(1)}
@@ -868,9 +941,17 @@ async function translateAndSpeak(text,fromLang,toLang){
     const idx=S.currentExchanges.length-1;
     oe.innerHTML+=(oe.innerHTML?sep:'')+'<div class="tp-phrase" data-idx="'+idx+'" onclick="selectPhrase('+idx+')" style="padding:2px 4px;border-radius:4px;cursor:pointer">'+text+'</div>';
     te.innerHTML+=(te.innerHTML?sep:'')+'<div class="tp-phrase" data-idx="'+idx+'" onclick="selectPhrase('+idx+')" style="padding:2px 4px;border-radius:4px;cursor:pointer">'+translated+'</div>';
+    // Scroller vers le bas immédiatement
+    setTimeout(()=>{
+      const tp=document.getElementById('tp-top-wrap');const tb=document.getElementById('tp-bot-wrap');
+      if(tp)tp.scrollTop=tp.scrollHeight;if(tb)tb.scrollTop=tb.scrollHeight;
+    },50);
   }
+  setScreen(2); // Avant speakText pour éviter les inversions
+  // Cacher la zone de saisie texte
+  const tz=document.getElementById('text-input-zone');
+  if(tz)tz.style.display='none';
   await speakText(translated,toLang);
-  setScreen(2);
 }
 
 async function speakText(text,langCode){
@@ -894,7 +975,7 @@ function updateMicIndicators(){
   const mt=document.getElementById('mic-top');const mb=document.getElementById('mic-bottom');
   mt.classList.remove('visible');mb.classList.remove('visible');
   if(S.screen===3)return;
-  if(isLearn()){if(S.screen>=1)mb.classList.add('visible');return}
+  if(isLearn()){if(S.screen>=0)mb.classList.add('visible');return}
   if(S.direction==='AB')mb.classList.add('visible');else mt.classList.add('visible');
 }
 
@@ -939,7 +1020,8 @@ function renderConvScreen(){
         +'<button class="cs-btn" onclick="renameLesson()" style="border-color:'+color+';color:'+color+'">✏️ '+t('rename')+'</button>'
         +'<button class="cs-btn" onclick="exportEntry()" style="border-color:'+color+';color:'+color+'">🎵 MP3</button>'
         +'<button class="cs-btn" onclick="exportDocx()" style="border-color:'+color+';color:'+color+'">📄 DOCX</button>'
-        +'<button class="cs-btn" onclick="exportPdf()" style="border-color:'+color+';color:'+color+'">📋 PDF</button>'
+        +'<button class="cs-btn" onclick="exportPdf(\'C\')" style="border-color:'+color+';color:'+color+'">📋 PDF-C</button>'
+        +'<button class="cs-btn" onclick="exportPdf(\'L\')" style="border-color:'+color+';color:'+color+'">📋 PDF-L</button>'
         +'<button class="cs-btn" style="background:#FFE0E3;color:#C0002A" onclick="deleteEntry()">🗑 '+t('delete')+'</button>';
     }else{
       actionDiv.innerHTML='<button class="cs-btn" id="cs-listen" onclick="listenEntry()" style="border-color:'+color+';color:'+color+'">🔊 '+t('listen')+'</button>'
@@ -1153,7 +1235,7 @@ async function exportDocx(){
   showToast('📄 Document téléchargé');
 }
 
-function exportPdf(){
+function exportPdf(format='C'){
   if(!selectedEntry)return;
   const groups=[];
   for(const ex of selectedEntry.exchanges){
@@ -1164,23 +1246,43 @@ function exportPdf(){
       groups.push({original:ex.original,langFrom:ex.langFrom,translations:[{text:ex.translated,lang:ex.langTo}]});
     }
   }
-  const maxTrans=Math.max(...groups.map(g=>g.translations.length));
-  const isMulti=maxTrans>1;
-  const name=selectedEntry.name||'Leçon';
+  const name=selectedEntry.name||'Session';
   const date=new Date(selectedEntry.date).toLocaleDateString();
   const langs=[...new Set(selectedEntry.exchanges.map(e=>e.langTo))];
-  let tableRows='';
-  if(isMulti){
-    tableRows='<tr><th>'+selectedEntry.langFrom.toUpperCase()+'</th>'+langs.map(l=>'<th>'+l.toUpperCase()+'</th>').join('')+'</tr>'
-      +groups.map(g=>'<tr><td class="orig">'+g.original+'</td>'+langs.map(l=>{const tr=g.translations.find(t=>t.lang===l);return'<td>'+(tr?tr.text:'—')+'</td>';}).join('')+'</tr>').join('');
+  const isMulti=langs.length>1;
+
+  let body='';
+
+  if(format==='C'){
+    // PDF-C : tableau colonnes
+    let tableRows='';
+    if(isMulti){
+      tableRows='<tr><th>'+selectedEntry.langFrom.toUpperCase()+'</th>'+langs.map(l=>'<th>'+l.toUpperCase()+'</th>').join('')+'</tr>'
+        +groups.map(g=>'<tr><td class="orig">'+g.original+'</td>'+langs.map(l=>{const tr=g.translations.find(t=>t.lang===l);return'<td>'+(tr?tr.text:'—')+'</td>';}).join('')+'</tr>').join('');
+    } else {
+      tableRows='<tr><th>'+selectedEntry.langFrom.toUpperCase()+'</th><th>'+(selectedEntry.langTo||'').toUpperCase()+'</th></tr>'
+        +groups.map(g=>'<tr><td class="orig">'+g.original+'</td><td>'+(g.translations[0]?.text||'')+'</td></tr>').join('');
+    }
+    body='<table>'+tableRows+'</table>';
   } else {
-    tableRows='<tr><th>'+selectedEntry.langFrom.toUpperCase()+'</th><th>'+(selectedEntry.langTo||'').toUpperCase()+'</th></tr>'
-      +groups.map(g=>'<tr><td class="orig">'+g.original+'</td><td>'+(g.translations[0]?.text||'')+'</td></tr>').join('');
+    // PDF-L : phrases empilées avec séparateurs
+    body=groups.map(g=>{
+      const orig='<div class="phrase-orig">'+g.original+'</div>';
+      const trans=g.translations.map(t=>'<div class="phrase-trans"><span class="lang-badge">'+t.lang.toUpperCase()+'</span> '+t.text+'</div>').join('');
+      return '<div class="phrase-block">'+orig+trans+'</div>';
+    }).join('<hr class="phrase-sep">');
   }
-  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Calibri,Arial,sans-serif;margin:30px;color:#1A2340}h1{font-size:22px;margin-bottom:4px}.meta{color:#8A96B4;font-size:13px;margin-bottom:24px}table{border-collapse:collapse;width:100%}th{background:#4A6CF7;color:white;padding:10px 14px;text-align:left}td{padding:10px 14px;border-bottom:1px solid #eee}td.orig{font-weight:700}tr:nth-child(even) td{background:#F8F9FF}@media print{body{margin:15px}}</style><title>'+name+'</title></head><body>'
-    +'<h1>📖 '+name+'</h1><div class="meta">📅 '+date+' · 📍 '+(selectedEntry.location||'')+' · '+groups.length+' phrase(s)</div>'
-    +'<table>'+tableRows+'</table>'
+
+  const css=format==='C'
+    ?'table{border-collapse:collapse;width:100%}th{background:#4A6CF7;color:white;padding:10px 14px;text-align:left}td{padding:10px 14px;border-bottom:1px solid #eee}td.orig{font-weight:700}tr:nth-child(even) td{background:#F8F9FF}'
+    :'.phrase-block{margin:16px 0;padding:8px 0}.phrase-orig{font-size:16px;font-weight:700;color:#1A2340;margin-bottom:8px}.phrase-trans{font-size:15px;color:#2D4FBF;margin:4px 0;padding-left:12px}.lang-badge{display:inline-block;background:#4A6CF7;color:white;font-size:10px;font-weight:800;padding:2px 6px;border-radius:4px;margin-right:8px}.phrase-sep{border:none;border-top:2px solid #E4E8F5;margin:8px 0}';
+
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Calibri,Arial,sans-serif;margin:30px;color:#1A2340}h1{font-size:22px;margin-bottom:4px}.meta{color:#8A96B4;font-size:13px;margin-bottom:24px}'+css+'@media print{body{margin:15px}}</style><title>'+name+'</title></head><body>'
+    +'<h1>📖 '+name+' <span style="font-size:13px;color:#8A96B4;font-weight:normal">PDF-'+format+'</span></h1>'
+    +'<div class="meta">📅 '+date+' · 📍 '+(selectedEntry.location||'')+' · '+groups.length+' phrase(s)</div>'
+    +body
     +'<script>window.onload=function(){window.print()}<\/script></body></html>';
+
   const w=window.open('','_blank');
   if(w){w.document.write(html);w.document.close();}
   else showToast('Autorisez les popups pour le PDF');
@@ -1271,12 +1373,10 @@ function updateDisplay(){
 }
 
 function updateUILabels(){
-  // Mode buttons
+  // Mode buttons — toujours DUO/SOLO
   document.getElementById('btn-top-center').textContent=isLearn()?t('lessons'):t('conv');
-  const exchLabels={fr:'Échange',mk:'Размена',es:'Intercambio',de:'Austausch',en:'Exchange'};
-  const learnLabels={fr:'Apprentissage',mk:'Учење',es:'Aprendizaje',de:'Lernen',en:'Learning'};
-  document.getElementById('btn-exchange').textContent=exchLabels[S.uiLang]||'Exchange';
-  document.getElementById('btn-learn').textContent=learnLabels[S.uiLang]||'Learning';
+  document.getElementById('btn-exchange').textContent='DUO';
+  document.getElementById('btn-learn').textContent='SOLO';
   // Lang card sub labels
   const lsTop=document.getElementById('lang-sub-top');
   const lsBot=document.getElementById('lang-sub-bot');
@@ -1328,6 +1428,22 @@ function showToast(msg){const el=document.getElementById('toast');el.textContent
 
 // ── Boot ───────────────────────────────────────────────────────
 updateDisplay();updateUILabels();renderScreen();
+
+// Fixer la position du cercle une fois pour toutes
+setTimeout(()=>{
+  const cz=document.getElementById('circle-container');
+  const zone=document.querySelector('.center-zone');
+  if(cz&&zone){
+    const zr=zone.getBoundingClientRect();
+    const cr=cz.getBoundingClientRect();
+    const top=cr.top-zr.top;
+    const left=cr.left-zr.left;
+    cz.style.position='absolute';
+    cz.style.top=top+'px';
+    cz.style.left=left+'px';
+    cz.style.transform='none';
+  }
+},100);
 
 // ── Splash ─────────────────────────────────────────────────────
 function hideSplash(){
