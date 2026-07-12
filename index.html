@@ -584,8 +584,8 @@ function renderScreen(){
   // Cercle ou panneau texte
   const showPanel=learn&&(S.screen===2||S.screen===3);
   if(circleContainer)circleContainer.style.visibility=showPanel?'hidden':'visible';
-  if(showPanel)textPanel.classList.add('visible');
-  else textPanel.classList.remove('visible');
+  if(showPanel&&textPanel)textPanel.classList.add('visible');
+  else if(textPanel)textPanel.classList.remove('visible');
 
   // Zone d'aide — screen 0 uniquement
   const helpZone=document.getElementById('help-zone');
