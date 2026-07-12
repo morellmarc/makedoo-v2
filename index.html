@@ -610,6 +610,7 @@ function renderScreen(){
   if(textZone){
     const show=learn&&S.screen>=1&&S.screen<=2;
     textZone.style.display=show?'block':'none';
+    if(show)alert('textZone visible! screen='+S.screen+' learn='+learn);
   }
 
   if(S.screen===0){
