@@ -605,7 +605,7 @@ function renderScreen(){
   }
 
   // Zone texte (mode learn, screens 0 et 1)
-  if(textZone)textZone.className='text-input-zone'+(learn&&S.screen>=1?' visible':'');
+  if(textZone)textZone.className='text-input-zone'+(learn&&S.screen>=1&&S.screen<=2?' visible':'');
 
   if(S.screen===0){
     status.textContent='';
@@ -746,8 +746,12 @@ function doConfirmedExitConv(){
   S.currentExchanges=[];setScreen(0);
 }
 function doResume(){
-  // En mode apprentissage, Poursuivre = nouvelle phrase → efface la mémoire
-  if(isLearn())S.lastOriginal=null;
+  // En mode SOLO, Poursuivre = nouvelle phrase → efface la mémoire et le champ
+  if(isLearn()){
+    S.lastOriginal=null;
+    const input=document.getElementById('text-lesson-input');
+    if(input)input.value='';
+  }
   setScreen(1);
 }
 function doReplace(){if(S.currentExchanges.length>0)S.currentExchanges.pop();setScreen(1)}
