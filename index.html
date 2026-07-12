@@ -244,7 +244,7 @@ input:focus{border-color:var(--blue)}
     </div>
 
     <!-- SAISIE TEXTE SOLO -->
-    <div class="text-input-zone" id="text-input-zone" style="position:absolute;top:72px;left:8px;right:8px;z-index:20;background:var(--bg);padding:4px 0">
+    <div class="text-input-zone" id="text-input-zone" style="position:absolute;top:72px;left:8px;right:8px;z-index:20;background:var(--bg);padding:4px 0;border:2px solid red">
       <div style="display:flex;gap:6px;align-items:center">
         <input type="text" id="text-lesson-input" placeholder="Tapez votre phrase…" style="flex:1">
         <button onclick="submitTextLesson()" style="background:linear-gradient(135deg,#00C48C,#00A878);border:none;border-radius:10px;color:white;font-weight:700;font-size:15px;padding:10px 14px;cursor:pointer">→</button>
@@ -607,7 +607,10 @@ function renderScreen(){
   }
 
   // Zone texte (mode learn, screens 0 et 1)
-  if(textZone)textZone.className='text-input-zone'+(learn&&S.screen>=1&&S.screen<=2?' visible':'');
+  if(textZone){
+    const show=learn&&S.screen>=1&&S.screen<=2;
+    textZone.style.display=show?'block':'none';
+  }
 
   if(S.screen===0){
     status.textContent='';
