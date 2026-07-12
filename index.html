@@ -609,7 +609,7 @@ function renderScreen(){
   // Zone texte (mode learn, screens 0 et 1)
   if(textZone){
     const show=learn&&S.screen>=1&&S.screen<=2;
-    alert('mode='+S.mode+' learn='+learn+' screen='+S.screen+' show='+show);
+    showToast('mode='+S.mode+' sc='+S.screen+' show='+show);
     textZone.style.display=show?'block':'none';
   }
 
