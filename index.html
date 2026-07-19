@@ -320,7 +320,10 @@ input:focus{border-color:var(--blue)}
 <div id="conv-screen">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--surface);flex-shrink:0">
     <div id="cs-title" style="font-size:16px;font-weight:800"></div>
-    <button class="cs-btn" onclick="hideConvScreen()" style="background:var(--red-light);color:var(--red-text)">✕ Sortir</button>
+    <div style="display:flex;gap:6px">
+      <button class="cs-btn" id="btn-import-session" onclick="importSession()" style="background:var(--blue-light);color:var(--blue);display:none">📥</button>
+      <button class="cs-btn" onclick="hideConvScreen()" style="background:var(--red-light);color:var(--red-text)" id="btn-exit-convscreen">Exit</button>
+    </div>
   </div>
   <div id="cs-actions" style="padding:10px 16px;border-bottom:1px solid var(--line);background:var(--bg);flex-shrink:0;display:flex;flex-direction:column;gap:4px;align-items:stretch;justify-content:center;min-height:52px;flex-wrap:wrap"></div>
   <div id="cs-review-panel" style="display:none;flex-direction:column;flex-shrink:0;border-bottom:1px solid var(--line);max-height:40vh">
@@ -815,13 +818,46 @@ function doRepeatSelected(){
   (async()=>{
     for(const i of idxs){
       const ex=S.currentExchanges[i];
-      if(ex)await speakText(ex.translated,ex.langTo||S.langTo);
+      if(!ex)continue;
+      // Surligner la phrase en cours dans les deux colonnes
+      document.querySelectorAll('.tp-phrase').forEach(el=>{
+        const idx=parseInt(el.dataset.idx);
+        if(idx===i){
+          el.style.background='#FFE0B2';
+          el.style.fontWeight='700';
+          // Scroller vers la phrase
+          el.scrollIntoView({block:'nearest',behavior:'smooth'});
+        } else {
+          el.style.background=selectedPhraseIdxs.has(idx)?'#BBDEFB':'';
+          el.style.fontWeight='';
+        }
+      });
+      await speakText(ex.translated,ex.langTo||S.langTo);
     }
+    // Remettre le surlignage de sélection
+    document.querySelectorAll('.tp-phrase').forEach(el=>{
+      const idx=parseInt(el.dataset.idx);
+      el.style.background=selectedPhraseIdxs.has(idx)?'#BBDEFB':'';
+      el.style.fontWeight='';
+    });
   })();
-  // Reste sur screen 2
 }
 
 function doReplaceSelected(){
+  // Confirmation avant suppression
+  document.getElementById('confirm-exit-msg').textContent=t('deleteConfirm');
+  document.getElementById('btn-confirm-exit').textContent=t('replace');
+  document.getElementById('btn-cancel-exit').textContent=t('resume');
+  // Remplace la fonction de confirmation temporairement
+  document.getElementById('btn-confirm-exit').onclick=function(){
+    hideOv('ov-confirm-exit');
+    doConfirmedReplace();
+    // Restaurer onclick original
+    document.getElementById('btn-confirm-exit').onclick=function(){isLearn()?doConfirmedExit():doConfirmedExitConv()};
+  };
+  showOv('ov-confirm-exit');
+}
+function doConfirmedReplace(){
   const idxs=selectedPhraseIdxs.size>0?[...selectedPhraseIdxs].sort((a,b)=>b-a):[S.currentExchanges.length-1];
   // Supprimer par index décroissant
   idxs.forEach(i=>{if(i>=0&&i<S.currentExchanges.length)S.currentExchanges.splice(i,1)});
@@ -1049,6 +1085,12 @@ function renderConvScreen(){
   const color=convViewMode?'var(--learn)':'var(--accent)';
   document.getElementById('cs-title').textContent=convViewMode?t('lessons'):t('conv');
   document.getElementById('cs-title').style.color=color;
+  // Bouton import visible uniquement en mode Sessions
+  const importBtn=document.getElementById('btn-import-session');
+  if(importBtn)importBtn.style.display=convViewMode?'inline-block':'none';
+  // Bouton Exit
+  const exitBtn=document.getElementById('btn-exit-convscreen');
+  if(exitBtn)exitBtn.textContent=t('exit');
   const actionDiv=document.getElementById('cs-actions');
   if(selectedEntry){
     if(convViewMode){
@@ -1056,6 +1098,7 @@ function renderConvScreen(){
         '<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:6px">'
         +'<button class="cs-btn" onclick="resumeLesson()" style="border-color:'+color+';color:'+color+'">📖 '+t('review')+'</button>'
         +'<button class="cs-btn" onclick="renameLesson()" style="border-color:'+color+';color:'+color+'">✏️ '+t('rename')+'</button>'
+        +'<button class="cs-btn" onclick="exportSessionJson()" style="border-color:'+color+';color:'+color+'">📤 JSON</button>'
         +'<button class="cs-btn" style="background:#FFE0E3;color:#C0002A" onclick="deleteEntry()">🗑 '+t('delete')+'</button>'
         +'</div>'
         +'<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:6px">'
@@ -1329,6 +1372,44 @@ function exportPdf(format='C'){
   else showToast('Autorisez les popups pour le PDF');
 }
 
+// ── Export / Import JSON ───────────────────────────────────────
+function exportSessionJson(){
+  if(!selectedEntry)return;
+  const json=JSON.stringify(selectedEntry,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const name=(selectedEntry.name||'session').replace(/[^a-z0-9]/gi,'_');
+  a.href=url;a.download='makedoo_'+name+'_'+selectedEntry.date+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📤 JSON');
+}
+
+function importSession(){
+  const input=document.createElement('input');
+  input.type='file';input.accept='.json';
+  input.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        if(!data.exchanges||!Array.isArray(data.exchanges)){showToast('Fichier invalide');return;}
+        const exists=S.lessons.some(l=>l.id===data.id);
+        if(exists){showToast('Session déjà importée');return;}
+        data.id=data.id||Date.now();
+        S.lessons.unshift(data);
+        localStorage.setItem('mk_v3_lessons',JSON.stringify(S.lessons));
+        renderConvScreen();
+        showToast('📥 '+(data.name||'Session importée'));
+      }catch(err){showToast('Erreur de lecture');}
+    };
+    reader.readAsText(file);
+  };
+  document.body.appendChild(input);input.click();document.body.removeChild(input);
+}
+
 function openLangPicker(target){
   S.langPickerTarget=target;
   document.getElementById('t-langpicker').textContent=target==='from'?t('myLang'):t('transLang');
@@ -1431,8 +1512,8 @@ function updateUILabels(){
   const finLabel=document.getElementById('fin-btn-label');
   if(finLabel)finLabel.textContent=t('exit');
   // Conv screen exit button
-  const exitBtn=document.querySelector('#conv-screen .cs-btn');
-  if(exitBtn)exitBtn.textContent=t('exitBtn');
+  const exitConvBtn=document.getElementById('btn-exit-convscreen');
+  if(exitConvBtn)exitConvBtn.textContent=t('exit');
   // Voice list prompt if empty/default
   const vl=document.getElementById('voice-list');
   if(vl&&vl.children.length===0)vl.textContent=t('scanPrompt');
