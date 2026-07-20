@@ -75,7 +75,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI'
 .intervention-zone{position:absolute;top:44px;left:0;right:0;height:68px;display:flex;flex-direction:column;align-items:center;gap:6px;justify-content:center;overflow:hidden;z-index:20;padding:4px 8px}
 .help-zone-css{position:absolute;top:0;left:0;right:0;height:44px;display:flex;flex-direction:column;align-items:center;gap:3px;justify-content:center;padding:2px 8px;z-index:20;background:var(--bg)}
 .circle-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:8px}
-.conversation-zone{position:absolute;bottom:0;left:0;right:0;min-height:120px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;justify-content:center;background:var(--bg);z-index:10}
+.conversation-zone{position:absolute;bottom:0;left:0;right:0;min-height:120px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;justify-content:center;background:var(--bg);z-index:25}
 .status-tag{border-radius:10px;padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:0.3px;text-align:center;min-height:28px;display:inline-block}
 .status-tag.active{color:var(--green-text);background:var(--green-light)}
 .status-tag.learn{color:var(--blue-text);background:var(--blue-light)}
@@ -652,8 +652,20 @@ function renderScreen(){
     if(!learn){
       convActions.innerHTML=(S.currentExchanges.length>0?'<button class="action-btn blue solid" onclick="doSave()">'+t('save')+'</button>':'')+'<button class="action-btn red" onclick="doExitConv()">'+t('exit')+'</button>';
     }
-    // SOLO : Exit toujours visible sur screen 1
-    if(finBtn)finBtn.style.display=learn?'inline-flex':'none';
+    // SOLO screen 1 : bouton Retour si session en cours, Sortir si démarrage
+    if(finBtn){
+      if(learn&&S.currentExchanges.length>0){
+        finBtn.style.display='inline-flex';
+        document.getElementById('fin-btn-label').textContent='← '+t('resume');
+        finBtn.onclick=function(){S.insertMode=false;S.insertBeforeIdx=undefined;setScreen(2);};
+      } else if(learn){
+        finBtn.style.display='inline-flex';
+        document.getElementById('fin-btn-label').textContent=t('exit');
+        finBtn.onclick=function(){confirmEnd();};
+      } else {
+        finBtn.style.display='none';
+      }
+    }
 
   }else if(S.screen===1&&S.listening){
     if(arcTop)arcTop.classList.add('fast');
