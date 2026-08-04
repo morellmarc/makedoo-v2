@@ -495,6 +495,9 @@ const LANGS=[
   {code:'el',label:'Ελληνικά',flag:'🇬🇷',bcp47:'el-GR',display:'EL'},
   {code:'bg',label:'Български',flag:'🇧🇬',bcp47:'bg-BG',display:'BG'},
   {code:'nl',label:'Nederlands',flag:'🇳🇱',bcp47:'nl-NL',display:'NL'},
+  {code:'pt',label:'Português',flag:'🇵🇹',bcp47:'pt-PT',display:'PT'},
+  {code:'ru',label:'Русский',flag:'🇷🇺',bcp47:'ru-RU',display:'RU'},
+  {code:'pl',label:'Polski',flag:'🇵🇱',bcp47:'pl-PL',display:'PL'},
 ];
 
 // ── Init ───────────────────────────────────────────────────────
@@ -870,7 +873,16 @@ function doResume(){
   }
 }
 function doReplace(){if(S.currentExchanges.length>0)S.currentExchanges.pop();setScreen(1)}
-function doRepeat(){if(S.lastTranslation)speakText(S.lastTranslation,S.lastTranslationLang)}
+function doRepeat(){
+  if(S.isSpeaking||!S.lastTranslation)return;
+  const repeatBtn=document.querySelector('[onclick="doRepeat()"]');
+  if(repeatBtn){repeatBtn.style.opacity='0.4';repeatBtn.style.pointerEvents='none';}
+  S.isSpeaking=true;
+  speakText(S.lastTranslation,S.lastTranslationLang).finally(()=>{
+    S.isSpeaking=false;
+    if(repeatBtn){repeatBtn.style.opacity='1';repeatBtn.style.pointerEvents='';}
+  });
+}
 function doRepeatLearn(){if(S.lastTranslation)speakText(S.lastTranslation,S.lastTranslationLang)}
 
 // Sélection multiple de phrases
@@ -915,7 +927,7 @@ function doRepeatAll(){
 function doRepeatSelected(){
   if(S.isSpeaking)return;
   const idxs=selectedPhraseIdxs.size>0?[...selectedPhraseIdxs].sort():[S.currentExchanges.length-1];
-  const repeatBtn=document.querySelector('.action-btn.orange');
+  const repeatBtn=document.querySelector('[onclick="doRepeatSelected()"]');
   if(repeatBtn){repeatBtn.style.opacity='0.4';repeatBtn.style.pointerEvents='none';}
   S.isSpeaking=true;
   (async()=>{
@@ -1021,7 +1033,7 @@ function startListening(){
   const isB=isLearn()?false:(S.currentSpeaker==='B');
   const fromLang=isB?S.langTo:S.langFrom;
   const toLang=isB?S.langFrom:S.langTo;
-  const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL'};
+  const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL',pt:'pt-PT',ru:'ru-RU',pl:'pl-PL'};
   const recogLang=langMap[fromLang]||'fr-FR';
   S.listening=true;setScreen(1);
   startCloudSTT(fromLang,toLang,recogLang);
@@ -1138,7 +1150,13 @@ async function translateAndSpeak(text,fromLang,toLang){
     const micC=document.getElementById('mic-center');
     if(micC)micC.style.opacity='1';
   }
+  // Verrouiller "Répéter" pendant la diction initiale automatique
+  S.isSpeaking=true;
+  const initialRepeatBtn=document.querySelector('[onclick="doRepeat()"], [onclick="doRepeatSelected()"]');
+  if(initialRepeatBtn){initialRepeatBtn.style.opacity='0.4';initialRepeatBtn.style.pointerEvents='none';}
   await speakText(translated,toLang);
+  S.isSpeaking=false;
+  if(initialRepeatBtn){initialRepeatBtn.style.opacity='1';initialRepeatBtn.style.pointerEvents='';}
   // En mode DUO, inverser automatiquement la flèche après traduction
   if(!isLearn()){
     S.direction=S.direction==='AB'?'BA':'AB';
@@ -1150,7 +1168,7 @@ async function translateAndSpeak(text,fromLang,toLang){
 }
 
 async function speakText(text,langCode){
-  const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL'};
+  const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL',pt:'pt-PT',ru:'ru-RU',pl:'pl-PL'};
   const lc=langMap[langCode]||'fr-FR';
   try{
     const res=await fetch(API_BASE+'/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,languageCode:lc,speakingRate:isLearn()?0.85:1.0})});
@@ -1391,7 +1409,7 @@ async function exportEntry(mode=2){
   if(!selectedEntry)return;
   const btn=document.querySelector('[onclick="exportEntry('+mode+')"]');
   if(btn)btn.textContent='⏳…';
-  const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL'};
+  const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL',pt:'pt-PT',ru:'ru-RU',pl:'pl-PL'};
   const chunks=[];
   const groups=[];
   const activeExE=getActiveExchanges(selectedEntry);
