@@ -73,7 +73,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI'
 
 /* Centre — cercle absolument positionné */
 .center-zone{flex:1;display:block;position:relative;padding:4px 8px}
-.intervention-zone{position:absolute;top:44px;left:0;right:0;height:68px;display:flex;flex-direction:column;align-items:center;gap:6px;justify-content:center;overflow:hidden;z-index:20;padding:4px 8px;background:#DFF4FF}
+.intervention-zone{position:absolute;top:44px;left:0;right:0;height:68px;display:flex;flex-direction:column;align-items:center;gap:2px;justify-content:center;overflow:hidden;z-index:20;padding:2px 8px;background:#DFF4FF}
 .help-zone-css{position:absolute;top:0;left:0;right:0;height:44px;display:flex;flex-direction:column;align-items:center;gap:3px;justify-content:center;padding:2px 8px;z-index:20;background:#DFF4FF}
 .circle-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:8px}
 .conversation-zone{position:absolute;bottom:0;left:0;right:0;min-height:120px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;justify-content:center;background:#FFE6EF;z-index:25}
@@ -532,6 +532,11 @@ const LANGS=[
   {code:'mt',label:'Malti',flag:'🇲🇹',bcp47:'mt-MT',display:'MT'},
   {code:'zh',label:'中文',flag:'🇨🇳',bcp47:'zh-CN',display:'ZH'},
   {code:'ja',label:'日本語',flag:'🇯🇵',bcp47:'ja-JP',display:'JA'},
+  {code:'th',label:'ไทย',flag:'🇹🇭',bcp47:'th-TH',display:'TH'},
+  {code:'km',label:'ខ្មែរ',flag:'🇰🇭',bcp47:'km-KH',display:'KM'},
+  {code:'id',label:'Bahasa Indonesia',flag:'🇮🇩',bcp47:'id-ID',display:'ID'},
+  {code:'vi',label:'Tiếng Việt',flag:'🇻🇳',bcp47:'vi-VN',display:'VI'},
+  {code:'lo',label:'ລາວ',flag:'🇱🇦',bcp47:'lo-LA',display:'LO'},
 ];
 
 // ── Init ───────────────────────────────────────────────────────
@@ -778,13 +783,13 @@ function renderScreen(){
   }else if(S.screen===2){
     if(learn){
       if(finBtn)finBtn.style.display='none';
-      intLabel.innerHTML='<div style="display:flex;align-items:center;gap:8px;width:100%;justify-content:center">'
-        +'<span style="background:#E3F2FD;border-radius:20px;padding:5px 14px;font-size:12px;color:var(--learn);font-weight:700">'+t('choosePhrase')+'</span>'
-        +'<button class="action-btn blue" style="padding:5px 12px;font-size:11px" onclick="doRepeatAll()">'+t('all')+'</button>'
+      intLabel.innerHTML='<div style="display:flex;align-items:center;gap:6px;width:100%;justify-content:center">'
+        +'<span style="background:#E3F2FD;border-radius:14px;padding:4px 12px;font-size:12px;color:var(--learn);font-weight:700">'+t('choosePhrase')+'</span>'
+        +'<button class="action-btn blue" style="padding:4px 10px;font-size:11px" onclick="doRepeatAll()">'+t('all')+'</button>'
         +'</div>';
       intLabel.classList.add('visible');
       intLabel.style.cssText='opacity:1;width:100%';
-      intActions.innerHTML='<button class="action-btn orange" style="padding:8px 12px;font-size:12px" onclick="doRepeatSelected()">'+t('repeat')+'</button><button class="action-btn neutral" style="padding:8px 12px;font-size:12px" onclick="doReplaceSelected()">'+t('replace')+'</button><button class="action-btn blue" style="padding:8px 12px;font-size:12px" onclick="doSoloCopy()">📋 '+t('copy')+'</button>';
+      intActions.innerHTML='<button class="action-btn orange" style="padding:5px 10px;font-size:11px" onclick="doRepeatSelected()">'+t('repeat')+'</button><button class="action-btn neutral" style="padding:5px 10px;font-size:11px" onclick="doReplaceSelected()">'+t('replace')+'</button><button class="action-btn blue" style="padding:5px 10px;font-size:11px" onclick="doSoloCopy()">📋 '+t('copy')+'</button>';
       // ZONE BASSE : bandeau + boutons
       pill.className=(learn?'status-tag learn':'status-tag active');
       
@@ -943,8 +948,8 @@ function doDuoRead(){
   renderScreen();
 }
 function doSoloCopy(){
-  const idxs=selectedPhraseIdxs.size>0?[...selectedPhraseIdxs].sort((a,b)=>a-b):[];
-  if(idxs.length===0){showToast(t('selectFirst')||'Sélectionnez une phrase');return;}
+  const idxs=selectedPhraseIdxs.size>0?[...selectedPhraseIdxs].sort((a,b)=>a-b):(S.currentExchanges.length>0?[S.currentExchanges.length-1]:[]);
+  if(idxs.length===0)return;
   const text=idxs.map(i=>S.currentExchanges[i]).filter(Boolean).map(e=>e.translated).join('\n');
   if(!text)return;
   if(navigator.clipboard&&navigator.clipboard.writeText){
@@ -1157,7 +1162,7 @@ function startListening(){
   const isB=isLearn()?false:(S.currentSpeaker==='B');
   const fromLang=isB?S.langTo:S.langFrom;
   const toLang=isB?S.langFrom:S.langTo;
-  const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL',pt:'pt-PT',ru:'ru-RU',pl:'pl-PL',uk:'uk-UA',ro:'ro-RO',hu:'hu-HU',cs:'cs-CZ',sk:'sk-SK',sl:'sl-SI',hr:'hr-HR',bs:'bs-BA',sv:'sv-SE',da:'da-DK',no:'nb-NO',fi:'fi-FI',is:'is-IS',et:'et-EE',lv:'lv-LV',lt:'lt-LT',ka:'ka-GE',hy:'hy-AM',be:'be-BY',ca:'ca-ES',eu:'eu-ES',cy:'cy-GB',ga:'ga-IE',mt:'mt-MT',zh:'zh-CN',ja:'ja-JP'};
+  const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL',pt:'pt-PT',ru:'ru-RU',pl:'pl-PL',uk:'uk-UA',ro:'ro-RO',hu:'hu-HU',cs:'cs-CZ',sk:'sk-SK',sl:'sl-SI',hr:'hr-HR',bs:'bs-BA',sv:'sv-SE',da:'da-DK',no:'nb-NO',fi:'fi-FI',is:'is-IS',et:'et-EE',lv:'lv-LV',lt:'lt-LT',ka:'ka-GE',hy:'hy-AM',be:'be-BY',ca:'ca-ES',eu:'eu-ES',cy:'cy-GB',ga:'ga-IE',mt:'mt-MT',zh:'zh-CN',ja:'ja-JP',th:'th-TH',km:'km-KH',id:'id-ID',vi:'vi-VN',lo:'lo-LA'};
   const recogLang=langMap[fromLang]||'fr-FR';
   S.listening=true;setScreen(1);
   startCloudSTT(fromLang,toLang,recogLang);
@@ -1307,7 +1312,7 @@ async function translateAndSpeak(text,fromLang,toLang){
 }
 
 async function speakText(text,langCode){
-  const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL',pt:'pt-PT',ru:'ru-RU',pl:'pl-PL',uk:'uk-UA',ro:'ro-RO',hu:'hu-HU',cs:'cs-CZ',sk:'sk-SK',sl:'sl-SI',hr:'hr-HR',bs:'bs-BA',sv:'sv-SE',da:'da-DK',no:'nb-NO',fi:'fi-FI',is:'is-IS',et:'et-EE',lv:'lv-LV',lt:'lt-LT',ka:'ka-GE',hy:'hy-AM',be:'be-BY',ca:'ca-ES',eu:'eu-ES',cy:'cy-GB',ga:'ga-IE',mt:'mt-MT',zh:'zh-CN',ja:'ja-JP'};
+  const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL',pt:'pt-PT',ru:'ru-RU',pl:'pl-PL',uk:'uk-UA',ro:'ro-RO',hu:'hu-HU',cs:'cs-CZ',sk:'sk-SK',sl:'sl-SI',hr:'hr-HR',bs:'bs-BA',sv:'sv-SE',da:'da-DK',no:'nb-NO',fi:'fi-FI',is:'is-IS',et:'et-EE',lv:'lv-LV',lt:'lt-LT',ka:'ka-GE',hy:'hy-AM',be:'be-BY',ca:'ca-ES',eu:'eu-ES',cy:'cy-GB',ga:'ga-IE',mt:'mt-MT',zh:'zh-CN',ja:'ja-JP',th:'th-TH',km:'km-KH',id:'id-ID',vi:'vi-VN',lo:'lo-LA'};
   const lc=langMap[langCode]||'fr-FR';
   try{
     const res=await fetch(API_BASE+'/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,languageCode:lc,speakingRate:isLearn()?0.85:1.0})});
@@ -1564,7 +1569,7 @@ async function exportEntry(mode=2){
   if(!selectedEntry)return;
   const btn=document.querySelector('[onclick="exportEntry('+mode+')"]');
   if(btn)btn.textContent='⏳…';
-  const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL',pt:'pt-PT',ru:'ru-RU',pl:'pl-PL',uk:'uk-UA',ro:'ro-RO',hu:'hu-HU',cs:'cs-CZ',sk:'sk-SK',sl:'sl-SI',hr:'hr-HR',bs:'bs-BA',sv:'sv-SE',da:'da-DK',no:'nb-NO',fi:'fi-FI',is:'is-IS',et:'et-EE',lv:'lv-LV',lt:'lt-LT',ka:'ka-GE',hy:'hy-AM',be:'be-BY',ca:'ca-ES',eu:'eu-ES',cy:'cy-GB',ga:'ga-IE',mt:'mt-MT',zh:'zh-CN',ja:'ja-JP'};
+  const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL',pt:'pt-PT',ru:'ru-RU',pl:'pl-PL',uk:'uk-UA',ro:'ro-RO',hu:'hu-HU',cs:'cs-CZ',sk:'sk-SK',sl:'sl-SI',hr:'hr-HR',bs:'bs-BA',sv:'sv-SE',da:'da-DK',no:'nb-NO',fi:'fi-FI',is:'is-IS',et:'et-EE',lv:'lv-LV',lt:'lt-LT',ka:'ka-GE',hy:'hy-AM',be:'be-BY',ca:'ca-ES',eu:'eu-ES',cy:'cy-GB',ga:'ga-IE',mt:'mt-MT',zh:'zh-CN',ja:'ja-JP',th:'th-TH',km:'km-KH',id:'id-ID',vi:'vi-VN',lo:'lo-LA'};
   const chunks=[];
   const groups=[];
   const activeExE=getActiveExchanges(selectedEntry);
