@@ -25,8 +25,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI'
 .logo-text{font-size:22px;font-weight:900;letter-spacing:-0.5px;color:var(--text)}
 
 /* ── TOP BAR ── */
-.top-bar{display:flex;justify-content:space-between;align-items:center;padding:6px 16px;flex-shrink:0;background:#D9E7FF;border-bottom:1px solid var(--line)}
-.conv-btn{background:var(--blue-light);border:none;border-radius:12px;padding:8px 16px;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;letter-spacing:0.2px}
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:6px 16px;flex-shrink:0;background:#D9E7FF;border-bottom:1px solid var(--line);position:relative;z-index:65}
+.conv-btn{background:var(--blue-light);border:none;border-radius:12px;padding:8px 16px;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;letter-spacing:0.2px;width:132px;text-align:center;box-sizing:border-box}
 .conv-btn.learn-mode{background:#E3F2FD;color:#1565C0}
 .name-btn{background:var(--orange-light);border:none;border-radius:12px;padding:8px 16px;font-size:12px;font-weight:700;color:var(--orange-text);cursor:pointer}
 
@@ -75,7 +75,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI'
 .intervention-zone{position:absolute;top:0;left:0;right:0;height:58px;display:flex;flex-direction:column;align-items:center;gap:2px;justify-content:center;overflow:hidden;z-index:20;padding:1px 8px;background:#CFE1FF}
 .help-zone-css{position:absolute;top:0;left:0;right:0;height:58px;display:flex;flex-direction:column;align-items:center;gap:2px;justify-content:center;padding:1px 8px;z-index:20;background:#CFE1FF}
 .circle-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:8px}
-.conversation-zone{position:absolute;bottom:0;left:0;right:0;min-height:96px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;justify-content:center;background:#B8D4FF;z-index:25}
+.conversation-zone{position:absolute;bottom:0;left:0;right:0;min-height:101px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;justify-content:center;background:#CFE1FF;z-index:25}
 .status-tag{border-radius:10px;padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:0.3px;text-align:center;min-height:28px;display:inline-block}
 .status-tag.active{color:var(--green-text);background:var(--green-light)}
 .status-tag.learn{color:var(--blue-text);background:var(--blue-light)}
@@ -84,7 +84,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI'
 /* ── RIGHT COLUMN ── */
 .right-col{width:38px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:10px 4px}
 .setup-card{width:36px;height:36px;border-radius:12px;background:var(--neutral-light);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted)}
-.setup-card-top{width:44px;height:44px;border-radius:14px;background:var(--neutral-light);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--muted);flex-shrink:0}
+.setup-card-top{width:34px;height:34px;border-radius:11px;background:var(--neutral-light);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--muted);flex-shrink:0}
+.info-card-top{width:34px;height:34px;border-radius:11px;background:var(--blue-light);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--blue);flex-shrink:0}
 
 /* ── ACTION BUTTONS ── */
 .action-btn{border:none;border-radius:10px;font-size:13px;font-weight:700;padding:7px 14px;cursor:pointer;letter-spacing:0.2px;transition:opacity 0.15s;font-family:inherit}
@@ -118,10 +119,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI'
 .text-input-zone.visible{display:block}
 
 /* ── MODE BAR ── */
-.mode-bar{display:flex;justify-content:center;align-items:center;gap:10px;padding:6px 20px calc(8px + env(safe-area-inset-bottom, 10px));border-top:1px solid var(--line);flex-shrink:0;background:#D9E7FF}
-.mode-btn{font-size:12px;font-weight:700;letter-spacing:0.3px;cursor:pointer;padding:10px 22px;border:none;border-radius:14px;transition:all 0.2s;font-family:inherit}
+.mode-bar{display:flex;justify-content:center;align-items:center;gap:10px;padding:6px 20px 26px;border-top:1px solid var(--line);flex-shrink:0;background:#D9E7FF}
+.mode-btn{font-size:12px;font-weight:700;letter-spacing:0.3px;cursor:pointer;padding:10px 22px;border:none;border-radius:14px;transition:all 0.2s;font-family:inherit;background:#D4F5E4;color:var(--text)}
 .mode-btn.active-exchange{background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:white;box-shadow:0 4px 14px rgba(74,108,247,0.3)}
 .mode-btn.active-learn{background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:white;box-shadow:0 4px 14px rgba(74,108,247,0.3)}
+.mode-btn.active-plus{background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:white;box-shadow:0 4px 14px rgba(74,108,247,0.3)}
 .mode-btn:not(.active-exchange):not(.active-learn){background:var(--neutral-light);color:var(--muted)}
 .nav-spacer{height:44px;flex-shrink:0;background:var(--surface)}
 
@@ -162,14 +164,21 @@ input:focus{border-color:var(--blue)}
 <!-- TOP BAR -->
 <div class="top-bar" id="top-bar">
   <button class="conv-btn" id="btn-top-center" onclick="showTopCenter()">📋 Conversations</button>
-  <button class="setup-card-top" onclick="showOv('ov-setup')">⚙</button>
+  <div id="solo-top-flags" style="display:none;gap:6px;align-items:center">
+    <button id="solo-flag-a-small" onclick="openLangPicker('from')" style="background:none;border:none;font-size:26px;cursor:pointer;padding:2px 4px;line-height:1">🏳️</button>
+    <button id="solo-flag-b-small" onclick="openLangPicker('to')" style="background:none;border:none;font-size:26px;cursor:pointer;padding:2px 4px;line-height:1">🏳️</button>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center">
+    <button class="info-card-top" onclick="togglePlusPresentation()">ℹ️</button>
+    <button class="setup-card-top" onclick="showOv('ov-setup')">⚙</button>
+  </div>
 </div>
 
 <!-- MAIN -->
 <div class="main-layout">
 
   <!-- LEFT COL -->
-  <div class="left-col">
+  <div class="left-col" id="left-col">
     <div>
       <div class="lang-card to-lang" id="lang-top-card" onclick="openLangPicker(isLearn()?'from':'to')">
         <div class="lang-card-code" id="lang-top">MK</div>
@@ -199,14 +208,14 @@ input:focus{border-color:var(--blue)}
     </div>
 
     <!-- ZONE HAUTE -->
-    <div class="intervention-zone">
+    <div class="intervention-zone" id="intervention-zone">
       <div class="intervention-label" id="intervention-label"></div>
       <div class="action-row" id="action-row"></div>
     </div>
 
     <!-- SAISIE TEXTE SOLO -->
-    <div class="text-input-zone" id="text-input-zone" style="position:absolute;top:60px;left:0;right:0;z-index:20;background:#CFE1FF;padding:2px 8px">
-      <div style="display:flex;gap:6px;align-items:center">
+    <div class="text-input-zone" id="text-input-zone" style="position:absolute;top:60px;left:0;right:0;height:56px;box-sizing:border-box;z-index:20;background:#CFE1FF;padding:2px 8px;display:flex;align-items:center">
+      <div style="display:flex;gap:6px;align-items:center;width:100%">
         <input type="text" id="text-lesson-input" placeholder="Tapez votre phrase…" style="flex:1">
         <button id="btn-submit-text" onclick="submitTextLesson()" style="background:linear-gradient(135deg,#00C48C,#00A878);border:none;border-radius:10px;color:white;font-weight:700;font-size:15px;padding:10px 14px;cursor:pointer">→</button>
       </div>
@@ -242,6 +251,12 @@ input:focus{border-color:var(--blue)}
       <div class="center-status" id="center-status"></div>
     </div>
 
+    <!-- DRAPEAUX SOLO (remplace le cercle) -->
+    <div id="solo-flags-area" style="display:none;position:absolute;top:116px;left:0;right:0;bottom:101px;z-index:5;background:#CFE1FF;flex-direction:row">
+      <button id="solo-flag-a-btn" ontouchstart="soloStartRecord('A')" ontouchend="soloStopRecord('A')" ontouchcancel="soloStopRecord('A')" onmousedown="soloStartRecord('A')" onmouseup="soloStopRecord('A')" onmouseleave="soloStopRecord('A')" style="flex:1;border:none;background:transparent;font-size:88px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0">🏳️</button>
+      <button id="solo-flag-b-btn" ontouchstart="soloStartRecord('B')" ontouchend="soloStopRecord('B')" ontouchcancel="soloStopRecord('B')" onmousedown="soloStartRecord('B')" onmouseup="soloStopRecord('B')" onmouseleave="soloStopRecord('B')" style="flex:1;border:none;background:transparent;font-size:88px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;border-left:1px solid rgba(0,0,0,0.08)">🏳️</button>
+    </div>
+
     <!-- ACCUEIL INITIAL (sans cadre, remplace le cercle 12s) -->
     <div id="welcome-intro" style="position:absolute;top:76px;left:0;right:0;bottom:10px;padding:0 20px;text-align:center;display:none;flex-direction:column;justify-content:flex-start;gap:12px;z-index:15;overflow-y:auto">
       <div id="welcome-intro-1" style="font-size:14px;line-height:1.3;color:var(--text)"></div>
@@ -264,7 +279,7 @@ input:focus{border-color:var(--blue)}
     </div>
 
     <!-- ZONE BASSE -->
-    <div class="conversation-zone">
+    <div class="conversation-zone" id="conversation-zone-el">
       <div style="display:flex;align-items:center;gap:8px;justify-content:center;flex-shrink:0">
         <div class="status-tag waiting" id="status-pill"></div>
         <button class="fin-btn" id="fin-btn" onclick="confirmEnd()"><span id="fin-btn-label">Exit</span></button>
@@ -275,7 +290,7 @@ input:focus{border-color:var(--blue)}
   </div>
 
   <!-- RIGHT COL -->
-  <div class="right-col">
+  <div class="right-col" id="right-col">
     <button class="setup-card" style="display:none" onclick="showOv('ov-setup')">⚙</button>
   </div>
 
@@ -307,9 +322,32 @@ input:focus{border-color:var(--blue)}
   <div id="cs-list" style="flex:1;overflow-y:auto;padding:12px 16px"></div>
 </div>
 
+<!-- PRÉSENTATION (accessible depuis DUO et SOLO) -->
+<div id="plus-presentation" style="display:none;position:fixed;inset:0;z-index:60;background:#CFE1FF;flex-direction:column;align-items:center;justify-content:center;padding:0 24px;text-align:center;gap:12px">
+  <div id="plus-pres-1" style="font-size:14px;line-height:1.4;color:var(--text)"></div>
+  <div id="plus-pres-2" style="font-size:14px;line-height:1.4;color:var(--text)"></div>
+  <div id="plus-pres-3" style="font-size:14px;line-height:1.4;color:var(--text)"></div>
+  <div id="plus-pres-4" style="font-size:14px;line-height:1.4;color:var(--text)"></div>
+  <div id="plus-pres-5" style="font-size:14px;line-height:1.4;color:var(--text)"></div>
+</div>
+
+<!-- ÉCRAN + (échanges simplifiés) -->
+<div id="plus-screen" style="display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;position:relative;background:#CFE1FF">
+  <div id="plus-press-zone" style="position:absolute;top:116px;left:0;right:0;bottom:101px;display:flex;background:#CFE1FF">
+    <button id="plus-flag-a-btn" ontouchstart="plusStartRecord('A')" ontouchend="plusStopRecord('A')" ontouchcancel="plusStopRecord('A')" onmousedown="plusStartRecord('A')" onmouseup="plusStopRecord('A')" onmouseleave="plusStopRecord('A')" style="flex:1;border:none;background:transparent;font-size:88px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0">🏳️</button>
+    <button id="plus-flag-b-btn" ontouchstart="plusStartRecord('B')" ontouchend="plusStopRecord('B')" ontouchcancel="plusStopRecord('B')" onmousedown="plusStartRecord('B')" onmouseup="plusStopRecord('B')" onmouseleave="plusStopRecord('B')" style="flex:1;border:none;background:transparent;font-size:88px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;border-left:1px solid rgba(0,0,0,0.08)">🏳️</button>
+  </div>
+  <div style="position:absolute;bottom:0;left:0;right:0;min-height:101px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:4px 0;background:#CFE1FF">
+    <div id="plus-status" style="text-align:center;font-size:12px;color:var(--muted)">Maintenez un drapeau enfoncé pour parler</div>
+    <div id="plus-save-row" style="display:none;justify-content:center">
+      <button class="action-btn primary" onclick="plusDoSave()">💾 <span id="plus-save-label">Sauvegarder</span></button>
+    </div>
+  </div>
+</div>
+
 <!-- MODE BAR -->
-<div class="mode-bar" id="mode-bar">
-  <button class="mode-btn active-exchange" id="btn-exchange" onclick="setMode('exchange')">DUO</button>
+<div class="mode-bar" id="mode-bar" style="position:relative;z-index:65">
+  <button class="mode-btn active-exchange" id="btn-exchange" onclick="showPlusScreen()">DUO</button>
   <button class="mode-btn" id="btn-learn" onclick="setMode('learn')">SOLO</button>
 </div>
 <div class="nav-spacer" id="nav-spacer"></div>
@@ -506,16 +544,16 @@ const S={
   journal:JSON.parse(localStorage.getItem('mk_v3_journal')||'[]'),
   lessons:JSON.parse(localStorage.getItem('mk_v3_lessons')||'[]'),
   contacts:JSON.parse(localStorage.getItem('mk_v3_contacts')||JSON.stringify([{id:1,name:'Olivija',lang:'mk'}])),
-  lpTimer:null,langPickerTarget:null,ignoreTap:false,reviewOpen:false,welcomeShown:false,insertMode:false,insertBeforeIdx:undefined,isSpeaking:false,duoReadMode:false,duoWelcomeShown:false,showInfoScreen0:false,
+  lpTimer:null,langPickerTarget:null,ignoreTap:false,reviewOpen:false,welcomeShown:false,insertMode:false,insertBeforeIdx:undefined,isSpeaking:false,duoReadMode:false,duoWelcomeShown:false,showInfoScreen0:false,plusScreenActive:false,plusBusy:false,savingFromPlus:false,
   selectedVoiceURI:localStorage.getItem('makedoo_v3_voice_uri')||null,
   selectedVoiceLang:localStorage.getItem('makedoo_v3_voice_lang')||null,
 };
 
 // ── i18n ───────────────────────────────────────────────────────
 const I18N={
-  fr:{conv:'Conversations',lessons:'Sessions',waiting:'En attente de conversation',waitingLesson:'En attente de session',startConv:'Démarrer la conversation',startLesson:'Démarrer la session',inProgress:'Conversation en cours',lessonProgress:'Session en cours',ended:'Conversation terminée',lessonEnded:'Session terminée',clickStop:'Clic pour arrêter',repeat:'Répéter',resume:'Poursuivre',save:'Sauvegarder',exit:'Sortir',welcome:'Bienvenue\ndans\nMakedoo',back:'← Retour',longPressLang:'Cliquez sur la langue pour la changer',clickArrow:'Cliquez sur la flèche pour changer d\'interlocuteur',swapLangs:'Cliquez sur la flèche pour permuter les langues source et cible',replace:'Remplacer',insert:'Insérer',all:'Tous',oralTrans:'Traduction orale',writtenTrans:'Traduction écrite',read:'Lire',copy:'Copier',copied:'Copié !',selectFirst:'Sélectionnez une phrase',useInputOrMic:'Utilisez la zone de saisie ou le micro',welcomeTitle:'Bienvenue dans Makedoo',welcomeText1:'Makedoo est une application de traduction vocale et textuelle, conçue pour faciliter la communication entre personnes de langues différentes et l\'apprentissage.',welcomeText2:'L\'utilisation de Makedoo est gratuite et ne nécessite aucun chargement',welcomeTextLangs:'Makedoo est l\'application des 40 langues européennes, plus l\'arabe et les langues asiatiques',soloIntro:'SOLO est le mode d\'apprentissage',duoIntro:'DUO est le mode de conversation',micStart:'Un clic sur le micro pour démarrer',micStop:'Un clic sur le micro pour arrêter',clickTalk:'Clic pour parler',youFirst:'Vous parlez en premier',theyFirst:' parle en premier',keyOk:'✓ Clé enregistrée',learnSoon:'Mode Apprentissage bientôt !',myLang:'Ma langue',transLang:'Langue de traduction',exchanges:'échange(s)',noConv:'Aucune conversation',noLesson:'Aucune session',selectConv:'Sélectionner une conversation',selectLesson:'Sélectionner une session',review:'Réviser',rename:'Renommer',export:'Exporter MP3',delete:'Supprimer',listen:'Écouter',stop:'Arrêter',unknown:'Inconnu',choosePhrase:'Choisir une phrase',target:'Cible',source:'Source',settings:'⚙ Paramètres',apiKeyLabel:'Clé API Google',uiLangLabel:"Langue de l'interface",saveKey:'Enregistrer la clé',voicesLabel:'Voix MK disponibles',scanVoices:'🔍 Scanner les voix MK',scanPrompt:'Appuyez pour scanner…',noVoices:'Aucune voix MK trouvée',newContact:'Nouveau nom…',exitNoSave:'Sortir sans sauvegarder ?',deleteConfirm:'Supprimer ?',sttError:'Parole non reconnue',sttFail:'Erreur STT',micError:'Microphone non accessible',micTestChecking:'Vérification…',micTestOk:'Microphone accessible !',micTestDenied:'Accès refusé.',micTestLabel:'🎤 Test du microphone',micTestBtn:'🎤 Tester le microphone',micTestHint:'Appuyez pour vérifier l\'accès au micro',tagline:'Parler et apprendre\nles 40 langues\nd\'Europe',skip:'Skip ›',exitBtn:'✕ Exit',lesonTitle:'💾 Save lesson',lessonName:'Lesson name',lessonPlaceholder:'My lesson…',contactTitle:'Contact',convTitle:'Conversations',lessonTitle2:'Sessions',saveConvTitle:'💾 Sauvegarder la conversation',convNameLabel:'Nom de la conversation',convPlaceholder:'Ma conversation…',saveConvBtn:'💾 Sauvegarder'},
-  en:{conv:'Conversations',lessons:'Sessions',waiting:'Waiting for conversation',waitingLesson:'Waiting for session',startConv:'Start conversation',startLesson:'Start session',inProgress:'Conversation in progress',lessonProgress:'Session in progress',ended:'Conversation ended',lessonEnded:'Session ended',clickStop:'Click to stop',repeat:'Repeat',resume:'Continue',save:'Save',exit:'Exit',welcome:'Welcome\nto\nMakedoo',back:'← Back',longPressLang:'Click the language to change it',clickArrow:'Click the arrow to change the speaker',swapLangs:'Click the arrow to swap source and target languages',replace:'Replace',insert:'Insert',all:'All',oralTrans:'Oral translation',writtenTrans:'Written translation',read:'Read',copy:'Copy',copied:'Copied!',selectFirst:'Select a phrase first',useInputOrMic:'Use the text field or the microphone',welcomeTitle:'Welcome to Makedoo',welcomeText1:'Makedoo is a voice and text translation app, designed to facilitate communication between people of different languages and learning.',welcomeText2:'Makedoo is free to use and requires no download',welcomeTextLangs:'Makedoo is the app for 40 European languages, plus Arabic and Asian languages',soloIntro:'SOLO is the learning mode',duoIntro:'DUO is the conversation mode',micStart:'Tap the microphone to start',micStop:'Tap the microphone to stop',clickTalk:'Click to speak',youFirst:'You speak first',theyFirst:' speaks first',keyOk:'✓ Key saved',learnSoon:'Learning mode soon!',myLang:'My language',transLang:'Translation language',exchanges:'exchange(s)',noConv:'No conversations',noLesson:'No sessions',selectConv:'Select a conversation',selectLesson:'Select a session',review:'Review',rename:'Rename',export:'Export MP3',delete:'Delete',listen:'Listen',stop:'Stop',unknown:'Unknown',startLesson2:'Start lesson',target:'Target',source:'Source',settings:'⚙ Settings',apiKeyLabel:'Google API Key',uiLangLabel:'Interface language',saveKey:'Save key',voicesLabel:'Available MK voices',scanVoices:'🔍 Scan MK voices',scanPrompt:'Tap to scan…',noVoices:'No MK voice found',newContact:'New name…',exitNoSave:'Exit without saving?',deleteConfirm:'Delete?',sttError:'Speech not recognized',sttFail:'STT Error',micError:'Microphone not accessible',micTestChecking:'Checking…',micTestOk:'Microphone accessible!',micTestDenied:'Access denied.',micTestLabel:'🎤 Microphone test',micTestBtn:'🎤 Test microphone',micTestHint:'Tap to check microphone access',tagline:'Speak and learn\nthe 40 languages\nof Europe',skip:'Skip ›',exitBtn:'✕ Exit',lessonTitle:'💾 Save session',lessonName:'Lesson name',lessonPlaceholder:'My lesson…',contactTitle:'Contact',convTitle:'Conversations',lessonTitle2:'Sessions',saveConvTitle:'💾 Save conversation',convNameLabel:'Conversation name',convPlaceholder:'My conversation…',saveConvBtn:'💾 Save'},
-  mk:{conv:'Разговори',lessons:'Sessions',waiting:'Чекање разговор',waitingLesson:'Чекање session',startConv:'Започни разговор',startLesson:'Започни session',inProgress:'Разговор во тек',lessonProgress:'Session во тек',ended:'Разговорот завршен',lessonEnded:'Session завршена',clickStop:'Клик за стопирање',repeat:'Повтори',resume:'Продолжи',save:'Зачувај',exit:'Излез',welcome:'Добредојдовте\nво\nMakedoo',back:'← Назад',longPressLang:'Кликнете на јазикот за да го промените',clickArrow:'Кликнете на стрелката за промена на соговорник',swapLangs:'Кликнете на стрелката за замена на изворниот и целниот јазик',replace:'Замени',insert:'Вметни',all:'Сите',oralTrans:'Устен превод',writtenTrans:'Писмен превод',read:'Читај',copy:'Копирај',copied:'Копирано!',selectFirst:'Изберете фраза',useInputOrMic:'Користете го полето или микрофонот',welcomeTitle:'Добредојдовте во Makedoo',welcomeText1:'Makedoo е апликација за гласовен и текстуален превод, дизајнирана да ја олесни комуникацијата меѓу луѓе од различни јазици и учењето.',welcomeText2:'Употребата на Makedoo е бесплатна и не бара преземање',welcomeTextLangs:'Makedoo е апликацијата за 40 европски јазици, плус арапски и азиски јазици',soloIntro:'SOLO е режим за учење',duoIntro:'Режимот DUO е режим за разговор',micStart:'Кликнете на микрофонот за да започнете',micStop:'Кликнете на микрофонот за да запрете',clickTalk:'Клик за зборување',youFirst:'Вие зборувате прво',theyFirst:' зборува прво',keyOk:'✓ Зачувано',learnSoon:'Режим учење наскоро!',myLang:'Мојот јазик',transLang:'Јазик на превод',exchanges:'размена(и)',noConv:'Нема разговори',noLesson:'Нема sessions',selectConv:'Изберете разговор',selectLesson:'Изберете session',review:'Прегледај',rename:'Преименувај',export:'Извоз MP3',delete:'Избриши',listen:'Слушај',stop:'Стопирај',unknown:'Непознат',startLesson2:'Започни лекција',target:'Цел',source:'Извор',settings:'⚙ Поставки',apiKeyLabel:'Google API Клуч',uiLangLabel:'Јазик на интерфејс',saveKey:'Зачувај',voicesLabel:'МК гласови',scanVoices:'🔍 Скенирај гласови',scanPrompt:'Притиснете за скенирање…',noVoices:'Нема МК глас',newContact:'Ново ime…',exitNoSave:'Излез без зачувување?',deleteConfirm:'Избриши?',sttError:'Говорот не е препознаен',sttFail:'Грешка STT',micError:'Микрофонот не е достапен',micTestChecking:'Проверка…',micTestOk:'Микрофонот е достапен!',micTestDenied:'Пристапот е одбиен.',micTestLabel:'🎤 Тест на микрофон',micTestBtn:'🎤 Тестирај микрофон',micTestHint:'Допри за да провериш пристап',tagline:'Зборувајте и учете\n40 европски\nјазици',skip:'Прескокни ›',exitBtn:'✕ Излез',lessonTitle:'💾 Зачувај лекција',lessonName:'Ime на лекцијата',lessonPlaceholder:'Моја лекција…',contactTitle:'Соговорник',convTitle:'Разговори',lessonTitle2:'Sessions',saveConvTitle:'💾 Зачувај разговор',convNameLabel:'Ime на разговорот',convPlaceholder:'Мојот разговор…',saveConvBtn:'💾 Зачувај'},
+  fr:{conv:'Conversations',lessons:'Sessions',waiting:'En attente de conversation',waitingLesson:'En attente de session',startConv:'Démarrer la conversation',startLesson:'Démarrer la session',inProgress:'Conversation en cours',lessonProgress:'Session en cours',ended:'Conversation terminée',lessonEnded:'Session terminée',clickStop:'Clic pour arrêter',repeat:'Répéter',resume:'Poursuivre',save:'Sauvegarder',exit:'Sortir',welcome:'Bienvenue\ndans\nMakedoo',back:'← Retour',longPressLang:'Cliquez sur la langue pour la changer',clickArrow:'Cliquez sur la flèche pour changer d\'interlocuteur',swapLangs:'Cliquez sur la flèche pour permuter les langues source et cible',replace:'Remplacer',insert:'Insérer',all:'Tous',oralTrans:'Traduction orale',writtenTrans:'Traduction écrite',read:'Lire',copy:'Copier',copied:'Copié !',selectFirst:'Sélectionnez une phrase',useInputOrMic:'Utilisez la zone de saisie ou les drapeaux',welcomeTitle:'Bienvenue dans Makedoo',welcomeText1:'Makedoo est une application de traduction vocale et textuelle, conçue pour faciliter la communication entre personnes de langues différentes et l\'apprentissage.',welcomeText2:'L\'utilisation de Makedoo est gratuite et ne nécessite aucun chargement',welcomeTextLangs:'Makedoo est l\'application des 40 langues européennes, plus l\'arabe et les langues asiatiques',soloIntro:'SOLO est le mode d\'apprentissage',duoIntro:'DUO est le mode de conversation',exchangesLabel:'Échanges',plusChooseLang:'Cliquez sur le drapeau pour choisir la langue',plusPressToTalk:'Pression longue pour parler',micStart:'Un clic sur le micro pour démarrer',micStop:'Un clic sur le micro pour arrêter',clickTalk:'Clic pour parler',youFirst:'Vous parlez en premier',theyFirst:' parle en premier',keyOk:'✓ Clé enregistrée',learnSoon:'Mode Apprentissage bientôt !',myLang:'Ma langue',transLang:'Langue de traduction',exchanges:'échange(s)',noConv:'Aucune conversation',noLesson:'Aucune session',selectConv:'Sélectionner une conversation',selectLesson:'Sélectionner une session',review:'Réviser',rename:'Renommer',export:'Exporter MP3',delete:'Supprimer',listen:'Écouter',stop:'Arrêter',unknown:'Inconnu',choosePhrase:'Choisir une phrase',target:'Cible',source:'Source',settings:'⚙ Paramètres',apiKeyLabel:'Clé API Google',uiLangLabel:"Langue de l'interface",saveKey:'Enregistrer la clé',voicesLabel:'Voix MK disponibles',scanVoices:'🔍 Scanner les voix MK',scanPrompt:'Appuyez pour scanner…',noVoices:'Aucune voix MK trouvée',newContact:'Nouveau nom…',exitNoSave:'Sortir sans sauvegarder ?',deleteConfirm:'Supprimer ?',sttError:'Parole non reconnue',sttFail:'Erreur STT',micError:'Microphone non accessible',micTestChecking:'Vérification…',micTestOk:'Microphone accessible !',micTestDenied:'Accès refusé.',micTestLabel:'🎤 Test du microphone',micTestBtn:'🎤 Tester le microphone',micTestHint:'Appuyez pour vérifier l\'accès au micro',tagline:'Parler et apprendre\nles 40 langues\nd\'Europe',skip:'Skip ›',exitBtn:'✕ Exit',lesonTitle:'💾 Save lesson',lessonName:'Lesson name',lessonPlaceholder:'My lesson…',contactTitle:'Contact',convTitle:'Conversations',lessonTitle2:'Sessions',saveConvTitle:'💾 Sauvegarder la conversation',convNameLabel:'Nom de la conversation',convPlaceholder:'Ma conversation…',saveConvBtn:'💾 Sauvegarder'},
+  en:{conv:'Conversations',lessons:'Sessions',waiting:'Waiting for conversation',waitingLesson:'Waiting for session',startConv:'Start conversation',startLesson:'Start session',inProgress:'Conversation in progress',lessonProgress:'Session in progress',ended:'Conversation ended',lessonEnded:'Session ended',clickStop:'Click to stop',repeat:'Repeat',resume:'Continue',save:'Save',exit:'Exit',welcome:'Welcome\nto\nMakedoo',back:'← Back',longPressLang:'Click the language to change it',clickArrow:'Click the arrow to change the speaker',swapLangs:'Click the arrow to swap source and target languages',replace:'Replace',insert:'Insert',all:'All',oralTrans:'Oral translation',writtenTrans:'Written translation',read:'Read',copy:'Copy',copied:'Copied!',selectFirst:'Select a phrase first',useInputOrMic:'Use the text field or the flags',welcomeTitle:'Welcome to Makedoo',welcomeText1:'Makedoo is a voice and text translation app, designed to facilitate communication between people of different languages and learning.',welcomeText2:'Makedoo is free to use and requires no download',welcomeTextLangs:'Makedoo is the app for 40 European languages, plus Arabic and Asian languages',soloIntro:'SOLO is the learning mode',duoIntro:'DUO is the conversation mode',exchangesLabel:'Exchanges',plusChooseLang:'Click the flag to choose the language',plusPressToTalk:'Long press to talk',micStart:'Tap the microphone to start',micStop:'Tap the microphone to stop',clickTalk:'Click to speak',youFirst:'You speak first',theyFirst:' speaks first',keyOk:'✓ Key saved',learnSoon:'Learning mode soon!',myLang:'My language',transLang:'Translation language',exchanges:'exchange(s)',noConv:'No conversations',noLesson:'No sessions',selectConv:'Select a conversation',selectLesson:'Select a session',review:'Review',rename:'Rename',export:'Export MP3',delete:'Delete',listen:'Listen',stop:'Stop',unknown:'Unknown',startLesson2:'Start lesson',target:'Target',source:'Source',settings:'⚙ Settings',apiKeyLabel:'Google API Key',uiLangLabel:'Interface language',saveKey:'Save key',voicesLabel:'Available MK voices',scanVoices:'🔍 Scan MK voices',scanPrompt:'Tap to scan…',noVoices:'No MK voice found',newContact:'New name…',exitNoSave:'Exit without saving?',deleteConfirm:'Delete?',sttError:'Speech not recognized',sttFail:'STT Error',micError:'Microphone not accessible',micTestChecking:'Checking…',micTestOk:'Microphone accessible!',micTestDenied:'Access denied.',micTestLabel:'🎤 Microphone test',micTestBtn:'🎤 Test microphone',micTestHint:'Tap to check microphone access',tagline:'Speak and learn\nthe 40 languages\nof Europe',skip:'Skip ›',exitBtn:'✕ Exit',lessonTitle:'💾 Save session',lessonName:'Lesson name',lessonPlaceholder:'My lesson…',contactTitle:'Contact',convTitle:'Conversations',lessonTitle2:'Sessions',saveConvTitle:'💾 Save conversation',convNameLabel:'Conversation name',convPlaceholder:'My conversation…',saveConvBtn:'💾 Save'},
+  mk:{conv:'Разговори',lessons:'Sessions',waiting:'Чекање разговор',waitingLesson:'Чекање session',startConv:'Започни разговор',startLesson:'Започни session',inProgress:'Разговор во тек',lessonProgress:'Session во тек',ended:'Разговорот завршен',lessonEnded:'Session завршена',clickStop:'Клик за стопирање',repeat:'Повтори',resume:'Продолжи',save:'Зачувај',exit:'Излез',welcome:'Добредојдовте\nво\nMakedoo',back:'← Назад',longPressLang:'Кликнете на јазикот за да го промените',clickArrow:'Кликнете на стрелката за промена на соговорник',swapLangs:'Кликнете на стрелката за замена на изворниот и целниот јазик',replace:'Замени',insert:'Вметни',all:'Сите',oralTrans:'Устен превод',writtenTrans:'Писмен превод',read:'Читај',copy:'Копирај',copied:'Копирано!',selectFirst:'Изберете фраза',useInputOrMic:'Користете го полето или знамињата',welcomeTitle:'Добредојдовте во Makedoo',welcomeText1:'Makedoo е апликација за гласовен и текстуален превод, дизајнирана да ја олесни комуникацијата меѓу луѓе од различни јазици и учењето.',welcomeText2:'Употребата на Makedoo е бесплатна и не бара преземање',welcomeTextLangs:'Makedoo е апликацијата за 40 европски јазици, плус арапски и азиски јазици',soloIntro:'SOLO е режим за учење',duoIntro:'Режимот DUO е режим за разговор',micStart:'Кликнете на микрофонот за да започнете',micStop:'Кликнете на микрофонот за да запрете',clickTalk:'Клик за зборување',youFirst:'Вие зборувате прво',theyFirst:' зборува прво',keyOk:'✓ Зачувано',learnSoon:'Режим учење наскоро!',myLang:'Мојот јазик',transLang:'Јазик на превод',exchanges:'размена(и)',noConv:'Нема разговори',noLesson:'Нема sessions',selectConv:'Изберете разговор',selectLesson:'Изберете session',review:'Прегледај',rename:'Преименувај',export:'Извоз MP3',delete:'Избриши',listen:'Слушај',stop:'Стопирај',unknown:'Непознат',startLesson2:'Започни лекција',target:'Цел',source:'Извор',settings:'⚙ Поставки',apiKeyLabel:'Google API Клуч',uiLangLabel:'Јазик на интерфејс',saveKey:'Зачувај',voicesLabel:'МК гласови',scanVoices:'🔍 Скенирај гласови',scanPrompt:'Притиснете за скенирање…',noVoices:'Нема МК глас',newContact:'Ново ime…',exitNoSave:'Излез без зачувување?',deleteConfirm:'Избриши?',sttError:'Говорот не е препознаен',sttFail:'Грешка STT',micError:'Микрофонот не е достапен',micTestChecking:'Проверка…',micTestOk:'Микрофонот е достапен!',micTestDenied:'Пристапот е одбиен.',micTestLabel:'🎤 Тест на микрофон',micTestBtn:'🎤 Тестирај микрофон',micTestHint:'Допри за да провериш пристап',tagline:'Зборувајте и учете\n40 европски\nјазици',skip:'Прескокни ›',exitBtn:'✕ Излез',lessonTitle:'💾 Зачувај лекција',lessonName:'Ime на лекцијата',lessonPlaceholder:'Моја лекција…',contactTitle:'Соговорник',convTitle:'Разговори',lessonTitle2:'Sessions',saveConvTitle:'💾 Зачувај разговор',convNameLabel:'Ime на разговорот',convPlaceholder:'Мојот разговор…',saveConvBtn:'💾 Зачувај'},
   es:{conv:'Conversaciones',lessons:'Sessions',waiting:'Esperando',waitingLesson:'Esperando session',startConv:'Iniciar conversación',startLesson:'Iniciar session',inProgress:'En curso',lessonProgress:'Session en curso',ended:'Terminada',lessonEnded:'Session terminada',clickStop:'Clic para detener',repeat:'Repetir',resume:'Continuar',save:'Guardar',exit:'Salir',welcome:'Bienvenido\na\nMakedoo',back:'← Volver',longPressLang:'Haz clic en el idioma para cambiarlo',clickArrow:'Pulsa la flecha para cambiar interlocutor',swapLangs:'Pulsa la flecha para intercambiar idioma origen y destino',replace:'Reemplazar',insert:'Insertar',all:'Todo',oralTrans:'Traducción oral',writtenTrans:'Traducción escrita',read:'Leer',copy:'Copiar',copied:'¡Copiado!',selectFirst:'Selecciona una frase',useInputOrMic:'Usa el campo de texto o el micrófono',welcomeTitle:'Bienvenido a Makedoo',welcomeText1:'Makedoo es una aplicación de traducción de voz y texto, diseñada para facilitar la comunicación entre personas de diferentes idiomas y el aprendizaje.',welcomeText2:'El uso de Makedoo es gratuito y no requiere descarga',welcomeTextLangs:'Makedoo es la aplicación de los 40 idiomas europeos, más el árabe y los idiomas asiáticos',soloIntro:'SOLO es el modo de aprendizaje',duoIntro:'El modo DUO es el modo de conversación',micStart:'Toca el micrófono para empezar',micStop:'Toca el micrófono para detener',clickTalk:'Clic para hablar',youFirst:'Usted habla primero',theyFirst:' habla primero',keyOk:'✓ Guardado',learnSoon:'¡Modo aprendizaje pronto!',myLang:'Mi idioma',transLang:'Idioma traducción',exchanges:'intercambio(s)',noConv:'Sin conversaciones',noLesson:'Sin sessions',selectConv:'Seleccionar conversación',selectLesson:'Seleccionar session',review:'Revisar',rename:'Renombrar',export:'Exportar MP3',delete:'Eliminar',listen:'Escuchar',stop:'Parar',unknown:'Desconocido',startLesson2:'Iniciar lección',target:'Destino',source:'Origen',settings:'⚙ Ajustes',apiKeyLabel:'Clave API Google',uiLangLabel:'Idioma interfaz',saveKey:'Guardar clave',voicesLabel:'Voces MK disponibles',scanVoices:'🔍 Buscar voces MK',scanPrompt:'Toca para buscar…',noVoices:'Sin voz MK',newContact:'Nuevo nombre…',exitNoSave:'¿Salir sin guardar?',deleteConfirm:'¿Eliminar?',sttError:'Voz no reconocida',sttFail:'Error STT',micError:'Micrófono no accesible',micTestChecking:'Comprobando…',micTestOk:'¡Micrófono accesible!',micTestDenied:'Acceso denegado.',micTestLabel:'🎤 Prueba de micrófono',micTestBtn:'🎤 Probar micrófono',micTestHint:'Toca para verificar acceso',tagline:'Habla y aprende\nlos 40 idiomas\nde Europa',skip:'Omitir ›',exitBtn:'✕ Salir',lessonTitle:'💾 Guardar lección',lessonName:'Nombre de lección',lessonPlaceholder:'Mi lección…',contactTitle:'Interlocutor',convTitle:'Conversaciones',lessonTitle2:'Sessions',saveConvTitle:'💾 Guardar conversación',convNameLabel:'Nombre conversación',convPlaceholder:'Mi conversación…',saveConvBtn:'💾 Guardar'},
   de:{conv:'Gespräche',lessons:'Sessions',waiting:'Warte',waitingLesson:'Warte auf Session',startConv:'Gespräch starten',startLesson:'Session starten',inProgress:'Läuft',lessonProgress:'Session läuft',ended:'Beendet',lessonEnded:'Session beendet',clickStop:'Klick zum Stoppen',repeat:'Wiederholen',resume:'Fortfahren',save:'Speichern',exit:'Beenden',welcome:'Willkommen\nbei\nMakedoo',back:'← Zurück',longPressLang:'Klicken Sie auf die Sprache, um sie zu ändern',clickArrow:'Pfeil klicken zum Partnerwechsel',swapLangs:'Pfeil klicken zum Tauschen von Quell- und Zielsprache',replace:'Ersetzen',insert:'Einfügen',all:'Alle',oralTrans:'Mündliche Übersetzung',writtenTrans:'Schriftliche Übersetzung',read:'Lesen',copy:'Kopieren',copied:'Kopiert!',selectFirst:'Wähle einen Satz aus',useInputOrMic:'Nutze das Textfeld oder das Mikrofon',welcomeTitle:'Willkommen bei Makedoo',welcomeText1:'Makedoo ist eine App für Sprach- und Textübersetzung, die die Kommunikation zwischen Menschen verschiedener Sprachen sowie das Lernen erleichtert.',welcomeText2:'Die Nutzung von Makedoo ist kostenlos und erfordert keinen Download',welcomeTextLangs:'Makedoo ist die App für 40 europäische Sprachen, plus Arabisch und asiatische Sprachen',soloIntro:'SOLO ist der Lernmodus',duoIntro:'Der DUO-Modus ist der Gesprächsmodus',micStart:'Mikrofon antippen zum Starten',micStop:'Mikrofon antippen zum Stoppen',clickTalk:'Klick zum Sprechen',youFirst:'Sie sprechen zuerst',theyFirst:' spricht zuerst',keyOk:'✓ Gespeichert',learnSoon:'Lernmodus bald!',myLang:'Meine Sprache',transLang:'Übersetzungssprache',exchanges:'Austausch',noConv:'Keine Gespräche',noLesson:'Keine Sessions',selectConv:'Gespräch auswählen',selectLesson:'Session auswählen',review:'Überprüfen',rename:'Umbenennen',export:'MP3 Export',delete:'Löschen',listen:'Anhören',stop:'Stoppen',unknown:'Unbekannt',startLesson2:'Lektion starten',target:'Ziel',source:'Quelle',settings:'⚙ Einstellungen',apiKeyLabel:'Google API-Schlüssel',uiLangLabel:'Oberflächensprache',saveKey:'Schlüssel speichern',voicesLabel:'MK-Stimmen verfügbar',scanVoices:'🔍 MK-Stimmen suchen',scanPrompt:'Zum Scannen tippen…',noVoices:'Keine MK-Stimme gefunden',newContact:'Neuer Name…',exitNoSave:'Ohne Speichern beenden?',deleteConfirm:'Löschen?',sttError:'Sprache nicht erkannt',sttFail:'STT-Fehler',micError:'Mikrofon nicht zugänglich',micTestChecking:'Überprüfung…',micTestOk:'Mikrofon zugänglich!',micTestDenied:'Zugriff verweigert.',micTestLabel:'🎤 Mikrofontest',micTestBtn:'🎤 Mikrofon testen',micTestHint:'Tippen zum Prüfen des Zugriffs',tagline:'Sprechen und lernen\nSie die 40 Sprachen\nEuropas',skip:'Überspringen ›',exitBtn:'✕ Beenden',lessonTitle:'💾 Lektion speichern',lessonName:'Lektionsname',lessonPlaceholder:'Meine Lektion…',contactTitle:'Gesprächspartner',convTitle:'Gespräche',lessonTitle2:'Sessions',saveConvTitle:'💾 Gespräch speichern',convNameLabel:'Gesprächsname',convPlaceholder:'Mein Gespräch…',saveConvBtn:'💾 Speichern'},
   it:{conv:'Conversazioni',lessons:'Sessioni',waiting:'In attesa',waitingLesson:'In attesa di sessione',startConv:'Avvia conversazione',startLesson:'Avvia sessione',inProgress:'Conversazione in corso',lessonProgress:'Sessione in corso',ended:'Terminata',lessonEnded:'Sessione terminata',clickStop:'Clic per fermare',repeat:'Ripetere',resume:'Continuare',save:'Salvare',exit:'Uscire',welcome:'Benvenuto\nin\nMakedoo',back:'← Indietro',longPressLang:'Clicca sulla lingua per cambiarla',clickArrow:'Clicca la freccia per cambiare interlocutore',swapLangs:'Clicca la freccia per scambiare lingua di origine e destinazione',replace:'Sostituire',insert:'Inserire',all:'Tutti',oralTrans:'Traduzione orale',writtenTrans:'Traduzione scritta',read:'Leggere',copy:'Copia',copied:'Copiato!',selectFirst:'Seleziona una frase',useInputOrMic:'Usa il campo di testo o il microfono',welcomeTitle:'Benvenuto su Makedoo',welcomeText1:'Makedoo è un\'app di traduzione vocale e testuale, progettata per facilitare la comunicazione tra persone di lingue diverse e l\'apprendimento.',welcomeText2:'L\'uso di Makedoo è gratuito e non richiede alcun download',welcomeTextLangs:'Makedoo è l\'app delle 40 lingue europee, più l\'arabo e le lingue asiatiche',soloIntro:'SOLO è la modalità di apprendimento',duoIntro:'La modalità DUO è la modalità di conversazione',micStart:'Tocca il microfono per iniziare',micStop:'Tocca il microfono per fermare',clickTalk:'Clic per parlare',youFirst:'Parli prima lei',theyFirst:' parla prima',keyOk:'Salvato',myLang:'La mia lingua',transLang:'Lingua di traduzione',exchanges:'scambio/i',noConv:'Nessuna conversazione',noLesson:'Nessuna sessione',selectConv:'Seleziona conversazione',selectLesson:'Seleziona sessione',review:'Rivedere',rename:'Rinominare',export:'Esporta MP3',delete:'Eliminare',listen:'Ascoltare',stop:'Fermare',unknown:'Sconosciuto',choosePhrase:'Scegli una frase',target:'Destinazione',source:'Sorgente',settings:'Impostazioni',apiKeyLabel:'Chiave API Google',uiLangLabel:'Lingua interfaccia',saveKey:'Salva chiave',voicesLabel:'Voci MK',scanVoices:'Scansiona voci MK',scanPrompt:'Tocca per scansionare...',noVoices:'Nessuna voce MK',newContact:'Nuovo nome...',exitNoSave:'Uscire senza salvare?',deleteConfirm:'Eliminare?',sttError:'Voce non riconosciuta',sttFail:'Errore STT',micError:'Microfono non accessibile',micTestChecking:'Verifica…',micTestOk:'Microfono accessibile!',micTestDenied:'Accesso negato.',micTestLabel:'🎤 Test microfono',micTestBtn:'🎤 Prova microfono',micTestHint:'Tocca per verificare l\'accesso',tagline:'Parla e impara\nle 40 lingue\nd\'Europa',skip:'Salta',exitBtn:'Esci',saveConvTitle:'Salva conversazione',convNameLabel:'Nome conversazione',convPlaceholder:'La mia conversazione...',saveConvBtn:'Salva',lessonTitle:'Salva sessione',lessonName:'Nome sessione',lessonPlaceholder:'La mia sessione...',lessonTitle2:'Sessioni'},
@@ -621,6 +659,9 @@ function execLP(a){
 
 // ── Mode ───────────────────────────────────────────────────────
 function setMode(mode){
+  if(S.plusScreenActive){hidePlusScreen();S.screen=0;}
+  const pres=document.getElementById('plus-presentation');
+  if(pres&&pres.style.display==='flex')pres.style.display='none';
   if(S.screen!==0)return;
   S.mode=mode;
   S.showInfoScreen0=false;
@@ -639,6 +680,9 @@ function setMode(mode){
   });
   document.getElementById('btn-top-center').classList.toggle('learn-mode',learn);
   renderScreen();updateDisplay();updateUILabels();
+  if(learn&&S.screen===0){
+    setScreen(S.currentExchanges.length>0?2:1);
+  }
 }
 
 // ── Arrow ──────────────────────────────────────────────────────
@@ -726,11 +770,22 @@ function renderScreen(){
   // Reset
   intActions.innerHTML='';convActions.innerHTML='';
   pill.className='status-tag waiting';pill.textContent='';pill.style.display='inline-block';
-  intLabel.className='intervention-label';intLabel.textContent='';
+  intLabel.className='intervention-label';intLabel.textContent='';intLabel.style.display='';
   const welcomeIntroReset=document.getElementById('welcome-intro');
   if(welcomeIntroReset)welcomeIntroReset.style.display='none';
   const infoTriggerReset=document.getElementById('circle-info-trigger');
   if(infoTriggerReset)infoTriggerReset.style.display='none';
+  // Hauteurs par défaut de la cascade (surchargées au cas par cas ci-dessous)
+  const intZoneReset=document.getElementById('intervention-zone');
+  const textPanelReset=document.getElementById('text-panel');
+  const soloFlagsReset=document.getElementById('solo-flags-area');
+  if(intZoneReset)intZoneReset.style.height='58px';
+  if(textPanelReset)textPanelReset.style.top='116px';
+  if(soloFlagsReset)soloFlagsReset.style.top='116px';
+  const convZoneReset=document.getElementById('conversation-zone-el');
+  if(convZoneReset)convZoneReset.style.minHeight='101px';
+  if(textPanelReset)textPanelReset.style.bottom='101px';
+  if(soloFlagsReset)soloFlagsReset.style.bottom='101px';
   if(micC)micC.style.opacity='0';
   if(hgC)hgC.style.opacity='0';
   const wt=document.getElementById('welcome-text');
@@ -745,11 +800,24 @@ function renderScreen(){
   const inProgress=learn?t('lessonProgress'):t('inProgress');
   // Flèche active en SOLO à l'écran 0 et à l'écran de révision (2), désactivée pendant l'enregistrement (1)
   const leftArrow=document.getElementById('left-arrow');
+  if(leftArrow)leftArrow.style.display=learn?'none':'';
   if(leftArrow)leftArrow.classList.toggle('disabled',learn&&S.screen===1);
 
-  // Cercle ou panneau texte
+  // Cercle (DUO, obsolète), drapeaux (SOLO), ou panneau texte
   const showPanel=(learn&&(S.screen===2||S.screen===3))||(!learn&&S.screen===2&&S.duoReadMode);
-  if(circleContainer)circleContainer.style.visibility=showPanel?'hidden':'visible';
+  const soloFlagsArea=document.getElementById('solo-flags-area');
+  if(learn){
+    if(circleContainer){circleContainer.style.visibility='hidden';circleContainer.style.display='none';}
+    if(soloFlagsArea)soloFlagsArea.style.display=showPanel?'none':'flex';
+  } else {
+    if(circleContainer){circleContainer.style.display='';circleContainer.style.visibility=showPanel?'hidden':'visible';}
+    if(soloFlagsArea)soloFlagsArea.style.display='none';
+  }
+  const soloTopFlags=document.getElementById('solo-top-flags');
+  if(soloTopFlags)soloTopFlags.style.display='flex';
+  const leftColEl=document.getElementById('left-col');const rightColEl=document.getElementById('right-col');
+  if(leftColEl)leftColEl.style.display=learn?'none':'flex';
+  if(rightColEl)rightColEl.style.display=learn?'none':'flex';
   if(showPanel&&textPanel)textPanel.classList.add('visible');
   else if(textPanel)textPanel.classList.remove('visible');
 
@@ -849,40 +917,34 @@ function renderScreen(){
         if(circleContainer)circleContainer.style.visibility='visible';
         if(infoTrigger)infoTrigger.style.display='block';
       }
-      intLabel.textContent=t('soloIntro');
-      intLabel.classList.add('visible');
-      intLabel.style.cssText='opacity:1;background:#CFE1FF;border-radius:14px;padding:6px 14px;font-size:12px;color:var(--learn);font-weight:700;width:100%;text-align:center';
       convActions.innerHTML='<button class="action-btn green solid" onclick="startSession()">▶ '+t('startLesson')+'</button>';
     }
 
   }else if(S.screen===1&&!S.listening){
     if(micC)micC.style.opacity='1';
     status.textContent=t('clickTalk');
-    pill.className=(learn?'status-tag learn':'status-tag active');
-    pill.textContent='💬 '+inProgress;
+    const soloFresh=learn&&S.currentExchanges.length===0;
+    if(soloFresh){
+      pill.style.display='none';
+      convActions.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted)">'+t('plusPressToTalk')+'</div>';
+    } else {
+      pill.className=(learn?'status-tag learn':'status-tag active');
+      pill.textContent='💬 '+inProgress;
+    }
     if(!learn){
       intLabel.innerHTML=t('micStart')+'<br>'+t('micStop');
       intLabel.classList.add('visible');
       intLabel.style.cssText='opacity:1;background:#CFE1FF;border-radius:14px;padding:4px 12px;font-size:11px;color:var(--text);font-weight:700;width:100%;text-align:center;line-height:1.5';
     }
-    if(learn){
-      intLabel.textContent='⌨️🎤 '+t('useInputOrMic');
-      intLabel.classList.add('visible');
-      intLabel.style.cssText='opacity:1;background:#E3F2FD;border-radius:14px;padding:4px 12px;font-size:11px;color:var(--learn);font-weight:700;width:100%;text-align:center';
-    }
     if(!learn){
       convActions.innerHTML=(S.currentExchanges.length>0?'<button class="action-btn blue solid" onclick="doSave()">'+t('save')+'</button>':'')+'<button class="action-btn red" onclick="doExitConv()">'+t('exit')+'</button>';
     }
-    // SOLO screen 1 : bouton Retour si session en cours, Sortir si démarrage
+    // SOLO screen 1 : bouton Retour si session en cours, rien au tout premier écran
     if(finBtn){
       if(learn&&S.currentExchanges.length>0){
         finBtn.style.display='inline-flex';
         document.getElementById('fin-btn-label').textContent=t('back');
         finBtn.onclick=function(){S.insertMode=false;S.insertBeforeIdx=undefined;setScreen(2);};
-      } else if(learn){
-        finBtn.style.display='inline-flex';
-        document.getElementById('fin-btn-label').textContent=t('exit');
-        finBtn.onclick=function(){confirmEnd();};
       } else {
         finBtn.style.display='none';
       }
@@ -906,18 +968,19 @@ function renderScreen(){
   }else if(S.screen===2){
     if(learn){
       if(finBtn)finBtn.style.display='none';
-      intLabel.innerHTML='<div style="display:flex;align-items:center;gap:6px;width:100%;justify-content:center">'
-        +'<span style="background:#E3F2FD;border-radius:14px;padding:4px 12px;font-size:12px;color:var(--learn);font-weight:700">'+t('choosePhrase')+'</span>'
-        +'<button class="action-btn blue" style="padding:4px 10px;font-size:11px" onclick="doRepeatAll()">'+t('all')+'</button>'
-        +'</div>';
-      intLabel.classList.add('visible');
-      intLabel.style.cssText='opacity:1;width:100%';
-      intActions.innerHTML='<button class="action-btn orange" style="padding:5px 10px;font-size:11px" onclick="doRepeatSelected()">'+t('repeat')+'</button><button class="action-btn neutral" style="padding:5px 10px;font-size:11px" onclick="doReplaceSelected()">'+t('replace')+'</button><button class="action-btn blue" style="padding:5px 10px;font-size:11px" onclick="doSoloCopy()">📋 '+t('copy')+'</button>';
-      // ZONE BASSE : bandeau + boutons
-      pill.className=(learn?'status-tag learn':'status-tag active');
-      
-      pill.textContent='💬 '+inProgress;
-      convActions.innerHTML='<button class="action-btn green solid" onclick="doResume()">'+t('resume')+'</button><button class="action-btn learn" onclick="doSaveLesson()">'+t('save')+'</button><button class="action-btn red" onclick="confirmEnd()">'+t('exit')+'</button>';
+      intLabel.style.display='none';
+      intActions.innerHTML='<button class="action-btn orange" style="padding:5px 8px;font-size:11px" onclick="doRepeatSelected()">'+t('repeat')+'</button><button class="action-btn blue" style="padding:5px 8px;font-size:11px" onclick="doRepeatAll()">'+t('all')+'</button><button class="action-btn neutral" style="padding:5px 8px;font-size:11px" onclick="doReplaceSelected()">'+t('replace')+'</button><button class="action-btn blue" style="padding:5px 8px;font-size:11px" onclick="doSoloCopy()">📋 '+t('copy')+'</button>';
+      // Une seule ligne de boutons désormais : on réduit la hauteur réservée
+      const intZone=document.getElementById('intervention-zone');
+      const textPanelEl=document.getElementById('text-panel');
+      if(intZone)intZone.style.height='40px';
+      if(textPanelEl)textPanelEl.style.top='98px';
+      // ZONE BASSE : boutons (pas de bandeau de statut)
+      pill.style.display='none';
+      convActions.innerHTML='<button class="action-btn green solid" style="padding:6px 12px;font-size:12px" onclick="doResume()">'+t('resume')+'</button><button class="action-btn learn" style="padding:6px 12px;font-size:12px" onclick="doSaveLesson()">'+t('save')+'</button><button class="action-btn red" style="padding:6px 12px;font-size:12px" onclick="confirmEnd()">'+t('exit')+'</button>';
+      const convZone=document.getElementById('conversation-zone-el');
+      if(convZone)convZone.style.minHeight='76px';
+      if(textPanelEl)textPanelEl.style.bottom='76px';
     }else{
       if(S.duoReadMode){
         intLabel.textContent='📖 '+t('writtenTrans');
@@ -1228,6 +1291,14 @@ function doConfirmedReplace(){
 }
 function doSave(){
   if(S.currentExchanges.length===0){setScreen(0);return;}
+  S.savingFromPlus=false;
+  document.getElementById('conv-name-input').value='';
+  document.getElementById('conv-date').textContent=new Date().toLocaleDateString()+' · '+S.location;
+  showOv('ov-save-conv');
+}
+function plusDoSave(){
+  if(S.currentExchanges.length===0){showToast(t('noConv'));return;}
+  S.savingFromPlus=true;
   document.getElementById('conv-name-input').value='';
   document.getElementById('conv-date').textContent=new Date().toLocaleDateString()+' · '+S.location;
   showOv('ov-save-conv');
@@ -1237,7 +1308,17 @@ function confirmSaveConv(){
   S.journal.unshift({id:Date.now(),name,date:new Date().toISOString().split('T')[0],location:S.location,langFrom:S.langFrom,langTo:S.langTo,count:S.currentExchanges.length,exchanges:[...S.currentExchanges]});
   localStorage.setItem('mk_v3_journal',JSON.stringify(S.journal));
   hideOv('ov-save-conv');
-  S.currentExchanges=[];setScreen(0);showToast('💾 '+name);
+  S.currentExchanges=[];
+  if(S.savingFromPlus){
+    const statusEl=document.getElementById('plus-status');
+    if(statusEl)statusEl.textContent=t('plusPressToTalk');
+    const saveRow=document.getElementById('plus-save-row');
+    if(saveRow)saveRow.style.display='none';
+  } else {
+    setScreen(0);
+  }
+  S.savingFromPlus=false;
+  showToast('💾 '+name);
 }
 function doSaveLesson(){
   document.getElementById('lesson-name-input').value='';
@@ -1497,8 +1578,14 @@ function hideConvScreen(){
   const mb=document.getElementById('mode-bar');
   const ns=document.getElementById('nav-spacer');
   const cs=document.getElementById('conv-screen');
+  const ps=document.getElementById('plus-screen');
   if(cs){cs.style.display='none';cs.style.position='';cs.style.inset='';cs.style.zIndex='';}
-  if(ml)ml.style.display='flex';
+  if(S.plusScreenActive){
+    if(ps)ps.style.display='flex';
+    if(ml)ml.style.display='none';
+  } else {
+    if(ml)ml.style.display='flex';
+  }
   if(mb)mb.style.display='flex';
   if(ns)ns.style.display='block';
   selectedEntry=null;isPlayingConv=false;
@@ -1982,7 +2069,8 @@ function importSession(){
 function openLangPicker(target){
   S.langPickerTarget=target;
   document.getElementById('t-langpicker').textContent=target==='from'?t('myLang'):t('transLang');
-  document.getElementById('lang-list').innerHTML=LANGS.map(l=>'<div class="list-item'+(( target==='from'&&l.code===S.langFrom)||(target==='to'&&l.code===S.langTo)?' selected':'')+'" onclick="selectLang(\''+l.code+'\')">'+l.flag+' '+l.label+'</div>').join('');
+  const curCode=target==='from'?S.langFrom:S.langTo;
+  document.getElementById('lang-list').innerHTML=LANGS.map(l=>'<div class="list-item'+(l.code===curCode?' selected':'')+'" onclick="selectLang(\''+l.code+'\')">'+l.flag+' '+l.label+'</div>').join('');
   showOv('ov-lang');
 }
 function selectLang(code){
@@ -1998,12 +2086,223 @@ function selectLang(code){
     }
     updateUILabels();
     renderScreen();
-  } else {
+  } else if(S.langPickerTarget==='to'){
     S.langTo=code;
     localStorage.setItem('makedoo_v3_langTo',code);
   }
   updateDisplay();
   hideOv('ov-lang');
+}
+
+// ── Écran "+" (échanges simplifiés à deux drapeaux) ─────────────
+function togglePlusPresentation(){
+  const pres=document.getElementById('plus-presentation');
+  if(!pres)return;
+  const showing=pres.style.display==='flex';
+  if(showing){
+    pres.style.display='none';
+  } else {
+    const lines=getInfoLines();
+    for(let i=1;i<=5;i++){
+      const el=document.getElementById('plus-pres-'+i);
+      if(el)el.textContent=lines[i-1]||'';
+    }
+    pres.style.display='flex';
+  }
+}
+
+function showPlusScreen(markActive){
+  if(markActive===undefined)markActive=true;
+  const ml=document.querySelector('.main-layout');
+  const ps=document.getElementById('plus-screen');
+  if(ml)ml.style.display='none';
+  if(ps)ps.style.display='flex';
+  S.plusScreenActive=true;
+  S.mode='exchange';
+  if(markActive){
+    document.getElementById('btn-exchange').className='mode-btn active-exchange';
+    document.getElementById('btn-learn').className='mode-btn';
+  } else {
+    document.getElementById('btn-exchange').className='mode-btn';
+    document.getElementById('btn-learn').className='mode-btn';
+  }
+  const pres=document.getElementById('plus-presentation');
+  if(pres&&pres.style.display==='flex')pres.style.display='none';
+  const soloTopFlags=document.getElementById('solo-top-flags');
+  if(soloTopFlags)soloTopFlags.style.display='flex';
+  const statusEl=document.getElementById('plus-status');
+  if(statusEl&&!plusRecordingSide&&!S.plusBusy)statusEl.textContent=t('plusPressToTalk');
+  const saveRow=document.getElementById('plus-save-row');
+  if(saveRow)saveRow.style.display=S.currentExchanges.length>0?'flex':'none';
+  const saveLabel=document.getElementById('plus-save-label');
+  if(saveLabel)saveLabel.textContent=t('save');
+  updateSoloFlagsDisplay();
+  updateUILabels();
+}
+function hidePlusScreen(){
+  const ml=document.querySelector('.main-layout');
+  const ps=document.getElementById('plus-screen');
+  if(ps)ps.style.display='none';
+  if(ml)ml.style.display='flex';
+  S.plusScreenActive=false;
+  document.getElementById('btn-exchange').className='mode-btn'+(S.mode==='exchange'?' active-exchange':'');
+  document.getElementById('btn-learn').className='mode-btn'+(S.mode==='learn'?' active-learn':'');
+  updateUILabels();
+}
+
+let plusMediaRecorder=null,plusAudioChunks=[],plusRecordingSide=null;
+
+function plusStartRecord(side){
+  if(S.plusBusy||plusRecordingSide)return;
+  plusRecordingSide=side;
+  const btn=document.getElementById(side==='A'?'plus-flag-a-btn':'plus-flag-b-btn');
+  if(btn)btn.style.opacity='0.5';
+  const statusEl=document.getElementById('plus-status');
+  if(statusEl)statusEl.textContent='🔴 …';
+  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}).then(stream=>{
+    if(plusRecordingSide!==side){stream.getTracks().forEach(t=>t.stop());return}
+    plusAudioChunks=[];
+    const mimeType=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/webm';
+    plusMediaRecorder=new MediaRecorder(stream,{mimeType});
+    plusMediaRecorder.ondataavailable=e=>{if(e.data.size>0)plusAudioChunks.push(e.data)};
+    plusMediaRecorder.onstop=async()=>{
+      stream.getTracks().forEach(t=>t.stop());
+      if(!plusAudioChunks.length){plusResetFlags();return}
+      const fromLang=side==='A'?S.langFrom:S.langTo;
+      const toLang=side==='A'?S.langTo:S.langFrom;
+      const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL',pt:'pt-PT',ru:'ru-RU',pl:'pl-PL',uk:'uk-UA',ro:'ro-RO',hu:'hu-HU',cs:'cs-CZ',sk:'sk-SK',sl:'sl-SI',hr:'hr-HR',bs:'bs-BA',sv:'sv-SE',da:'da-DK',no:'nb-NO',fi:'fi-FI',is:'is-IS',et:'et-EE',lv:'lv-LV',lt:'lt-LT',ka:'ka-GE',hy:'hy-AM',be:'be-BY',ca:'ca-ES',eu:'eu-ES',cy:'cy-GB',ga:'ga-IE',mt:'mt-MT',zh:'zh-CN',ja:'ja-JP',th:'th-TH',km:'km-KH',id:'id-ID',vi:'vi-VN',lo:'lo-LA'};
+      const recogLang=langMap[fromLang]||'fr-FR';
+      const statusEl2=document.getElementById('plus-status');
+      if(statusEl2)statusEl2.textContent='⏳ …';
+      const blob=new Blob(plusAudioChunks,{type:mimeType});
+      const reader=new FileReader();
+      reader.onloadend=async()=>{
+        const base64=reader.result.split(',')[1];
+        try{
+          const res=await fetch(API_BASE+'/stt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audio:base64,languageCode:recogLang,mimeType})});
+          const data=await res.json();
+          const text=data.transcript||'';
+          if(text){await plusTranslateAndSpeak(text,fromLang,toLang);}
+          else{if(statusEl2)statusEl2.textContent='😕 …';}
+        }catch(e){
+          if(statusEl2)statusEl2.textContent='❌ '+t('sttFail');
+        }
+        plusResetFlags();
+      };
+      reader.readAsDataURL(blob);
+    };
+    plusMediaRecorder.start();
+  }).catch(e=>{
+    showToast(t('micError'));
+    plusRecordingSide=null;
+    plusResetFlags();
+  });
+}
+
+function plusStopRecord(side){
+  if(plusRecordingSide!==side)return;
+  if(plusMediaRecorder&&plusMediaRecorder.state==='recording'){
+    plusMediaRecorder.stop();
+  } else {
+    plusRecordingSide=null;
+    plusResetFlags();
+  }
+}
+
+function plusResetFlags(){
+  plusRecordingSide=null;
+  S.plusBusy=false;
+  const ba=document.getElementById('plus-flag-a-btn');const bb=document.getElementById('plus-flag-b-btn');
+  if(ba)ba.style.opacity='1';
+  if(bb)bb.style.opacity='1';
+  const statusEl=document.getElementById('plus-status');
+  if(statusEl)statusEl.textContent=t('plusPressToTalk');
+}
+
+// ── Drapeaux SOLO (remplace le cercle/micro) ─────────────────────
+let soloMediaRecorder=null,soloAudioChunks=[],soloRecordingSide=null;
+
+function soloStartRecord(side){
+  if(soloRecordingSide)return;
+  soloRecordingSide=side;
+  const btn=document.getElementById(side==='A'?'solo-flag-a-btn':'solo-flag-b-btn');
+  if(btn)btn.style.opacity='0.5';
+  const statusEl=document.getElementById('solo-flags-status');
+  if(statusEl)statusEl.textContent='🔴 …';
+  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}).then(stream=>{
+    if(soloRecordingSide!==side){stream.getTracks().forEach(t=>t.stop());return}
+    soloAudioChunks=[];
+    const mimeType=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/webm';
+    soloMediaRecorder=new MediaRecorder(stream,{mimeType});
+    soloMediaRecorder.ondataavailable=e=>{if(e.data.size>0)soloAudioChunks.push(e.data)};
+    soloMediaRecorder.onstop=async()=>{
+      stream.getTracks().forEach(t=>t.stop());
+      if(!soloAudioChunks.length){soloResetFlags();return}
+      const fromLang=side==='A'?S.langFrom:S.langTo;
+      const toLang=side==='A'?S.langTo:S.langFrom;
+      const langMap={fr:'fr-FR',mk:'mk-MK',en:'en-US',es:'es-ES',de:'de-DE',it:'it-IT',ar:'ar-XA',sq:'sq-AL',sr:'sr-RS',tr:'tr-TR',el:'el-GR',bg:'bg-BG',nl:'nl-NL',pt:'pt-PT',ru:'ru-RU',pl:'pl-PL',uk:'uk-UA',ro:'ro-RO',hu:'hu-HU',cs:'cs-CZ',sk:'sk-SK',sl:'sl-SI',hr:'hr-HR',bs:'bs-BA',sv:'sv-SE',da:'da-DK',no:'nb-NO',fi:'fi-FI',is:'is-IS',et:'et-EE',lv:'lv-LV',lt:'lt-LT',ka:'ka-GE',hy:'hy-AM',be:'be-BY',ca:'ca-ES',eu:'eu-ES',cy:'cy-GB',ga:'ga-IE',mt:'mt-MT',zh:'zh-CN',ja:'ja-JP',th:'th-TH',km:'km-KH',id:'id-ID',vi:'vi-VN',lo:'lo-LA'};
+      const recogLang=langMap[fromLang]||'fr-FR';
+      const statusEl2=document.getElementById('solo-flags-status');
+      if(statusEl2)statusEl2.textContent='⏳ …';
+      const blob=new Blob(soloAudioChunks,{type:mimeType});
+      const reader=new FileReader();
+      reader.onloadend=async()=>{
+        const base64=reader.result.split(',')[1];
+        try{
+          const res=await fetch(API_BASE+'/stt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audio:base64,languageCode:recogLang,mimeType})});
+          const data=await res.json();
+          const text=data.transcript||'';
+          soloResetFlags();
+          if(text){await translateAndSpeak(text,fromLang,toLang);}
+          else{showToast(t('sttError'));}
+        }catch(e){
+          soloResetFlags();
+          showToast(t('sttFail'));
+        }
+      };
+      reader.readAsDataURL(blob);
+    };
+    soloMediaRecorder.start();
+  }).catch(e=>{
+    showToast(t('micError'));
+    soloRecordingSide=null;
+    soloResetFlags();
+  });
+}
+
+function soloStopRecord(side){
+  if(soloRecordingSide!==side)return;
+  if(soloMediaRecorder&&soloMediaRecorder.state==='recording'){
+    soloMediaRecorder.stop();
+  } else {
+    soloRecordingSide=null;
+    soloResetFlags();
+  }
+}
+
+function soloResetFlags(){
+  soloRecordingSide=null;
+  const ba=document.getElementById('solo-flag-a-btn');const bb=document.getElementById('solo-flag-b-btn');
+  if(ba)ba.style.opacity='1';
+  if(bb)bb.style.opacity='1';
+  const statusEl=document.getElementById('solo-flags-status');
+  if(statusEl)statusEl.textContent='';
+}
+
+async function plusTranslateAndSpeak(text,fromLang,toLang){
+  S.plusBusy=true;
+  let translated=text;
+  try{
+    const res=await fetch(API_BASE+'/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,source:fromLang,target:toLang})});
+    const data=await res.json();
+    if(data.translated)translated=data.translated;
+  }catch(e){}
+  S.currentExchanges.push({original:text,translated,langFrom:fromLang,langTo:toLang});
+  const saveRow=document.getElementById('plus-save-row');
+  if(saveRow)saveRow.style.display='flex';
+  const statusEl=document.getElementById('plus-status');
+  if(statusEl)statusEl.textContent=translated;
+  await speakText(translated,toLang);
 }
 
 // ── Contact picker ─────────────────────────────────────────────
@@ -2202,11 +2501,27 @@ function updateDisplay(){
     document.getElementById('lang-top').textContent=lt?lt.display:S.langTo.toUpperCase();
     document.getElementById('lang-bottom').textContent=lf?lf.display:S.langFrom.toUpperCase();
   }
+  updateSoloFlagsDisplay();
+}
+
+function updateSoloFlagsDisplay(){
+  const lf=LANGS.find(l=>l.code===S.langFrom);const lt=LANGS.find(l=>l.code===S.langTo);
+  const sa=document.getElementById('solo-flag-a-small');const sb=document.getElementById('solo-flag-b-small');
+  const ba=document.getElementById('solo-flag-a-btn');const bb=document.getElementById('solo-flag-b-btn');
+  const pa=document.getElementById('plus-flag-a-btn');const pb=document.getElementById('plus-flag-b-btn');
+  if(sa)sa.textContent=lf?lf.flag:'🏳️';
+  if(sb)sb.textContent=lt?lt.flag:'🏳️';
+  if(ba)ba.textContent=lf?lf.flag:'🏳️';
+  if(bb)bb.textContent=lt?lt.flag:'🏳️';
+  if(pa)pa.textContent=lf?lf.flag:'🏳️';
+  if(pb)pb.textContent=lt?lt.flag:'🏳️';
 }
 
 function updateUILabels(){
   // Mode buttons — toujours DUO/SOLO
   document.getElementById('btn-top-center').textContent=isLearn()?t('lessons'):t('conv');
+  document.getElementById('btn-top-center').style.opacity='1';
+  document.getElementById('btn-top-center').style.cursor='pointer';
   document.getElementById('btn-exchange').textContent='DUO';
   document.getElementById('btn-learn').textContent='SOLO';
   // Test microphone
@@ -2268,7 +2583,7 @@ let toastTimer=null;
 function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2500)}
 
 // ── Boot ───────────────────────────────────────────────────────
-loadInfoText().then(()=>{if(S.screen===0)renderScreen();});
+loadInfoText().then(()=>{if(S.screen===0)renderScreen();togglePlusPresentation();});
 updateVoiceButtons();
 // Synchroniser le scroll des deux fenêtres texte (source/cible)
 (function(){
@@ -2288,6 +2603,7 @@ updateVoiceButtons();
   }
 })();
 updateDisplay();updateUILabels();renderScreen();
+showPlusScreen(false);
 
 // Compteur de visites (discret, silencieux en cas d'échec)
 fetch(API_BASE+'/visit').catch(()=>{});
