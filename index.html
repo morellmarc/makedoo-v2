@@ -75,7 +75,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI'
 .intervention-zone{position:absolute;top:0;left:0;right:0;height:58px;display:flex;flex-direction:column;align-items:center;gap:2px;justify-content:center;overflow:hidden;z-index:20;padding:1px 8px;background:#CFE1FF}
 .help-zone-css{position:absolute;top:0;left:0;right:0;height:58px;display:flex;flex-direction:column;align-items:center;gap:2px;justify-content:center;padding:1px 8px;z-index:20;background:#CFE1FF}
 .circle-area{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:8px}
-.conversation-zone{position:absolute;bottom:0;left:0;right:0;min-height:101px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0 4px;justify-content:space-between;background:#CFE1FF;z-index:25}
+.conversation-zone{position:absolute;bottom:0;left:0;right:0;min-height:130px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0 4px;justify-content:flex-start;background:#CFE1FF;z-index:25}
 .status-tag{border-radius:10px;padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:0.3px;text-align:center;min-height:28px;display:inline-block}
 .status-tag.active{color:var(--green-text);background:var(--green-light)}
 .status-tag.learn{color:var(--blue-text);background:var(--blue-light)}
@@ -107,7 +107,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI'
 .fin-btn{display:none;background:var(--red-light);border:none;border-radius:12px;color:var(--red-text);font-size:12px;font-weight:700;padding:7px 16px;cursor:pointer;font-family:inherit}
 
 /* ── TEXT PANEL ── */
-.text-panel{position:absolute;top:116px;left:0;right:0;bottom:101px;z-index:5;border:1.5px solid #C7D5FF;overflow:hidden;background:var(--surface);display:none;flex-direction:column;box-shadow:0 2px 12px rgba(74,108,247,0.08)}
+.text-panel{position:absolute;top:116px;left:0;right:0;bottom:130px;z-index:5;border:1.5px solid #C7D5FF;overflow:hidden;background:var(--surface);display:none;flex-direction:column;box-shadow:0 2px 12px rgba(74,108,247,0.08)}
 .text-panel.visible{display:flex}
 .text-panel-top{flex:1;padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);line-height:1.5;overflow-y:auto;min-height:0;user-select:text;-webkit-user-select:text}
 .text-panel-bot{flex:1;padding:8px 12px;font-size:13px;color:var(--blue-text);font-weight:600;line-height:1.5;overflow-y:auto;min-height:0;background:#F8F9FF;user-select:text;-webkit-user-select:text}
@@ -163,19 +163,20 @@ input:focus{border-color:var(--blue)}
 
 <!-- TOP BAR -->
 <div class="top-bar" id="top-bar">
-  <button class="conv-btn" id="btn-top-center" onclick="showTopCenter()">📋 Conversations</button>
   <div id="solo-top-flags" style="display:none;gap:6px;align-items:center">
     <button id="solo-flag-a-small" onclick="openLangPicker('from')" style="background:none;border:none;font-size:26px;cursor:pointer;padding:2px 4px;line-height:1">🏳️</button>
     <button id="solo-flag-b-small" onclick="openLangPicker('to')" style="background:none;border:none;font-size:26px;cursor:pointer;padding:2px 4px;line-height:1">🏳️</button>
   </div>
+  <div style="flex:1"></div>
   <div style="display:flex;gap:6px;align-items:center">
+    <button class="info-card-top" id="audio-top-icon" style="background:#FFE9CC;color:#B36A00" onclick="openAudioEntry()">🎧</button>
     <button class="info-card-top" onclick="togglePlusPresentation()">ℹ️</button>
     <button class="setup-card-top" onclick="showOv('ov-setup')">⚙</button>
   </div>
 </div>
 
 <!-- MAIN -->
-<div class="main-layout">
+<div class="main-layout" id="main-layout-el">
 
   <!-- LEFT COL -->
   <div class="left-col" id="left-col">
@@ -252,7 +253,7 @@ input:focus{border-color:var(--blue)}
     </div>
 
     <!-- DRAPEAUX SOLO (remplace le cercle) -->
-    <div id="solo-flags-area" style="display:none;position:absolute;top:116px;left:0;right:0;bottom:101px;z-index:5;background:#CFE1FF;flex-direction:row">
+    <div id="solo-flags-area" style="display:none;position:absolute;top:116px;left:0;right:0;bottom:130px;z-index:5;background:#CFE1FF;flex-direction:row">
       <button id="solo-flag-a-btn" ontouchstart="soloStartRecord('A')" ontouchend="soloStopRecord('A')" ontouchcancel="soloStopRecord('A')" onmousedown="soloStartRecord('A')" onmouseup="soloStopRecord('A')" onmouseleave="soloStopRecord('A')" style="flex:1;border:none;background:transparent;font-size:88px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0">🏳️</button>
       <button id="solo-flag-b-btn" ontouchstart="soloStartRecord('B')" ontouchend="soloStopRecord('B')" ontouchcancel="soloStopRecord('B')" onmousedown="soloStartRecord('B')" onmouseup="soloStopRecord('B')" onmouseleave="soloStopRecord('B')" style="flex:1;border:none;background:transparent;font-size:88px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;border-left:1px solid rgba(0,0,0,0.08)">🏳️</button>
     </div>
@@ -280,11 +281,12 @@ input:focus{border-color:var(--blue)}
 
     <!-- ZONE BASSE -->
     <div class="conversation-zone" id="conversation-zone-el">
-      <div style="display:flex;align-items:center;gap:8px;justify-content:center;flex-shrink:0">
+      <div style="position:absolute;top:8px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:8px">
         <div class="status-tag waiting" id="status-pill"></div>
         <button class="fin-btn" id="fin-btn" onclick="confirmEnd()"><span id="fin-btn-label">Exit</span></button>
       </div>
-      <div class="action-row" id="conv-action-row" style="flex-shrink:0"></div>
+      <button id="solo-conv-btn" class="conv-btn learn-mode" onclick="showLessons()" style="position:absolute;top:48px;left:50%;transform:translateX(-50%)">📋 Sessions</button>
+      <div class="action-row" id="conv-action-row" style="position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center"></div>
     </div>
 
   </div>
@@ -323,12 +325,8 @@ input:focus{border-color:var(--blue)}
 </div>
 
 <!-- PRÉSENTATION (accessible depuis DUO et SOLO) -->
-<div id="plus-presentation" style="display:none;position:fixed;inset:0;z-index:60;background:#CFE1FF;flex-direction:column;align-items:center;justify-content:center;padding:0 24px;text-align:center;gap:12px">
-  <div id="plus-pres-1" style="font-size:14px;line-height:1.4;color:var(--text)"></div>
-  <div id="plus-pres-2" style="font-size:14px;line-height:1.4;color:var(--text)"></div>
-  <div id="plus-pres-3" style="font-size:14px;line-height:1.4;color:var(--text)"></div>
-  <div id="plus-pres-4" style="font-size:14px;line-height:1.4;color:var(--text)"></div>
-  <div id="plus-pres-5" style="font-size:14px;line-height:1.4;color:var(--text)"></div>
+<div id="plus-presentation" style="display:none;position:fixed;inset:0;z-index:60;background:#CFE1FF;flex-direction:column;align-items:center;justify-content:center;padding:0 24px;text-align:center;gap:12px;overflow-y:auto">
+  <div id="plus-pres-content" style="font-size:14px;line-height:1.6;color:var(--text);white-space:pre-line"></div>
 </div>
 
 <!-- ÉCRAN + (échanges simplifiés) -->
@@ -336,18 +334,48 @@ input:focus{border-color:var(--blue)}
   <div style="position:absolute;top:0;left:0;right:0;height:116px;display:flex;align-items:center;justify-content:center;padding:0 20px;text-align:center">
     <div id="plus-hint-flags" style="font-size:12px;color:var(--muted);font-weight:600"></div>
   </div>
-  <div id="plus-press-zone" style="position:absolute;top:116px;left:0;right:0;bottom:101px;display:flex;background:#CFE1FF">
+  <div id="plus-press-zone" style="position:absolute;top:116px;left:0;right:0;bottom:130px;display:flex;background:#CFE1FF">
     <button id="plus-flag-a-btn" ontouchstart="plusStartRecord('A')" ontouchend="plusStopRecord('A')" ontouchcancel="plusStopRecord('A')" onmousedown="plusStartRecord('A')" onmouseup="plusStopRecord('A')" onmouseleave="plusStopRecord('A')" style="flex:1;border:none;background:transparent;font-size:88px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0">🏳️</button>
     <button id="plus-flag-b-btn" ontouchstart="plusStartRecord('B')" ontouchend="plusStopRecord('B')" ontouchcancel="plusStopRecord('B')" onmousedown="plusStartRecord('B')" onmouseup="plusStopRecord('B')" onmouseleave="plusStopRecord('B')" style="flex:1;border:none;background:transparent;font-size:88px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;border-left:1px solid rgba(0,0,0,0.08)">🏳️</button>
   </div>
-  <div style="position:absolute;bottom:0;left:0;right:0;min-height:101px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:4px;padding:8px 0 4px;background:#CFE1FF">
-    <div id="plus-status" style="text-align:center;font-size:15px;color:var(--muted);font-weight:600">Maintenez un drapeau enfoncé pour parler</div>
-    <div id="plus-save-row" style="display:none;justify-content:center;gap:10px">
+  <div style="position:absolute;bottom:0;left:0;right:0;min-height:130px;box-sizing:border-box;background:#CFE1FF">
+    <div id="plus-status" style="position:absolute;top:8px;left:0;right:0;text-align:center;font-size:15px;color:var(--muted);font-weight:600;overflow:hidden;padding:0 12px">Maintenez un drapeau enfoncé pour parler</div>
+    <button id="plus-conv-btn" class="conv-btn" onclick="showConversations()" style="position:absolute;top:48px;left:50%;transform:translateX(-50%)">📋 Conversations</button>
+    <div id="plus-save-row" style="display:none;position:absolute;bottom:8px;left:0;right:0;justify-content:center;gap:10px">
       <button class="action-btn orange" onclick="plusDoSave()">💾 <span id="plus-save-label">Sauvegarder</span></button>
       <button class="action-btn primary" id="plus-repeat-btn" onclick="plusDoRepeat()">🔁 <span id="plus-repeat-label">Répéter</span></button>
       <button class="action-btn red" onclick="plusDoExit()"><span id="plus-exit-label">Sortir</span></button>
     </div>
   </div>
+</div>
+
+<!-- ÉCRAN AUDIOTHÈQUE (accessible depuis n'importe quel mode) -->
+<div id="audio-main-screen" style="display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;position:relative;background:#CFE1FF;padding:12px;box-sizing:border-box">
+  <div style="margin-bottom:8px">
+    <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:3px">Langues</div>
+    <select id="audio-main-filter-lang" onchange="renderAudioMainList()" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;background:#fff">
+      <option value="">Toutes langues</option>
+      <option value="fr">🇫🇷 Français</option>
+      <option value="en">🇬🇧 English</option>
+      <option value="mk">🇲🇰 Македонски</option>
+    </select>
+  </div>
+  <div style="margin-bottom:8px">
+    <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:3px">Types</div>
+    <select id="audio-main-filter-type" onchange="renderAudioMainList()" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;background:#fff">
+      <option value="">Tous types</option>
+      <option value="livre">📖 Livres</option>
+      <option value="pack">💬 Packs</option>
+    </select>
+  </div>
+  <div style="margin-bottom:10px">
+    <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:3px">Catégories</div>
+    <select id="audio-main-filter-cat" onchange="renderAudioMainList()" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;background:#fff">
+      <option value="">Toutes catégories</option>
+    </select>
+  </div>
+  <div id="audio-main-list" style="display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1"></div>
+  <audio id="audio-main-player" controls style="width:100%;margin-top:14px"></audio>
 </div>
 
 <!-- MODE BAR -->
@@ -447,23 +475,29 @@ input:focus{border-color:var(--blue)}
       <div class="setting-label">GPS</div>
       <div id="gps-status" style="font-size:13px;color:var(--muted)">📍 …</div>
     </div>
-    <div class="setting-row" style="background:#E0F7EC;border-radius:12px;padding:12px;margin-top:14px;text-align:center">
-      <div class="setting-label" style="text-align:center">📚 Bibliothèque Makedoo</div>
-      <button class="setting-btn" style="background:linear-gradient(135deg,#00C48C,#00A878)" onclick="openManageLibrary()">🗂️ Gérer la bibliothèque</button>
+    <div class="setting-row" style="background:#F0F0F5;border-radius:12px;padding:12px;margin-top:14px;text-align:center" id="admin-gate-row">
+      <button class="setting-btn" style="background:linear-gradient(135deg,#8A96B4,#6B7794)" onclick="unlockAdminSection()">🔐 Options avancées</button>
     </div>
-    <div class="setting-row" style="background:#EDE6FF;border-radius:12px;padding:12px;margin-top:14px">
-      <div class="setting-label" id="label-infotext">✏️ Message d'accueil (écran de présentation)</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Écrivez en français — traduit automatiquement dans les 17 langues d'interface</div>
-      <div id="info-text-restore-note" style="display:none;background:#FFE8D4;color:#C05000;font-size:12px;font-weight:700;padding:8px 10px;border-radius:8px;margin-bottom:8px">⚠️ Le serveur a été réinitialisé. Le texte ci-dessous vient de votre sauvegarde locale — cliquez "Enregistrer" pour le republier.</div>
-      <textarea id="info-text-1" placeholder="Phrase 1…" style="width:100%;min-height:44px;border-radius:10px;border:1.5px solid var(--border);padding:8px 10px;font-size:13px;font-family:inherit;margin-bottom:6px;resize:vertical"></textarea>
-      <textarea id="info-text-2" placeholder="Phrase 2…" style="width:100%;min-height:44px;border-radius:10px;border:1.5px solid var(--border);padding:8px 10px;font-size:13px;font-family:inherit;margin-bottom:6px;resize:vertical"></textarea>
-      <textarea id="info-text-3" placeholder="Phrase 3…" style="width:100%;min-height:44px;border-radius:10px;border:1.5px solid var(--border);padding:8px 10px;font-size:13px;font-family:inherit;margin-bottom:6px;resize:vertical"></textarea>
-      <textarea id="info-text-4" placeholder="Phrase 4…" style="width:100%;min-height:44px;border-radius:10px;border:1.5px solid var(--border);padding:8px 10px;font-size:13px;font-family:inherit;margin-bottom:6px;resize:vertical"></textarea>
-      <textarea id="info-text-5" placeholder="Phrase 5…" style="width:100%;min-height:44px;border-radius:10px;border:1.5px solid var(--border);padding:8px 10px;font-size:13px;font-family:inherit;margin-bottom:6px;resize:vertical"></textarea>
-      <input type="password" id="info-text-pin" placeholder="Code PIN" style="margin-bottom:6px">
-      <button class="setting-btn" style="background:linear-gradient(135deg,#7C2DBF,#5A1E8F)" onclick="saveInfoText()">💾 Enregistrer le message</button>
-      <div id="info-text-status" style="font-size:12px;color:var(--muted);margin-top:6px;text-align:center"></div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px;text-align:center">Laissez vide pour revenir au texte par défaut</div>
+    <div id="admin-section" style="display:none">
+      <div class="setting-row" style="background:#E0F7EC;border-radius:12px;padding:12px;margin-top:14px;text-align:center">
+        <div class="setting-label" style="text-align:center">📚 Bibliothèque Makedoo</div>
+        <button class="setting-btn" style="background:linear-gradient(135deg,#00C48C,#00A878)" onclick="openManageLibrary()">🗂️ Gérer la bibliothèque</button>
+      </div>
+      <div class="setting-row" style="background:#FFF0DC;border-radius:12px;padding:12px;margin-top:14px;text-align:center">
+        <div class="setting-label" style="text-align:center">🎧 Audiothèque Makedoo</div>
+        <button class="setting-btn" style="background:linear-gradient(135deg,#FFA94D,#FF8C1A);margin-bottom:8px" onclick="openAudioLibrary()">🎧 Écouter les audios</button>
+        <button class="setting-btn" style="background:linear-gradient(135deg,#5B8DEF,#3B6FE0)" onclick="openPublishAudio()">📤 Publier un audio</button>
+      </div>
+      <div class="setting-row" style="background:#EDE6FF;border-radius:12px;padding:12px;margin-top:14px">
+        <div class="setting-label" id="label-infotext">✏️ Message d'accueil (écran de présentation)</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Écrivez en français — un saut de ligne = un nouveau paragraphe. Traduit automatiquement dans les 17 langues d'interface</div>
+        <div id="info-text-restore-note" style="display:none;background:#FFE8D4;color:#C05000;font-size:12px;font-weight:700;padding:8px 10px;border-radius:8px;margin-bottom:8px">⚠️ Le serveur a été réinitialisé. Le texte ci-dessous vient de votre sauvegarde locale — cliquez "Enregistrer" pour le republier.</div>
+        <textarea id="info-text-full" placeholder="Votre message…" style="width:100%;min-height:180px;border-radius:10px;border:1.5px solid var(--border);padding:8px 10px;font-size:13px;font-family:inherit;margin-bottom:6px;resize:vertical"></textarea>
+        <input type="password" id="info-text-pin" placeholder="Code PIN" style="margin-bottom:6px">
+        <button class="setting-btn" style="background:linear-gradient(135deg,#7C2DBF,#5A1E8F)" onclick="saveInfoText()">💾 Enregistrer le message</button>
+        <div id="info-text-status" style="font-size:12px;color:var(--muted);margin-top:6px;text-align:center"></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;text-align:center">Laissez vide pour revenir au texte par défaut</div>
+      </div>
     </div>
   </div>
 </div>
@@ -587,6 +621,82 @@ input:focus{border-color:var(--blue)}
   </div>
 </div>
 
+<div class="overlay" id="ov-audio-library" style="display:none">
+  <div class="overlay-card" style="max-height:80vh;overflow-y:auto">
+    <button class="overlay-close" onclick="hideOv('ov-audio-library');stopAudioPlayback()">×</button>
+    <div class="overlay-title">🎧 Audiothèque Makedoo</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <select id="audio-lib-filter-type" onchange="renderAudioLibraryList()" style="flex:1;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit">
+        <option value="">Tous types</option>
+        <option value="livre">📖 Livres</option>
+        <option value="pack">💬 Packs</option>
+      </select>
+      <select id="audio-lib-filter-lang" onchange="renderAudioLibraryList()" style="flex:1;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit">
+        <option value="">Toutes langues</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="mk">🇲🇰 Македонски</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <select id="audio-lib-filter-cat" onchange="renderAudioLibraryList()" style="flex:1;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit">
+        <option value="">Toutes catégories</option>
+      </select>
+    </div>
+    <div id="audio-lib-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    <audio id="audio-lib-player" controls style="width:100%;margin-top:14px;display:none"></audio>
+    <div id="audio-lib-pin-row" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+      <div class="setting-label">Code PIN (pour supprimer/renommer)</div>
+      <input type="password" id="audio-lib-pin" placeholder="Code PIN" style="margin-bottom:6px">
+      <div id="audio-lib-status" style="font-size:12px;color:var(--muted);text-align:center"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ov-publish-audio" style="display:none">
+  <div class="overlay-card">
+    <button class="overlay-close" onclick="hideOv('ov-publish-audio')">×</button>
+    <div class="overlay-title">📤 Publier un audio</div>
+    <div class="setting-row">
+      <div class="setting-label">Lien direct pCloud du fichier MP3</div>
+      <input type="url" id="publish-audio-url" placeholder="https://...">
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">Le lien doit pointer directement vers le fichier (lecture/téléchargement direct), pas vers une page de visualisation</div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Type</div>
+      <select id="publish-audio-type" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);font-size:14px;font-family:inherit">
+        <option value="livre">📖 Livre (complément d'apprentissage)</option>
+        <option value="pack">💬 Pack de phrases</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Titre</div>
+      <input type="text" id="publish-audio-title" placeholder="Histoire d'Ohrid">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Langue</div>
+      <select id="publish-audio-lang" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);font-size:14px;font-family:inherit">
+        <option value="fr">Français</option>
+        <option value="en">English</option>
+        <option value="mk">Македонски</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Catégorie</div>
+      <select id="publish-audio-category-select" onchange="onPublishAudioCategoryChange()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);font-size:14px;font-family:inherit">
+        <option value="">Chargement…</option>
+      </select>
+      <input type="text" id="publish-audio-category" placeholder="Nouvelle catégorie (ex: ohrid)" style="margin-top:6px;display:none">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Code PIN</div>
+      <input type="password" id="publish-audio-pin" placeholder="Code PIN">
+    </div>
+    <button class="setting-btn" onclick="confirmPublishAudio()">📤 Publier</button>
+    <div id="publish-audio-status" style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center"></div>
+  </div>
+</div>
+
 <div class="overlay" id="ov-save-lesson" style="display:none">
   <div class="overlay-card">
     <button class="overlay-close" onclick="hideOv('ov-save-lesson')">×</button>
@@ -619,7 +729,7 @@ const S={
   journal:JSON.parse(localStorage.getItem('mk_v3_journal')||'[]'),
   lessons:JSON.parse(localStorage.getItem('mk_v3_lessons')||'[]'),
   contacts:JSON.parse(localStorage.getItem('mk_v3_contacts')||JSON.stringify([{id:1,name:'Olivija',lang:'mk'}])),
-  lpTimer:null,langPickerTarget:null,ignoreTap:false,reviewOpen:false,welcomeShown:false,insertMode:false,insertBeforeIdx:undefined,isSpeaking:false,duoReadMode:false,duoWelcomeShown:false,showInfoScreen0:false,plusScreenActive:false,plusBusy:false,savingFromPlus:false,lastPlusOriginal:null,lastPlusOriginalLang:null,
+  lpTimer:null,langPickerTarget:null,ignoreTap:false,reviewOpen:false,welcomeShown:false,insertMode:false,insertBeforeIdx:undefined,isSpeaking:false,duoReadMode:false,duoWelcomeShown:false,showInfoScreen0:false,plusScreenActive:false,plusBusy:false,savingFromPlus:false,lastPlusOriginal:null,lastPlusOriginalLang:null,adminUnlocked:localStorage.getItem('mk_admin_unlocked')==='1',
   selectedVoiceURI:localStorage.getItem('makedoo_v3_voice_uri')||null,
   selectedVoiceLang:localStorage.getItem('makedoo_v3_voice_lang')||null,
 };
@@ -734,6 +844,12 @@ function execLP(a){
 
 // ── Mode ───────────────────────────────────────────────────────
 function setMode(mode){
+  const audioScreen=document.getElementById('audio-main-screen');
+  if(audioScreen&&audioScreen.style.display==='flex'){
+    const player=document.getElementById('audio-main-player');
+    if(player){player.pause();player.src='';}
+    audioScreen.style.display='none';
+  }
   if(S.plusScreenActive){hidePlusScreen();S.screen=0;}
   const pres=document.getElementById('plus-presentation');
   if(pres&&pres.style.display==='flex')pres.style.display='none';
@@ -753,7 +869,6 @@ function setMode(mode){
       else{el.classList.remove('learn-mode');if(id==='lang-top-card')el.classList.add('to-lang');else el.classList.add('from-lang');}
     }
   });
-  document.getElementById('btn-top-center').classList.toggle('learn-mode',learn);
   renderScreen();updateDisplay();updateUILabels();
   if(learn&&S.screen===0){
     setScreen(S.currentExchanges.length>0?2:1);
@@ -828,6 +943,7 @@ function showTopCenter(){isLearn()?showLessons():showConversations()}
 function setScreen(n){S.screen=n;S.isSpeaking=false;if(n===0)S.duoReadMode=false;renderScreen()}
 
 function renderScreen(){
+  updateAudioIconState();
   const status=document.getElementById('center-status');
   const pill=document.getElementById('status-pill');
   const finBtn=document.getElementById('fin-btn');
@@ -858,9 +974,9 @@ function renderScreen(){
   if(textPanelReset)textPanelReset.style.top='116px';
   if(soloFlagsReset)soloFlagsReset.style.top='116px';
   const convZoneReset=document.getElementById('conversation-zone-el');
-  if(convZoneReset)convZoneReset.style.minHeight='101px';
-  if(textPanelReset)textPanelReset.style.bottom='101px';
-  if(soloFlagsReset)soloFlagsReset.style.bottom='101px';
+  if(convZoneReset)convZoneReset.style.minHeight='130px';
+  if(textPanelReset)textPanelReset.style.bottom='130px';
+  if(soloFlagsReset)soloFlagsReset.style.bottom='130px';
   if(micC)micC.style.opacity='0';
   if(hgC)hgC.style.opacity='0';
   const wt=document.getElementById('welcome-text');
@@ -999,6 +1115,8 @@ function renderScreen(){
     if(micC)micC.style.opacity='1';
     status.textContent=t('clickTalk');
     const soloFresh=learn&&S.currentExchanges.length===0;
+    const sessBtnEl=document.getElementById('solo-conv-btn');
+    if(sessBtnEl)sessBtnEl.style.display=soloFresh?'block':'none';
     if(soloFresh){
       pill.style.display='block';
       pill.className='';
@@ -1062,6 +1180,8 @@ function renderScreen(){
       if(textPanelEl)textPanelEl.style.top='98px';
       // ZONE BASSE : boutons (pas de bandeau de statut)
       pill.style.display='none';
+      const sessBtnEl2=document.getElementById('solo-conv-btn');
+      if(sessBtnEl2)sessBtnEl2.style.display='none';
       convActions.innerHTML='<button class="action-btn orange" style="padding:6px 12px;font-size:12px" onclick="doSaveLesson()">'+t('save')+'</button><button class="action-btn green solid" style="padding:6px 12px;font-size:12px" onclick="doResume()">'+t('resume')+'</button><button class="action-btn red" style="padding:6px 12px;font-size:12px" onclick="confirmEnd()">'+t('exit')+'</button>';
       const convZone=document.getElementById('conversation-zone-el');
       if(convZone)convZone.style.minHeight='76px';
@@ -1091,6 +1211,8 @@ function renderScreen(){
     // Screen 3 only used for learn save dialog now
     if(learn){
       pill.className='status-tag warning';pill.textContent=t('lessonEnded');
+      const sessBtnEl3=document.getElementById('solo-conv-btn');
+      if(sessBtnEl3)sessBtnEl3.style.display='none';
       convActions.innerHTML='<button class="action-btn orange" onclick="doSaveLesson()">'+t('save')+'</button><button class="action-btn green solid" onclick="doResume()">'+t('resume')+'</button><button class="action-btn red" onclick="confirmEnd()">'+t('exit')+'</button>';
     }
   }
@@ -1391,6 +1513,8 @@ function plusDoExit(){
   if(repeatBtn)repeatBtn.style.display='none';
   const statusEl=document.getElementById('plus-status');
   if(statusEl)statusEl.textContent=t('plusPressToTalk');
+  updateAudioIconState();
+  updateDuoConvBtnVisibility();
 }
 function plusDoSave(){
   if(S.plusExchanges.length===0){showToast(t('noConv'));return;}
@@ -1417,6 +1541,8 @@ function confirmSaveConv(){
   }
   S.savingFromPlus=false;
   showToast('💾 '+name);
+  updateAudioIconState();
+  updateDuoConvBtnVisibility();
 }
 function doSaveLesson(){
   document.getElementById('lesson-name-input').value='';
@@ -1816,7 +1942,6 @@ function resumeLesson(){
     const el=document.getElementById(id);
     if(el){el.classList.remove('to-lang','from-lang');el.classList.add('learn-mode');}
   });
-  document.getElementById('btn-top-center').classList.add('learn-mode');
   hideConvScreen();
   updateDisplay();
   setScreen(2);
@@ -2269,6 +2394,266 @@ async function confirmDeleteFile(path){
   }catch(e){statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';}
 }
 
+// ── Audiothèque Makedoo (écoute + publication de MP3, hébergés sur pCloud) ──
+let audioLibTracksCache=[];
+let audioMainScreenPrevious=null;
+
+function isConversationOpen(){
+  if(S.plusScreenActive&&S.plusExchanges.length>0)return true;
+  if(!S.plusScreenActive&&isLearn&&typeof isLearn==='function'&&isLearn()&&S.currentExchanges.length>0)return true;
+  return false;
+}
+
+function updateAudioIconState(){
+  const btn=document.getElementById('audio-top-icon');
+  if(!btn)return;
+  const busy=isConversationOpen();
+  btn.disabled=busy;
+  btn.style.opacity=busy?'0.4':'1';
+  btn.style.cursor=busy?'default':'pointer';
+}
+
+async function openAudioEntry(){
+  if(isConversationOpen())return;
+  const pres=document.getElementById('plus-presentation');
+  if(pres&&pres.style.display==='flex')pres.style.display='none';
+  audioMainScreenPrevious=S.plusScreenActive?'plus':(document.getElementById('main-layout-el')&&document.getElementById('main-layout-el').style.display!=='none'?'main':'plus');
+  document.getElementById('plus-screen').style.display='none';
+  const mainLayoutEl=document.getElementById('main-layout-el');
+  if(mainLayoutEl)mainLayoutEl.style.display='none';
+  const audioScreen=document.getElementById('audio-main-screen');
+  audioScreen.style.display='flex';
+  document.getElementById('audio-main-filter-type').value='';
+  document.getElementById('audio-main-filter-lang').value='';
+  const listEl=document.getElementById('audio-main-list');
+  listEl.innerHTML='<div style="text-align:center;color:var(--muted);font-size:13px">Chargement…</div>';
+  try{
+    const res=await fetch(API_BASE+'/audio-manifest');
+    const data=await res.json();
+    audioLibTracksCache=data.tracks||[];
+    const cats=[...new Set(audioLibTracksCache.map(t=>t.category))].sort();
+    const catSel=document.getElementById('audio-main-filter-cat');
+    catSel.innerHTML='<option value="">Toutes catégories</option>'+cats.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+    renderAudioMainList();
+  }catch(e){
+    listEl.innerHTML='<div style="text-align:center;color:var(--red-text);font-size:13px">Erreur de chargement</div>';
+  }
+}
+
+function closeAudioMainScreen(){
+  const player=document.getElementById('audio-main-player');
+  if(player){player.pause();player.src='';}
+  document.getElementById('audio-main-screen').style.display='none';
+  if(audioMainScreenPrevious==='plus'){
+    document.getElementById('plus-screen').style.display='flex';
+  } else {
+    const mainLayoutEl=document.getElementById('main-layout-el');
+    if(mainLayoutEl)mainLayoutEl.style.display='flex';
+  }
+}
+
+function renderAudioMainList(){
+  const listEl=document.getElementById('audio-main-list');
+  const typeFilter=document.getElementById('audio-main-filter-type').value;
+  const langFilter=document.getElementById('audio-main-filter-lang').value;
+  const catFilter=document.getElementById('audio-main-filter-cat').value;
+  const langFlags={fr:'🇫🇷',en:'🇬🇧',mk:'🇲🇰'};
+  const typeIcons={livre:'📖',pack:'💬'};
+  let tracks=audioLibTracksCache;
+  if(typeFilter)tracks=tracks.filter(t=>(t.type||'livre')===typeFilter);
+  if(langFilter)tracks=tracks.filter(t=>t.lang===langFilter);
+  if(catFilter)tracks=tracks.filter(t=>t.category===catFilter);
+  const byCategory={};
+  tracks.forEach(tr=>{(byCategory[tr.category]=byCategory[tr.category]||[]).push(tr);});
+  listEl.innerHTML=Object.keys(byCategory).map(cat=>
+    '<div style="font-weight:800;font-size:13px;margin-top:8px;text-transform:capitalize">'+cat+'</div>'
+    +byCategory[cat].map(tr=>
+      '<button class="cs-btn" style="width:100%;text-align:left;display:flex;align-items:center;gap:8px" onclick="playAudioMainTrack(\''+tr.url.replace(/'/g,"\\'")+'\',\''+tr.title.replace(/'/g,"\\'")+'\')">'
+      +'<span>'+(typeIcons[tr.type||'livre'])+'</span><span>'+(langFlags[tr.lang]||'🏳️')+'</span><span>'+tr.title+'</span>'
+      +'</button>'
+    ).join('')
+  ).join('')||'<div style="text-align:center;color:var(--muted);font-size:13px">Aucun audio disponible</div>';
+}
+
+function playAudioMainTrack(url,title){
+  const player=document.getElementById('audio-main-player');
+  player.src=url;
+  player.play();
+  showToast('🎧 '+title);
+}
+
+async function unlockAdminSection(){
+  if(S.adminUnlocked){document.getElementById('admin-section').style.display='block';return;}
+  const pin=prompt('Mot de passe administrateur :');
+  if(pin===null)return;
+  try{
+    const res=await fetch(API_BASE+'/verify-admin-pin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin})});
+    const data=await res.json();
+    if(data.ok){
+      S.adminUnlocked=true;
+      localStorage.setItem('mk_admin_unlocked','1');
+      document.getElementById('admin-section').style.display='block';
+      document.getElementById('admin-gate-row').style.display='none';
+    } else {
+      showToast('❌ Mot de passe incorrect');
+    }
+  }catch(e){showToast('❌ Erreur de connexion');}
+}
+
+async function openAudioLibrary(){
+  showOv('ov-audio-library');
+  document.getElementById('audio-lib-player').style.display='none';
+  document.getElementById('audio-lib-status').textContent='';
+  document.getElementById('audio-lib-filter-lang').value='';
+  document.getElementById('audio-lib-filter-type').value='';
+  document.getElementById('audio-lib-pin-row').style.display=S.adminUnlocked?'block':'none';
+  const listEl=document.getElementById('audio-lib-list');
+  listEl.innerHTML='<div style="text-align:center;color:var(--muted);font-size:13px">Chargement…</div>';
+  try{
+    const res=await fetch(API_BASE+'/audio-manifest');
+    const data=await res.json();
+    audioLibTracksCache=data.tracks||[];
+    const cats=[...new Set(audioLibTracksCache.map(t=>t.category))].sort();
+    const catSel=document.getElementById('audio-lib-filter-cat');
+    catSel.innerHTML='<option value="">Toutes catégories</option>'+cats.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+    renderAudioLibraryList();
+  }catch(e){
+    listEl.innerHTML='<div style="text-align:center;color:var(--red-text);font-size:13px">Erreur de chargement</div>';
+  }
+}
+
+function renderAudioLibraryList(){
+  const listEl=document.getElementById('audio-lib-list');
+  const typeFilter=document.getElementById('audio-lib-filter-type').value;
+  const langFilter=document.getElementById('audio-lib-filter-lang').value;
+  const catFilter=document.getElementById('audio-lib-filter-cat').value;
+  const langFlags={fr:'🇫🇷',en:'🇬🇧',mk:'🇲🇰'};
+  const typeIcons={livre:'📖',pack:'💬'};
+  let tracks=audioLibTracksCache;
+  if(typeFilter)tracks=tracks.filter(t=>(t.type||'livre')===typeFilter);
+  if(langFilter)tracks=tracks.filter(t=>t.lang===langFilter);
+  if(catFilter)tracks=tracks.filter(t=>t.category===catFilter);
+  const byCategory={};
+  tracks.forEach(tr=>{(byCategory[tr.category]=byCategory[tr.category]||[]).push(tr);});
+  listEl.innerHTML=Object.keys(byCategory).map(cat=>
+    '<div style="font-weight:800;font-size:13px;margin-top:8px;text-transform:capitalize">'+cat+'</div>'
+    +byCategory[cat].map(tr=>
+      '<div style="display:flex;align-items:center;gap:6px">'
+      +'<button class="cs-btn" style="flex:1;text-align:left;display:flex;align-items:center;gap:8px" onclick="playAudioTrack(\''+tr.url.replace(/'/g,"\\'")+'\',\''+tr.title.replace(/'/g,"\\'")+'\')">'
+      +'<span>'+(typeIcons[tr.type||'livre'])+'</span><span>'+(langFlags[tr.lang]||'🏳️')+'</span><span>'+tr.title+'</span>'
+      +'</button>'
+      +(S.adminUnlocked?'<button class="cs-btn" style="padding:4px 8px;font-size:11px" onclick="promptRenameAudio(\''+tr.id+'\')">✏️</button>'
+      +'<button class="cs-btn" style="padding:4px 8px;font-size:11px;background:#FFE0E3;color:#C0002A" onclick="confirmDeleteAudio(\''+tr.id+'\')">🗑</button>':'')
+      +'</div>'
+    ).join('')
+  ).join('')||'<div style="text-align:center;color:var(--muted);font-size:13px">Aucun audio disponible</div>';
+}
+
+function playAudioTrack(url,title){
+  const player=document.getElementById('audio-lib-player');
+  player.src=url;
+  player.style.display='block';
+  player.play();
+  showToast('🎧 '+title);
+}
+
+function stopAudioPlayback(){
+  const player=document.getElementById('audio-lib-player');
+  if(player){player.pause();player.src='';}
+}
+
+function getAudioLibPin(){
+  const pin=document.getElementById('audio-lib-pin').value.trim();
+  const statusEl=document.getElementById('audio-lib-status');
+  if(!pin){statusEl.textContent='❌ Code PIN requis';statusEl.style.color='var(--red-text)';return null;}
+  return pin;
+}
+
+async function promptRenameAudio(trackId){
+  const track=audioLibTracksCache.find(t=>t.id===trackId);
+  if(!track)return;
+  const newTitle=prompt('Nouveau titre :',track.title);
+  if(newTitle===null||!newTitle.trim())return;
+  const pin=getAudioLibPin();if(!pin)return;
+  const statusEl=document.getElementById('audio-lib-status');
+  statusEl.textContent='⏳ …';statusEl.style.color='var(--muted)';
+  try{
+    const res=await fetch(API_BASE+'/audio-rename',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({trackId,title:newTitle.trim(),pin})});
+    const data=await res.json();
+    if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
+    statusEl.textContent='✅ Renommé';statusEl.style.color='var(--green-text)';
+    await openAudioLibrary();
+  }catch(e){statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';}
+}
+
+async function confirmDeleteAudio(trackId){
+  const track=audioLibTracksCache.find(t=>t.id===trackId);
+  if(!track)return;
+  if(!confirm('Supprimer "'+track.title+'" du catalogue ?\n(le fichier reste sur pCloud, seule l\'entrée Makedoo est retirée)'))return;
+  const pin=getAudioLibPin();if(!pin)return;
+  const statusEl=document.getElementById('audio-lib-status');
+  statusEl.textContent='⏳ Suppression…';statusEl.style.color='var(--muted)';
+  try{
+    const res=await fetch(API_BASE+'/audio-delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({trackId,pin})});
+    const data=await res.json();
+    if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
+    statusEl.textContent='✅ Supprimé';statusEl.style.color='var(--green-text)';
+    await openAudioLibrary();
+  }catch(e){statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';}
+}
+
+async function openPublishAudio(){
+  document.getElementById('publish-audio-url').value='';
+  document.getElementById('publish-audio-title').value='';
+  document.getElementById('publish-audio-category').value='';
+  document.getElementById('publish-audio-category').style.display='none';
+  document.getElementById('publish-audio-pin').value='';
+  document.getElementById('publish-audio-status').textContent='';
+  showOv('ov-publish-audio');
+  const sel=document.getElementById('publish-audio-category-select');
+  sel.innerHTML='<option value="">Chargement…</option>';
+  try{
+    const res=await fetch(API_BASE+'/audio-categories');
+    const data=await res.json();
+    const cats=data.categories||[];
+    sel.innerHTML=cats.map(c=>'<option value="'+c+'">'+c+'</option>').join('')+'<option value="__new__">➕ Nouvelle catégorie…</option>';
+    if(!cats.length)sel.value='__new__';
+    onPublishAudioCategoryChange();
+  }catch(e){
+    sel.innerHTML='<option value="__new__">➕ Nouvelle catégorie…</option>';
+    onPublishAudioCategoryChange();
+  }
+}
+
+function onPublishAudioCategoryChange(){
+  const sel=document.getElementById('publish-audio-category-select');
+  const newInput=document.getElementById('publish-audio-category');
+  newInput.style.display=sel.value==='__new__'?'block':'none';
+}
+
+async function confirmPublishAudio(){
+  const url=document.getElementById('publish-audio-url').value.trim();
+  const title=document.getElementById('publish-audio-title').value.trim();
+  const lang=document.getElementById('publish-audio-lang').value;
+  const type=document.getElementById('publish-audio-type').value;
+  const sel=document.getElementById('publish-audio-category-select');
+  const category=sel.value==='__new__'?document.getElementById('publish-audio-category').value.trim():sel.value;
+  const pin=document.getElementById('publish-audio-pin').value.trim();
+  const statusEl=document.getElementById('publish-audio-status');
+  if(!url){statusEl.textContent='❌ Lien pCloud requis';statusEl.style.color='var(--red-text)';return;}
+  if(!title||!category){statusEl.textContent='❌ Titre et catégorie requis';statusEl.style.color='var(--red-text)';return;}
+  if(!pin){statusEl.textContent='❌ Code PIN requis';statusEl.style.color='var(--red-text)';return;}
+  statusEl.textContent='⏳ …';statusEl.style.color='var(--muted)';
+  try{
+    const res=await fetch(API_BASE+'/publish-audio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,lang,type,category,url,pin})});
+    const data=await res.json();
+    if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
+    statusEl.textContent='✅ Publié !';statusEl.style.color='var(--green-text)';
+    showToast('🎧 Audio publié');
+    setTimeout(()=>hideOv('ov-publish-audio'),1200);
+  }catch(e){statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';}
+}
+
 // ── Bibliothèque Makedoo ──────────────────────────────────────
 const LIBRARY_BASE='https://raw.githubusercontent.com/morellmarc/makedoo-library/main';
 const LIBRARY_API='https://api.github.com/repos/morellmarc/makedoo-library/contents';
@@ -2419,16 +2804,33 @@ function togglePlusPresentation(){
     pres.style.display='none';
   } else {
     const lines=getInfoLines();
-    for(let i=1;i<=5;i++){
-      const el=document.getElementById('plus-pres-'+i);
-      if(el)el.textContent=lines[i-1]||'';
-    }
+    const el=document.getElementById('plus-pres-content');
+    if(el)el.textContent=lines.join('\n');
     pres.style.display='flex';
   }
 }
 
+// ── Flux micro persistant : évite le délai de getUserMedia() à chaque pression ──
+let sharedMicStream=null,sharedMicStreamPromise=null;
+function ensureMicStream(){
+  if(sharedMicStream)return Promise.resolve(sharedMicStream);
+  if(sharedMicStreamPromise)return sharedMicStreamPromise;
+  sharedMicStreamPromise=navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}).then(stream=>{
+    sharedMicStream=stream;
+    sharedMicStreamPromise=null;
+    return stream;
+  }).catch(e=>{sharedMicStreamPromise=null;throw e;});
+  return sharedMicStreamPromise;
+}
+
 function showPlusScreen(markActive){
   if(markActive===undefined)markActive=true;
+  const audioScreen=document.getElementById('audio-main-screen');
+  if(audioScreen&&audioScreen.style.display==='flex'){
+    const player=document.getElementById('audio-main-player');
+    if(player){player.pause();player.src='';}
+    audioScreen.style.display='none';
+  }
   const ml=document.querySelector('.main-layout');
   const ps=document.getElementById('plus-screen');
   if(ml)ml.style.display='none';
@@ -2452,6 +2854,7 @@ function showPlusScreen(markActive){
   if(hintFlags)hintFlags.textContent=t('clickFlagsToChange');
   const saveRow=document.getElementById('plus-save-row');
   if(saveRow)saveRow.style.display=S.plusExchanges.length>0?'flex':'none';
+  updateDuoConvBtnVisibility();
   const saveLabel=document.getElementById('plus-save-label');
   if(saveLabel)saveLabel.textContent=t('save');
   const exitLabel=document.getElementById('plus-exit-label');
@@ -2479,14 +2882,13 @@ function plusStartRecord(side){
   if(btn)btn.style.opacity='0.5';
   const statusEl=document.getElementById('plus-status');
   if(statusEl)statusEl.textContent='🔴 …';
-  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}).then(stream=>{
-    if(plusRecordingSide!==side){stream.getTracks().forEach(t=>t.stop());return}
+  ensureMicStream().then(stream=>{
+    if(plusRecordingSide!==side)return;
     plusAudioChunks=[];
     const mimeType=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/webm';
     plusMediaRecorder=new MediaRecorder(stream,{mimeType});
     plusMediaRecorder.ondataavailable=e=>{if(e.data.size>0)plusAudioChunks.push(e.data)};
     plusMediaRecorder.onstop=async()=>{
-      stream.getTracks().forEach(t=>t.stop());
       if(!plusAudioChunks.length){plusResetFlags();return}
       const fromLang=side==='A'?S.langFrom:S.langTo;
       const toLang=side==='A'?S.langTo:S.langFrom;
@@ -2522,7 +2924,10 @@ function plusStartRecord(side){
 function plusStopRecord(side){
   if(plusRecordingSide!==side)return;
   if(plusMediaRecorder&&plusMediaRecorder.state==='recording'){
-    plusMediaRecorder.stop();
+    // Petit délai pour capturer un peu de silence après le dernier mot (aide la reconnaissance vocale)
+    setTimeout(()=>{
+      if(plusMediaRecorder&&plusMediaRecorder.state==='recording')plusMediaRecorder.stop();
+    },350);
   } else {
     plusRecordingSide=null;
     plusResetFlags();
@@ -2549,14 +2954,13 @@ function soloStartRecord(side){
   if(btn)btn.style.opacity='0.5';
   const statusEl=document.getElementById('solo-flags-status');
   if(statusEl)statusEl.textContent='🔴 …';
-  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}).then(stream=>{
-    if(soloRecordingSide!==side){stream.getTracks().forEach(t=>t.stop());return}
+  ensureMicStream().then(stream=>{
+    if(soloRecordingSide!==side)return;
     soloAudioChunks=[];
     const mimeType=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/webm';
     soloMediaRecorder=new MediaRecorder(stream,{mimeType});
     soloMediaRecorder.ondataavailable=e=>{if(e.data.size>0)soloAudioChunks.push(e.data)};
     soloMediaRecorder.onstop=async()=>{
-      stream.getTracks().forEach(t=>t.stop());
       if(!soloAudioChunks.length){soloResetFlags();return}
       const fromLang=side==='A'?S.langFrom:S.langTo;
       const toLang=side==='A'?S.langTo:S.langFrom;
@@ -2593,7 +2997,9 @@ function soloStartRecord(side){
 function soloStopRecord(side){
   if(soloRecordingSide!==side)return;
   if(soloMediaRecorder&&soloMediaRecorder.state==='recording'){
-    soloMediaRecorder.stop();
+    setTimeout(()=>{
+      if(soloMediaRecorder&&soloMediaRecorder.state==='recording')soloMediaRecorder.stop();
+    },350);
   } else {
     soloRecordingSide=null;
     soloResetFlags();
@@ -2609,6 +3015,11 @@ function soloResetFlags(){
   if(statusEl)statusEl.textContent='';
 }
 
+function updateDuoConvBtnVisibility(){
+  const btn=document.getElementById('plus-conv-btn');
+  if(btn)btn.style.display=S.plusExchanges.length===0?'block':'none';
+}
+
 async function plusTranslateAndSpeak(text,fromLang,toLang){
   S.plusBusy=true;
   let translated=text;
@@ -2620,6 +3031,8 @@ async function plusTranslateAndSpeak(text,fromLang,toLang){
   S.plusExchanges.push({original:text,translated,langFrom:fromLang,langTo:toLang});
   S.lastPlusOriginal=text;
   S.lastPlusOriginalLang=fromLang;
+  updateAudioIconState();
+  updateDuoConvBtnVisibility();
   const saveRow=document.getElementById('plus-save-row');
   if(saveRow)saveRow.style.display='flex';
   const repeatBtn=document.getElementById('plus-repeat-btn');
@@ -2662,7 +3075,7 @@ async function loadInfoText(){
     const data=await res.json();
     customInfoText=data;
     const frData=data.byLang&&data.byLang.fr;
-    const serverEmpty=!frData||!(frData.text1||frData.text2||frData.text3||frData.text4||frData.text5);
+    const serverEmpty=!frData||!frData.text;
     const backupRaw=localStorage.getItem('makedoo_v3_infotext_backup');
     let displayData=frData||{};
     if(serverEmpty&&backupRaw){
@@ -2674,32 +3087,24 @@ async function loadInfoText(){
         if(restoreNote)restoreNote.style.display='block';
       }catch(e){}
     }
-    // Pré-remplir l'éditeur (toujours en français, langue de saisie) si les champs existent
-    const i1=document.getElementById('info-text-1');const i2=document.getElementById('info-text-2');const i3=document.getElementById('info-text-3');const i4=document.getElementById('info-text-4');const i5=document.getElementById('info-text-5');
-    if(i1)i1.value=displayData.text1||'';
-    if(i2)i2.value=displayData.text2||'';
-    if(i3)i3.value=displayData.text3||'';
-    if(i4)i4.value=displayData.text4||'';
-    if(i5)i5.value=displayData.text5||'';
+    // Pré-remplir l'éditeur (toujours en français, langue de saisie) si le champ existe
+    const fullField=document.getElementById('info-text-full');
+    if(fullField)fullField.value=displayData.text||'';
   }catch(e){customInfoText={};}
 }
 
 async function saveInfoText(){
-  const text1=document.getElementById('info-text-1').value.trim();
-  const text2=document.getElementById('info-text-2').value.trim();
-  const text3=document.getElementById('info-text-3').value.trim();
-  const text4=document.getElementById('info-text-4').value.trim();
-  const text5=document.getElementById('info-text-5').value.trim();
+  const text=document.getElementById('info-text-full').value;
   const pin=document.getElementById('info-text-pin').value.trim();
   const statusEl=document.getElementById('info-text-status');
   statusEl.textContent='⏳ Traduction dans 17 langues…';statusEl.style.color='var(--muted)';
   try{
-    const res=await fetch(API_BASE+'/info-text',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text1,text2,text3,text4,text5,pin,sourceLang:'fr'})});
+    const res=await fetch(API_BASE+'/info-text',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,pin,sourceLang:'fr'})});
     const data=await res.json();
     if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
     customInfoText=data;
     // Sauvegarde locale de secours en cas de futur redéploiement du serveur
-    localStorage.setItem('makedoo_v3_infotext_backup',JSON.stringify({text1,text2,text3,text4,text5}));
+    localStorage.setItem('makedoo_v3_infotext_backup',JSON.stringify({text}));
     const restoreNote=document.getElementById('info-text-restore-note');
     if(restoreNote)restoreNote.style.display='none';
     document.getElementById('info-text-pin').value='';
@@ -2713,13 +3118,13 @@ async function saveInfoText(){
 // Retourne le texte à afficher : personnalisé si présent, sinon traduction par défaut
 function getInfoLines(){
   const langData=customInfoText&&customInfoText.byLang&&customInfoText.byLang[S.uiLang];
-  if(langData&&(langData.text1||langData.text2||langData.text3||langData.text4||langData.text5)){
-    return [langData.text1||'',langData.text2||'',langData.text3||'',langData.text4||'',langData.text5||''];
+  if(langData&&langData.text){
+    return langData.text.split('\n');
   }
   // Repli sur le français si la langue d'interface n'a pas encore de traduction
   const frData=customInfoText&&customInfoText.byLang&&customInfoText.byLang.fr;
-  if(frData&&(frData.text1||frData.text2||frData.text3||frData.text4||frData.text5)){
-    return [frData.text1||'',frData.text2||'',frData.text3||'',frData.text4||'',frData.text5||''];
+  if(frData&&frData.text){
+    return frData.text.split('\n');
   }
   const base=t('welcomeText1');
   return [base,t('welcomeTextLangs'),t('welcomeText2'),base,base];
@@ -2855,9 +3260,10 @@ function updateSoloFlagsDisplay(){
 
 function updateUILabels(){
   // Mode buttons — toujours DUO/SOLO
-  document.getElementById('btn-top-center').textContent=isLearn()?t('lessons'):t('conv');
-  document.getElementById('btn-top-center').style.opacity='1';
-  document.getElementById('btn-top-center').style.cursor='pointer';
+  const convBtn=document.getElementById('plus-conv-btn');
+  if(convBtn)convBtn.textContent='📋 '+t('conv');
+  const sessBtn=document.getElementById('solo-conv-btn');
+  if(sessBtn)sessBtn.textContent='📋 '+t('lessons');
   document.getElementById('btn-exchange').textContent='DUO';
   document.getElementById('btn-learn').textContent='SOLO';
   // Test microphone
@@ -2911,7 +3317,14 @@ function updateUILabels(){
 }
 
 // ── Overlays ───────────────────────────────────────────────────
-function showOv(id){document.getElementById(id).style.display='flex'}
+function showOv(id){
+  document.getElementById(id).style.display='flex';
+  if(id==='ov-setup'&&S.adminUnlocked){
+    const sec=document.getElementById('admin-section');const gate=document.getElementById('admin-gate-row');
+    if(sec)sec.style.display='block';
+    if(gate)gate.style.display='none';
+  }
+}
 function hideOv(id){document.getElementById(id).style.display='none'}
 
 // ── Toast ──────────────────────────────────────────────────────
