@@ -187,7 +187,7 @@ input:focus{border-color:var(--blue)}
 </div>
 
 <!-- MAIN -->
-<div class="main-layout" id="main-layout-el">
+<div class="main-layout" id="main-layout-el" style="display:none">
 
   <!-- LEFT COL -->
   <div class="left-col" id="left-col">
@@ -330,14 +330,14 @@ input:focus{border-color:var(--blue)}
 <!-- PRÉSENTATION (accessible depuis DUO et SOLO) -->
 <div id="plus-presentation" style="display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;position:relative;background:#CFE1FF">
   <div style="flex:1;min-height:0;width:100%;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch">
-    <div id="plus-pres-content" style="width:100%;box-sizing:border-box;padding:20px 24px 24px;text-align:center;font-size:14px;line-height:1.35;color:var(--text)"></div>
+    <div id="plus-pres-content" style="width:100%;box-sizing:border-box;padding:20px 24px 24px;text-align:center;font-size:14px;line-height:1.30;color:var(--text)"></div>
   </div>
 </div>
 
 <!-- ÉCRAN + (échanges simplifiés) -->
 <div id="welcome-intro" style="display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;position:relative;background:#CFE1FF">
-  <div style="flex:1;min-height:0;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding:20px 20px 0">
-    <div id="welcome-intro-content" style="font-size:14px;line-height:1.3;color:var(--text);text-align:center"></div>
+  <div style="flex:1;min-height:0;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding:20px 24px 24px">
+    <div id="welcome-intro-content" style="font-size:14px;line-height:1.30;color:var(--text);text-align:center"></div>
   </div>
 </div>
 
@@ -1349,10 +1349,14 @@ function renderScreen(){
       // DUO — accueil : "Bienvenue" au tout premier démarrage, puis bannière permanente
       if(!S.duoWelcomeShown){
         if(circleContainer)circleContainer.style.visibility='hidden';
+        if(mainLayoutEl)mainLayoutEl.style.display='none';
         if(welcomeIntro){
-          welcomeIntro.style.display='flex';
-          if(mainLayoutEl)mainLayoutEl.style.display='none';
-          populateWelcomeIntro();
+          if(customInfoText){
+            welcomeIntro.style.display='flex';
+            populateWelcomeIntro();
+          } else {
+            welcomeIntro.style.display='none'; // Rien à afficher tant que les vraies données ne sont pas là — évite le flash du texte de repli
+          }
         }
         intLabel.textContent=t('welcomeTitle');
         intLabel.classList.add('visible');
@@ -2929,7 +2933,10 @@ async function openAudioEntry(){
   if(isConversationOpen())return;
   const pres=document.getElementById('plus-presentation');
   if(pres&&pres.style.display==='flex')pres.style.display='none';
-  audioMainScreenPrevious=S.plusScreenActive?'plus':(document.getElementById('main-layout-el')&&document.getElementById('main-layout-el').style.display!=='none'?'main':'plus');
+  const welcomeIntroAudio=document.getElementById('welcome-intro');
+  const wasWelcomeAudio=welcomeIntroAudio&&welcomeIntroAudio.style.display==='flex';
+  if(wasWelcomeAudio)welcomeIntroAudio.style.display='none';
+  audioMainScreenPrevious=wasWelcomeAudio?'welcome':(S.plusScreenActive?'plus':(document.getElementById('main-layout-el')&&document.getElementById('main-layout-el').style.display!=='none'?'main':'plus'));
   document.getElementById('plus-screen').style.display='none';
   const mainLayoutEl=document.getElementById('main-layout-el');
   if(mainLayoutEl)mainLayoutEl.style.display='none';
@@ -2962,6 +2969,9 @@ function closeAudioMainScreen(){
   document.getElementById('audio-main-screen').style.display='none';
   if(audioMainScreenPrevious==='plus'){
     document.getElementById('plus-screen').style.display='flex';
+  } else if(audioMainScreenPrevious==='welcome'){
+    const wi=document.getElementById('welcome-intro');
+    if(wi)wi.style.display='flex';
   } else {
     const mainLayoutEl=document.getElementById('main-layout-el');
     if(mainLayoutEl)mainLayoutEl.style.display='flex';
@@ -3006,7 +3016,10 @@ async function openPdfEntry(){
   if(isConversationOpen())return;
   const pres=document.getElementById('plus-presentation');
   if(pres&&pres.style.display==='flex')pres.style.display='none';
-  pdfMainScreenPrevious=S.plusScreenActive?'plus':(document.getElementById('main-layout-el')&&document.getElementById('main-layout-el').style.display!=='none'?'main':'plus');
+  const welcomeIntroPdf=document.getElementById('welcome-intro');
+  const wasWelcomePdf=welcomeIntroPdf&&welcomeIntroPdf.style.display==='flex';
+  if(wasWelcomePdf)welcomeIntroPdf.style.display='none';
+  pdfMainScreenPrevious=wasWelcomePdf?'welcome':(S.plusScreenActive?'plus':(document.getElementById('main-layout-el')&&document.getElementById('main-layout-el').style.display!=='none'?'main':'plus'));
   document.getElementById('plus-screen').style.display='none';
   const mainLayoutEl=document.getElementById('main-layout-el');
   if(mainLayoutEl)mainLayoutEl.style.display='none';
@@ -3039,6 +3052,9 @@ function closePdfMainScreen(){
   document.getElementById('pdf-main-screen').style.display='none';
   if(pdfMainScreenPrevious==='plus'){
     document.getElementById('plus-screen').style.display='flex';
+  } else if(pdfMainScreenPrevious==='welcome'){
+    const wi=document.getElementById('welcome-intro');
+    if(wi)wi.style.display='flex';
   } else {
     const mainLayoutEl=document.getElementById('main-layout-el');
     if(mainLayoutEl)mainLayoutEl.style.display='flex';
@@ -3670,12 +3686,18 @@ function togglePlusPresentation(){
   const mainLayoutEl=document.getElementById('main-layout-el');
   const plusScreen=document.getElementById('plus-screen');
   const welcomeIntro=document.getElementById('welcome-intro');
+  const pdfScreen=document.getElementById('pdf-main-screen');
+  const audioScreen=document.getElementById('audio-main-screen');
   if(showing){
     pres.style.display='none';
     if(presPreviousScreen==='plus'){
       if(plusScreen)plusScreen.style.display='flex';
     } else if(presPreviousScreen==='welcome'){
       if(welcomeIntro)welcomeIntro.style.display='flex';
+    } else if(presPreviousScreen==='pdf'){
+      if(pdfScreen)pdfScreen.style.display='flex';
+    } else if(presPreviousScreen==='audio'){
+      if(audioScreen)audioScreen.style.display='flex';
     } else {
       if(mainLayoutEl)mainLayoutEl.style.display='flex';
     }
@@ -3684,6 +3706,14 @@ function togglePlusPresentation(){
     if(plusScreen&&plusScreen.style.display==='flex'){
       presPreviousScreen='plus';
       plusScreen.style.display='none';
+    } else if(pdfScreen&&pdfScreen.style.display==='flex'){
+      presPreviousScreen='pdf';
+      pdfScreen.style.display='none';
+    } else if(audioScreen&&audioScreen.style.display==='flex'){
+      presPreviousScreen='audio';
+      const player=document.getElementById('audio-main-player');
+      if(player){player.pause();player.src='';}
+      audioScreen.style.display='none';
     } else if(welcomeIntro&&welcomeIntro.style.display==='flex'){
       presPreviousScreen='welcome';
       welcomeIntro.style.display='none';
@@ -4335,7 +4365,8 @@ updateVoiceButtons();
 updateDisplay();updateUILabels();renderScreen();
 (function(){
   const welcomeIntro=document.getElementById('welcome-intro');
-  if(!welcomeIntro||welcomeIntro.style.display!=='flex'){
+  const waitingForData=!S.duoWelcomeShown&&!customInfoText;
+  if(!waitingForData&&(!welcomeIntro||welcomeIntro.style.display!=='flex')){
     showPlusScreen(false);
   }
 })();
