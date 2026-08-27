@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<meta name="google" content="notranslate">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#FAFBFF">
@@ -1317,6 +1318,7 @@ if(!storedLangFrom){
     if(['fr','en','mk','es','de','it','tr','sq','sr','bg','el','pt','ro','hu','pl','nl','ru'].includes(phoneLang))S.uiLang=phoneLang;
   }
 }
+document.documentElement.lang=S.uiLang;
 
 navigator.geolocation&&navigator.geolocation.getCurrentPosition(async pos=>{
   try{const r=await fetch('https://nominatim.openstreetmap.org/reverse?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude+'&format=json');const d=await r.json();S.location=(d.display_name||'').split(',').slice(0,2).join(', ')}catch{S.location='Position obtenue'}
@@ -4372,6 +4374,7 @@ function saveApiKey(){const key=document.getElementById('api-key-input').value.t
 function setUILang(lang){
   S.uiLang=lang;localStorage.setItem('makedoo_v3_uilang',lang);
   localStorage.setItem('makedoo_v3_uilang_manual','true');
+  document.documentElement.lang=lang;
   ['fr','en','mk','es','de','it','tr','sq','sr','bg','el','pt','ro','hu','pl','nl','ru'].forEach(l=>{const b=document.getElementById('ulang-'+l);if(b)b.classList.toggle('sel',l===lang)});
   updateUILabels();
   renderScreen();
