@@ -1135,6 +1135,18 @@ function applyAccountI18n(){
   set('account-subscribe-btn','subscribeBtn');
   set('account-manage-btn','manageSubBtn');
   set('account-logout-btn','logoutBtn');
+  updatePresentationRegisterButtons();
+}
+
+// Affiche/masque les boutons "S'enregistrer" des écrans de présentation selon l'état de connexion.
+// Séparé du rendu initial de l'écran car la connexion se termine de façon asynchrone (après un clic
+// sur le lien magique) et ne doit pas laisser un bouton obsolète affiché.
+function updatePresentationRegisterButtons(){
+  const show=!getAuthJwt();
+  ['pres-register-btn-1','pres-register-btn-2'].forEach(id=>{
+    const b=document.getElementById(id);
+    if(b)b.style.display=show?'inline-block':'none';
+  });
 }
 
 // Traduit les messages d'erreur fixes renvoyés par le serveur (toujours en français côté API)
@@ -3876,7 +3888,7 @@ function populateWelcomeIntro(showStartBtn,startLabel){
     html+='<button class="setting-btn" style="background:linear-gradient(135deg,#00C48C,#00A878);width:auto;padding:7px 16px;font-size:12px;margin-top:8px" onclick="window.open(\''+ytUrl.replace(/'/g,"\\'")+'\',\'_blank\')">▶️ Youtube Tuto</button>';
   }
   if(!getAuthJwt()){
-    html+='<button class="setting-btn" style="background:linear-gradient(135deg,#4A6CF7,#3450C4);width:auto;padding:7px 16px;font-size:12px;margin-top:8px;margin-left:8px" onclick="showOv(\'ov-setup\')">'+t('requestLinkBtn')+'</button>';
+    html+='<button class="setting-btn" id="pres-register-btn-1" style="background:linear-gradient(135deg,#4A6CF7,#3450C4);width:auto;padding:7px 16px;font-size:12px;margin-top:8px;margin-left:8px" onclick="showOv(\'ov-setup\')">'+t('requestLinkBtn')+'</button>';
   }
   if(showStartBtn){
     html+='<div style="padding:20px 0"><button class="action-btn green solid" onclick="event.stopPropagation();startSession()">▶ '+startLabel+'</button></div>';
@@ -3939,7 +3951,7 @@ function togglePlusPresentation(){
       html+='<button class="setting-btn" style="background:linear-gradient(135deg,#00C48C,#00A878);width:auto;padding:7px 16px;font-size:12px;margin-top:8px" onclick="window.open(\''+ytUrl.replace(/'/g,"\\'")+'\',\'_blank\')">▶️ Youtube Tuto</button>';
     }
     if(!getAuthJwt()){
-      html+='<button class="setting-btn" style="background:linear-gradient(135deg,#4A6CF7,#3450C4);width:auto;padding:7px 16px;font-size:12px;margin-top:8px;margin-left:8px" onclick="showOv(\'ov-setup\')">'+t('requestLinkBtn')+'</button>';
+      html+='<button class="setting-btn" id="pres-register-btn-2" style="background:linear-gradient(135deg,#4A6CF7,#3450C4);width:auto;padding:7px 16px;font-size:12px;margin-top:8px;margin-left:8px" onclick="showOv(\'ov-setup\')">'+t('requestLinkBtn')+'</button>';
     }
     if(el)el.innerHTML=html;
     const scrollWrap=el&&el.parentElement;
