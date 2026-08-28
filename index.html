@@ -1037,8 +1037,8 @@ const S={
   direction:'AB',currentSpeaker:'A',
   screen:0,listening:false,
   lastTranslation:null,lastTranslationLang:null,lastOriginal:null,
-  currentExchanges:[],
-  plusExchanges:[],
+  currentExchanges:JSON.parse(localStorage.getItem('mk_v3_draft_exchanges')||'[]'),
+  plusExchanges:JSON.parse(localStorage.getItem('mk_v3_draft_plus')||'[]'),
   journal:JSON.parse(localStorage.getItem('mk_v3_journal')||'[]'),
   lessons:JSON.parse(localStorage.getItem('mk_v3_lessons')||'[]'),
   contacts:JSON.parse(localStorage.getItem('mk_v3_contacts')||JSON.stringify([{id:1,name:'Olivija',lang:'mk'}])),
@@ -1331,6 +1331,37 @@ if(!storedLangFrom){
   }
 }
 document.documentElement.lang=S.uiLang;
+
+// ── Sauvegarde automatique du travail en cours (SOLO/DUO) ────────────────
+// Toutes les 4 secondes, tant qu'une session/leçon est en cours de construction, sa copie est
+// écrite en local — récupérée automatiquement si l'app est fermée par erreur avant sauvegarde.
+setInterval(()=>{
+  if(S.currentExchanges.length>0){
+    localStorage.setItem('mk_v3_draft_exchanges',JSON.stringify(S.currentExchanges));
+    localStorage.setItem('mk_v3_draft_mode',S.mode);
+  } else {
+    localStorage.removeItem('mk_v3_draft_exchanges');
+    localStorage.removeItem('mk_v3_draft_mode');
+  }
+  if(S.plusExchanges.length>0)localStorage.setItem('mk_v3_draft_plus',JSON.stringify(S.plusExchanges));
+  else localStorage.removeItem('mk_v3_draft_plus');
+},4000);
+// Calculé une seule fois, avant tout le reste du démarrage : empêche l'écran de présentation
+// automatique (showPlusScreen) d'écraser le mode SOLO/DUO restauré, quelle que soit la vitesse
+// du réseau (l'affichage de cet écran dépend d'un appel serveur asynchrone concurrent).
+const hasRecoverableDraft=S.currentExchanges.length>0;
+const hasRecoverablePlusDraft=S.plusExchanges.length>0;
+if(hasRecoverableDraft){
+  const draftMode=localStorage.getItem('mk_v3_draft_mode');
+  if(draftMode)S.mode=draftMode;
+}
+if(hasRecoverablePlusDraft){
+  // Nécessaire pour que le bouton « Répéter » fonctionne dès la récupération — sinon la dernière
+  // phrase à rejouer n'est jamais reconstituée, bien que l'échange soit bien présent dans le tableau.
+  const lastPlus=S.plusExchanges[S.plusExchanges.length-1];
+  S.lastPlusOriginal=lastPlus.original;
+  S.lastPlusOriginalLang=lastPlus.langFrom;
+}
 
 navigator.geolocation&&navigator.geolocation.getCurrentPosition(async pos=>{
   try{const r=await fetch('https://nominatim.openstreetmap.org/reverse?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude+'&format=json');const d=await r.json();S.location=(d.display_name||'').split(',').slice(0,2).join(', ')}catch{S.location='Position obtenue'}
@@ -1744,7 +1775,7 @@ function startSession(){
   S.welcomeShown=true;
   S.duoWelcomeShown=true;
   S.showInfoScreen0=false;
-  S.currentExchanges=[];
+  S.currentExchanges=[];localStorage.removeItem('mk_v3_draft_exchanges');
   selectedPhraseIdx=-1;selectedPhraseIdxs.clear();
   document.getElementById('tp-text-orig').innerHTML='';
   document.getElementById('tp-text-trans').innerHTML='';
@@ -1769,7 +1800,7 @@ function doConfirmedExit(){
   hideOv('ov-confirm-exit');
   if(S.listening){if(recognition)recognition.abort();if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();S.listening=false;}
   // Réinitialiser et retourner à l'écran 0
-  S.currentExchanges=[];
+  S.currentExchanges=[];localStorage.removeItem('mk_v3_draft_exchanges');
   S.lastOriginal=null;
   selectedPhraseIdx=-1;
   selectedPhraseIdxs.clear();
@@ -1783,7 +1814,7 @@ function doConfirmedExit(){
 }
 function cancelExit(){hideOv('ov-confirm-exit');}
 function doExitLesson(){
-  S.currentExchanges=[];
+  S.currentExchanges=[];localStorage.removeItem('mk_v3_draft_exchanges');
   S.lastOriginal=null;
   selectedPhraseIdx=-1;
   selectedPhraseIdxs.clear();
@@ -1802,7 +1833,7 @@ function doExitLesson(){
 function doExitConv(){
   if(S.currentExchanges.length===0){
     if(S.listening){if(recognition)recognition.abort();if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();S.listening=false;}
-    S.currentExchanges=[];setScreen(0);
+    S.currentExchanges=[];localStorage.removeItem('mk_v3_draft_exchanges');setScreen(0);
   } else {
     document.getElementById('confirm-exit-msg').textContent=t('exitNoSave');
     document.getElementById('btn-confirm-exit').textContent=t('exit');
@@ -1813,7 +1844,7 @@ function doExitConv(){
 function doConfirmedExitConv(){
   hideOv('ov-confirm-exit');
   if(S.listening){if(recognition)recognition.abort();if(mediaRecorder&&mediaRecorder.state==='recording')mediaRecorder.stop();S.listening=false;}
-  S.currentExchanges=[];setScreen(0);
+  S.currentExchanges=[];localStorage.removeItem('mk_v3_draft_exchanges');setScreen(0);
 }
 function doResume(){
   if(isLearn()){
@@ -2018,7 +2049,7 @@ function doSave(){
   showOv('ov-save-conv');
 }
 function plusDoExit(){
-  S.plusExchanges=[];
+  S.plusExchanges=[];localStorage.removeItem('mk_v3_draft_plus');
   S.lastPlusOriginal=null;
   S.lastPlusOriginalLang=null;
   const saveRow=document.getElementById('plus-save-row');
@@ -2044,13 +2075,13 @@ function confirmSaveConv(){
   localStorage.setItem('mk_v3_journal',JSON.stringify(S.journal));
   hideOv('ov-save-conv');
   if(S.savingFromPlus){
-    S.plusExchanges=[];
+    S.plusExchanges=[];localStorage.removeItem('mk_v3_draft_plus');
     const statusEl=document.getElementById('plus-status');
     if(statusEl)statusEl.textContent=t('plusPressToTalk');
     const saveRow=document.getElementById('plus-save-row');
     if(saveRow)saveRow.style.display='none';
   } else {
-    S.currentExchanges=[];
+    S.currentExchanges=[];localStorage.removeItem('mk_v3_draft_exchanges');
     setScreen(0);
   }
   S.savingFromPlus=false;
@@ -2068,9 +2099,9 @@ function confirmSaveLesson(){
   S.lessons.unshift({id:Date.now(),name,date:new Date().toISOString().split('T')[0],langFrom:S.langFrom,langTo:S.langTo,count:S.currentExchanges.length,exchanges:[...S.currentExchanges]});
   localStorage.setItem('mk_v3_lessons',JSON.stringify(S.lessons));
   hideOv('ov-save-lesson');
-  S.currentExchanges=[];setScreen(isLearn()?1:0);showToast('💾 '+name);
+  S.currentExchanges=[];localStorage.removeItem('mk_v3_draft_exchanges');setScreen(isLearn()?1:0);showToast('💾 '+name);
 }
-function doExit(){S.currentExchanges=[];setScreen(0)}
+function doExit(){S.currentExchanges=[];localStorage.removeItem('mk_v3_draft_exchanges');setScreen(0)}
 
 async function submitTextLesson(){
   if(!requireAccessOrPrompt())return;
@@ -2082,7 +2113,7 @@ async function submitTextLesson(){
   }
   if(!text)return;
   input.value='';
-  if(S.screen===0){S.currentExchanges=[];document.getElementById('tp-text-orig').innerHTML='';document.getElementById('tp-text-trans').innerHTML='';}
+  if(S.screen===0){S.currentExchanges=[];localStorage.removeItem('mk_v3_draft_exchanges');document.getElementById('tp-text-orig').innerHTML='';document.getElementById('tp-text-trans').innerHTML='';}
   const micC=document.getElementById('mic-center');
   const hgC=document.getElementById('hg-center');
   if(micC)micC.style.opacity='0';
@@ -2390,6 +2421,7 @@ function renderConvScreen(){
     }else{
       actionDiv.innerHTML=
         '<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:6px">'
+        +'<button class="cs-btn" onclick="resumeConversation()" style="border-color:'+color+';color:'+color+'">▶️ '+t('resume')+'</button>'
         +'<button class="cs-btn" id="cs-listen" onclick="listenEntry()" style="border-color:'+color+';color:'+color+'">🔊 '+t('listen')+'</button>'
         +'<button class="cs-btn" style="background:#FFE0E3;color:#C0002A" onclick="deleteEntry()">🗑 '+t('delete')+'</button>'
         +'</div>'
@@ -2453,6 +2485,24 @@ function getActiveLangTo(entry){
   return entry.invLangTo||entry.langTo;
 }
 
+// Reconstruit l'affichage des deux fenêtres de texte (original/traduit) à partir d'un tableau
+// d'échanges — utilisé à la fois pour reprendre une leçon sauvegardée et pour la récupération
+// automatique d'une session interrompue, qui ne restaure que les données sans reconstruire le DOM.
+function renderTextPanelsFromExchanges(exchanges,langFrom,langTo){
+  const oe=document.getElementById('tp-text-orig');const te=document.getElementById('tp-text-trans');
+  if(!oe||!te)return;
+  oe.innerHTML='';te.innerHTML='';
+  const sep='<div style="border-top:1px solid var(--border);margin:4px 0"></div>';
+  exchanges.forEach((e,i)=>{
+    oe.innerHTML+=(oe.innerHTML?sep:'')+'<div class="tp-phrase" data-idx="'+i+'" onclick="selectPhrase('+i+')" style="padding:2px 4px;border-radius:4px;cursor:pointer">'+e.original+'</div>';
+    te.innerHTML+=(te.innerHTML?sep:'')+'<div class="tp-phrase" data-idx="'+i+'" onclick="selectPhrase('+i+')" style="padding:2px 4px;border-radius:4px;cursor:pointer">'+e.translated+'</div>';
+  });
+  const lf=LANGS.find(l=>l.code===langFrom);const lt=LANGS.find(l=>l.code===langTo);
+  const lfEl=document.getElementById('tp-lang-top');const ltEl=document.getElementById('tp-lang-bot');
+  if(lfEl)lfEl.textContent=lf?lf.display:(langFrom||'').toUpperCase();
+  if(ltEl)ltEl.textContent=lt?lt.display:(langTo||'').toUpperCase();
+}
+
 function resumeLesson(){
   if(!selectedEntry)return;
   const activeEx=getActiveExchanges(selectedEntry);
@@ -2462,16 +2512,7 @@ function resumeLesson(){
   S.currentExchanges=[...activeEx];
   S.lastTranslation=activeEx[activeEx.length-1]&&activeEx[activeEx.length-1].translated||null;
   S.lastTranslationLang=activeTo||'mk';
-  const oe=document.getElementById('tp-text-orig');const te=document.getElementById('tp-text-trans');
-  oe.innerHTML='';te.innerHTML='';
-  const sep='<div style="border-top:1px solid var(--border);margin:4px 0"></div>';
-  activeEx.forEach((e,i)=>{
-    oe.innerHTML+=(oe.innerHTML?sep:'')+'<div class="tp-phrase" data-idx="'+i+'" onclick="selectPhrase('+i+')" style="padding:2px 4px;border-radius:4px;cursor:pointer">'+e.original+'</div>';
-    te.innerHTML+=(te.innerHTML?sep:'')+'<div class="tp-phrase" data-idx="'+i+'" onclick="selectPhrase('+i+')" style="padding:2px 4px;border-radius:4px;cursor:pointer">'+e.translated+'</div>';
-  });
-  const lf=LANGS.find(l=>l.code===S.langFrom);const lt=LANGS.find(l=>l.code===S.langTo);
-  document.getElementById('tp-lang-top').textContent=lf?lf.display:S.langFrom.toUpperCase();
-  document.getElementById('tp-lang-bot').textContent=lt?lt.display:S.langTo.toUpperCase();
+  renderTextPanelsFromExchanges(activeEx,S.langFrom,S.langTo);
   S.screen=0;S.mode='learn';selectedPhraseIdx=-1;selectedPhraseIdxs.clear();
   document.getElementById('btn-exchange').className='mode-btn';
   document.getElementById('btn-learn').className='mode-btn active-learn';
@@ -2484,6 +2525,22 @@ function resumeLesson(){
   hideConvScreen();
   updateDisplay();
   setScreen(2);
+}
+
+function resumeConversation(){
+  if(!selectedEntry)return;
+  const activeEx=getActiveExchanges(selectedEntry);
+  const activeFrom=getActiveLangFrom(selectedEntry);
+  const activeTo=getActiveLangTo(selectedEntry);
+  S.langFrom=activeFrom||'fr';S.langTo=activeTo||'mk';
+  S.plusExchanges=[...activeEx];
+  const last=activeEx[activeEx.length-1];
+  S.lastPlusOriginal=last?last.original:null;
+  S.lastPlusOriginalLang=last?last.langFrom:null;
+  hideConvScreen();
+  showPlusScreen(true);
+  const statusEl=document.getElementById('plus-status');
+  if(statusEl&&last)statusEl.textContent=last.translated;
 }
 
 function renameLesson(){
@@ -4569,7 +4626,7 @@ verifyMagicLinkFromUrl();
 refreshAccountUI();
 
 loadInfoText().then(()=>{
-  if(S.screen===0){
+  if(S.screen===0&&!hasRecoverableDraft&&!hasRecoverablePlusDraft){
     renderScreen();
     const welcomeIntro=document.getElementById('welcome-intro');
     if(!welcomeIntro||welcomeIntro.style.display!=='flex'){
@@ -4599,10 +4656,22 @@ updateDisplay();updateUILabels();renderScreen();
 (function(){
   const welcomeIntro=document.getElementById('welcome-intro');
   const waitingForData=!S.duoWelcomeShown&&!customInfoText;
-  if(!waitingForData&&(!welcomeIntro||welcomeIntro.style.display!=='flex')){
+  if(!hasRecoverableDraft&&!hasRecoverablePlusDraft&&!waitingForData&&(!welcomeIntro||welcomeIntro.style.display!=='flex')){
     showPlusScreen(false);
   }
 })();
+
+// Restauration du travail en cours (SOLO/DUO) : placé en tout dernier, après le reste du
+// démarrage, pour ne jamais être écrasé par l'affichage automatique de l'écran de présentation.
+if(hasRecoverableDraft){
+  renderTextPanelsFromExchanges(S.currentExchanges,S.langFrom,S.langTo);
+  showToast('🔄 '+S.currentExchanges.length+' — session récupérée');
+  setScreen(2);
+} else if(hasRecoverablePlusDraft){
+  showPlusScreen(true);
+  showToast('🔄 '+S.plusExchanges.length+' — conversation récupérée');
+}
+
 
 // Compteur de visites (discret, silencieux en cas d'échec)
 fetch(API_BASE+'/visit').catch(()=>{});
