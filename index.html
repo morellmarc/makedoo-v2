@@ -1083,12 +1083,24 @@ const isLearn=()=>S.mode==='learn';
 // ── Compte utilisateur : connexion par lien magique, abonnement Stripe ──
 function getAuthJwt(){return localStorage.getItem('mk_auth_jwt');}
 
+// Met à jour tout de suite le bouton "Login" affiché sur les écrans de présentation,
+// sans attendre qu'ils soient reconstruits par ailleurs (évite qu'il reste affiché
+// après une connexion réussie, jusqu'à la prochaine navigation).
+function syncLoginBtnVisibility(){
+  const show=S.hasAccess?'none':'inline-block';
+  const b1=document.getElementById('welcome-login-btn');
+  if(b1)b1.style.display=show;
+  const b2=document.getElementById('pres-login-btn');
+  if(b2)b2.style.display=show;
+}
+
 async function refreshAccountUI(){
   const jwtToken=getAuthJwt();
   const loggedOut=document.getElementById('account-logged-out');
   const loggedIn=document.getElementById('account-logged-in');
   if(!jwtToken){
     S.hasAccess=false;S.inTrial=false;S.trialEndsAt=null;S.accessChecked=true;
+    syncLoginBtnVisibility();
     if(loggedOut)loggedOut.style.display='block';
     if(loggedIn)loggedIn.style.display='none';
     return;
@@ -1103,6 +1115,7 @@ async function refreshAccountUI(){
         localStorage.removeItem('mk_cached_intrial');
         localStorage.removeItem('mk_cached_trialend');
         S.hasAccess=false;S.inTrial=false;S.trialEndsAt=null;S.accessChecked=true;
+        syncLoginBtnVisibility();
         if(loggedOut)loggedOut.style.display='block';
         if(loggedIn)loggedIn.style.display='none';
       }
@@ -1133,6 +1146,7 @@ async function refreshAccountUI(){
       hasAccess=isActive||true; // champ non fourni par le serveur : on n'exclut pas un compte déjà enregistré
     }
     S.hasAccess=hasAccess;S.inTrial=inTrial;S.trialEndsAt=trialEndsAt;S.accessChecked=true;
+    syncLoginBtnVisibility();
     // On mémorise ce dernier état confirmé par le serveur : au prochain démarrage de l'app,
     // S.hasAccess repart de cette valeur au lieu de "false" le temps que /auth/me réponde.
     localStorage.setItem('mk_cached_access',hasAccess?'1':'0');
@@ -4057,9 +4071,7 @@ function populateWelcomeIntro(showStartBtn,startLabel){
   if(ytUrl){
     html+='<button class="setting-btn" style="background:linear-gradient(135deg,#00C48C,#00A878);width:auto;padding:7px 16px;font-size:12px;margin-top:8px" onclick="window.open(\''+ytUrl.replace(/'/g,"\\'")+'\',\'_blank\')">▶️ Youtube Tuto</button>';
   }
-  if(!S.hasAccess){
-    html+='<button class="setting-btn" style="background:linear-gradient(135deg,#4A6CF7,#3450C4);width:auto;padding:7px 16px;font-size:12px;margin-top:8px;margin-left:8px" onclick="event.stopPropagation();showOv(\'ov-setup\')">👤 '+t('createAccount')+'</button>';
-  }
+  html+='<button id="welcome-login-btn" class="setting-btn" style="background:linear-gradient(135deg,#F5A623,#E65100);width:auto;padding:7px 16px;font-size:12px;margin-top:8px;margin-left:8px;box-shadow:0 2px 8px rgba(230,81,0,0.4);display:'+(S.hasAccess?'none':'inline-block')+'" onclick="event.stopPropagation();showOv(\'ov-setup\')">🔑 '+t('createAccount')+'</button>';
   if(showStartBtn){
     html+='<div style="padding:20px 0"><button class="action-btn green solid" onclick="event.stopPropagation();startSession()">▶ '+startLabel+'</button></div>';
   }
@@ -4120,9 +4132,7 @@ function togglePlusPresentation(){
     if(ytUrl){
       html+='<button class="setting-btn" style="background:linear-gradient(135deg,#00C48C,#00A878);width:auto;padding:7px 16px;font-size:12px;margin-top:8px" onclick="window.open(\''+ytUrl.replace(/'/g,"\\'")+'\',\'_blank\')">▶️ Youtube Tuto</button>';
     }
-    if(!S.hasAccess){
-      html+='<button class="setting-btn" style="background:linear-gradient(135deg,#4A6CF7,#3450C4);width:auto;padding:7px 16px;font-size:12px;margin-top:8px;margin-left:8px" onclick="event.stopPropagation();showOv(\'ov-setup\')">👤 '+t('createAccount')+'</button>';
-    }
+    html+='<button id="pres-login-btn" class="setting-btn" style="background:linear-gradient(135deg,#F5A623,#E65100);width:auto;padding:7px 16px;font-size:12px;margin-top:8px;margin-left:8px;box-shadow:0 2px 8px rgba(230,81,0,0.4);display:'+(S.hasAccess?'none':'inline-block')+'" onclick="event.stopPropagation();showOv(\'ov-setup\')">🔑 '+t('createAccount')+'</button>';
     if(el)el.innerHTML=html;
     const scrollWrap=el&&el.parentElement;
     if(scrollWrap)scrollWrap.scrollTop=0;
