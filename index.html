@@ -4378,9 +4378,28 @@ let mp3ImportSessionId=null;
 function soloOpenMp3Picker(){
   if(!checkAccessOrBlock())return;
   if(mp3ImportSessionId){showToast('Un import est déjà en cours');return;}
+  // Ferme tout écran plein cadre qui masquerait le mode normal (bibliothèque PDF/audio,
+  // présentation +) — setMode() seul ne referme pas ces écrans-là ni ne réaffiche main-layout
+  const audioScreen=document.getElementById('audio-main-screen');
+  if(audioScreen&&audioScreen.style.display==='flex'){
+    const player=document.getElementById('audio-main-player');
+    if(player){player.pause();player.src='';}
+    audioScreen.style.display='none';
+  }
+  const pdfScreen=document.getElementById('pdf-main-screen');
+  if(pdfScreen&&pdfScreen.style.display==='flex'){
+    const frame=document.getElementById('pdf-reader-frame');
+    if(frame)frame.src='';
+    pdfScreen.style.display='none';
+  }
+  const pres=document.getElementById('plus-presentation');
+  if(pres&&pres.style.display==='flex')pres.style.display='none';
+  if(S.plusScreenActive)hidePlusScreen();
+  const mainLayoutEl=document.getElementById('main-layout-el');
+  if(mainLayoutEl)mainLayoutEl.style.display='flex';
   if(!isLearn()){
-    // Bascule en mode SOLO et ouvre l'écran correspondant avant l'import — setMode()
-    // n'agit que depuis l'écran d'accueil (S.screen===0), d'où la remise à zéro ici
+    // Bascule en mode SOLO et ouvre l'écran correspondant — setMode() n'agit que
+    // depuis l'écran d'accueil (S.screen===0), d'où la remise à zéro ici
     S.screen=0;
     setMode('learn');
   }
