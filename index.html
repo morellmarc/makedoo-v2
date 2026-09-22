@@ -4378,6 +4378,12 @@ let mp3ImportSessionId=null;
 function soloOpenMp3Picker(){
   if(!checkAccessOrBlock())return;
   if(mp3ImportSessionId){showToast('Un import est déjà en cours');return;}
+  if(!isLearn()){
+    // Bascule en mode SOLO et ouvre l'écran correspondant avant l'import — setMode()
+    // n'agit que depuis l'écran d'accueil (S.screen===0), d'où la remise à zéro ici
+    S.screen=0;
+    setMode('learn');
+  }
   const input=document.getElementById('mp3-import-input');
   if(input){input.value='';input.click();}
 }
