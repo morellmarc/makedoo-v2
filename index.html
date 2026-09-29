@@ -2037,7 +2037,8 @@ async function doApplyCorrection(text){
     const res=await fetch(API_BASE+'/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,source:fromLang,target:toLang})});
     const data=await res.json();
     if(data.translated)translated=data.translated;
-  }catch(e){}
+    else{console.error('Échec traduction:',data.error);showToast('⚠️ Traduction indisponible, réessaye');}
+  }catch(e){console.error('Échec traduction:',e);showToast('⚠️ Traduction indisponible, réessaye');}
   ex.original=text;ex.translated=translated;
   saveInProgressWork();
   S.lastTranslation=translated;S.lastTranslationLang=toLang;S.lastOriginal=text;
@@ -2336,7 +2337,8 @@ async function translateAndSpeak(text,fromLang,toLang,silent){
     const res=await fetch(API_BASE+'/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,source:fromLang,target:toLang})});
     const data=await res.json();
     if(data.translated)translated=data.translated;
-  }catch(e){}
+    else{console.error('Échec traduction:',data.error);if(!silent)showToast('⚠️ Traduction indisponible, réessaye');}
+  }catch(e){console.error('Échec traduction:',e);if(!silent)showToast('⚠️ Traduction indisponible, réessaye');}
   const exchange={original:text,translated,langFrom:fromLang,langTo:toLang};
   const wasInsert=S.insertMode&&S.insertBeforeIdx!==undefined;
   if(wasInsert){
@@ -2945,6 +2947,7 @@ async function confirmRetranslate(){
   statusEl.textContent='⏳ Traduction en cours… (0/'+selectedEntry.exchanges.length+')';statusEl.style.color='var(--muted)';
   const oldSource=selectedEntry.langFrom;
   const results=[];
+  let hadError=false;
   for(let i=0;i<selectedEntry.exchanges.length;i++){
     const ex=selectedEntry.exchanges[i];
     // On repart toujours du texte original d'origine (jamais d'une traduction déjà traduite) pour éviter toute dégradation
@@ -2954,7 +2957,8 @@ async function confirmRetranslate(){
         const res=await fetch(API_BASE+'/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:ex.original,source:oldSource,target:newSource})});
         const data=await res.json();
         if(data.translated)newOriginal=data.translated;
-      }catch(e){}
+        else{console.error('Échec traduction:',data.error);hadError=true;}
+      }catch(e){console.error('Échec traduction:',e);hadError=true;}
     }
     let newTranslated=ex.translated;
     if(newTarget!==selectedEntry.langTo||newSource!==oldSource){
@@ -2962,11 +2966,13 @@ async function confirmRetranslate(){
         const res=await fetch(API_BASE+'/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:ex.original,source:oldSource,target:newTarget})});
         const data=await res.json();
         if(data.translated)newTranslated=data.translated;
-      }catch(e){}
+        else{console.error('Échec traduction:',data.error);hadError=true;}
+      }catch(e){console.error('Échec traduction:',e);hadError=true;}
     }
     results.push({original:newOriginal,translated:newTranslated,langFrom:newSource,langTo:newTarget});
     statusEl.textContent='⏳ Traduction en cours… ('+(i+1)+'/'+selectedEntry.exchanges.length+')';
   }
+  if(hadError)showToast('⚠️ Certaines traductions ont échoué, réessaye');
   retranslatedExchanges={exchanges:results,langFrom:newSource,langTo:newTarget};
   statusEl.textContent='✅ Traduction terminée';statusEl.style.color='var(--green-text)';
   document.getElementById('retranslate-step1').style.display='none';
@@ -4576,7 +4582,8 @@ async function plusTranslateAndSpeak(text,fromLang,toLang){
     const res=await fetch(API_BASE+'/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,source:fromLang,target:toLang})});
     const data=await res.json();
     if(data.translated)translated=data.translated;
-  }catch(e){}
+    else{console.error('Échec traduction:',data.error);showToast('⚠️ Traduction indisponible, réessaye');}
+  }catch(e){console.error('Échec traduction:',e);showToast('⚠️ Traduction indisponible, réessaye');}
   S.plusExchanges.push({original:text,translated,langFrom:fromLang,langTo:toLang});
   saveInProgressWork();
   S.lastPlusOriginal=text;
