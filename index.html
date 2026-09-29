@@ -4665,7 +4665,13 @@ async function saveInfoText(){
     const restoreNote=document.getElementById('info-text-restore-note');
     if(restoreNote)restoreNote.style.display='none';
     document.getElementById('info-text-pin').value='';
-    statusEl.textContent='✅ Message enregistré et traduit dans 17 langues !';statusEl.style.color='var(--green-text)';
+    const failedLangs=Object.keys(data.byLang||{}).filter(l=>data.byLang[l].error);
+    if(failedLangs.length){
+      statusEl.textContent='⚠️ Enregistré, mais échec de traduction pour : '+failedLangs.join(', ');
+      statusEl.style.color='var(--red-text)';
+    } else {
+      statusEl.textContent='✅ Message enregistré et traduit dans 17 langues !';statusEl.style.color='var(--green-text)';
+    }
     renderScreen();
   }catch(e){
     statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';
