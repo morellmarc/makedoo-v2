@@ -993,6 +993,61 @@ input:focus{border-color:var(--blue)}
   </div>
 </div>
 
+<div class="overlay" id="ov-edit-item" style="display:none">
+  <div class="overlay-card" style="max-height:85vh;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch">
+    <button class="overlay-close" onclick="hideOv('ov-edit-item')">×</button>
+    <div class="overlay-title" id="edit-item-title">✏️ Modifier la fiche</div>
+    <div class="setting-row">
+      <div class="setting-label">Titre</div>
+      <input type="text" id="edit-item-name">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Lien direct pCloud</div>
+      <input type="url" id="edit-item-url" placeholder="https://...">
+    </div>
+    <div class="setting-row" id="edit-item-type-row">
+      <div class="setting-label">Type</div>
+      <select id="edit-item-type" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);font-size:14px;font-family:inherit">
+        <option value="livre">📖 Livre (complément d'apprentissage)</option>
+        <option value="pack">💬 Pack de phrases</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Langue</div>
+      <select id="edit-item-lang" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);font-size:14px;font-family:inherit">
+        <option value="fr">🇫🇷 Français</option>
+        <option value="mk">🇲🇰 Македонски</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="it">🇮🇹 Italiano</option>
+        <option value="tr">🇹🇷 Türkçe</option>
+        <option value="sq">🇦🇱 Shqip</option>
+        <option value="sr">🇷🇸 Српски</option>
+        <option value="bg">🇧🇬 Български</option>
+        <option value="el">🇬🇷 Ελληνικά</option>
+        <option value="pt">🇵🇹 Português</option>
+        <option value="ro">🇷🇴 Română</option>
+        <option value="hu">🇭🇺 Magyar</option>
+        <option value="pl">🇵🇱 Polski</option>
+        <option value="nl">🇳🇱 Nederlands</option>
+        <option value="ru">🇷🇺 Русский</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Catégorie</div>
+      <select id="edit-item-category-select" onchange="onEditItemCategoryChange()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);font-size:14px;font-family:inherit"></select>
+      <input type="text" id="edit-item-category-new" placeholder="Nouvelle catégorie" style="margin-top:6px;display:none">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Code PIN</div>
+      <input type="password" id="edit-item-pin" placeholder="Code PIN">
+    </div>
+    <button class="setting-btn" onclick="confirmEditItem()">💾 Enregistrer</button>
+    <div id="edit-item-status" style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center"></div>
+  </div>
+</div>
+
 <div class="overlay" id="ov-admin-pin" style="display:none">
   <div class="overlay-card">
     <button class="overlay-close" onclick="hideOv('ov-admin-pin')">×</button>
@@ -3670,7 +3725,7 @@ async function loadManagePdfList(){
     listEl.innerHTML=pdfLibBooksCache.map(b=>
       '<div style="display:flex;align-items:center;gap:6px;border:1.5px solid var(--border);border-radius:10px;padding:8px 10px">'
       +'<div style="font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(langFlags[b.lang]||'🏳️')+' '+b.title+'</div>'
-      +'<button class="cs-btn" style="padding:4px 8px;font-size:11px" onclick="promptRenamePdf(\''+b.id+'\')">✏️</button>'
+      +'<button class="cs-btn" style="padding:4px 8px;font-size:11px" onclick="openEditItem(\'pdf\',\''+b.id+'\')">✏️</button>'
       +'<button class="cs-btn" style="padding:4px 8px;font-size:11px;background:#FFE0E3;color:#C0002A" onclick="confirmDeletePdf(\''+b.id+'\')">🗑</button>'
       +'</div>'
     ).join('')||'<div style="text-align:center;color:var(--muted);font-size:13px">Aucun livre</div>';
@@ -3778,6 +3833,67 @@ async function confirmDeleteCategory(name){
   }catch(e){statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';}
 }
 
+// ── Fiche d'édition complète (textes PDF et audios) ──────────────
+let editItemKind='pdf'; // 'pdf' ou 'audio'
+let editItemId=null;
+
+async function openEditItem(kind,id){
+  editItemKind=kind;editItemId=id;
+  const item=(kind==='audio'?audioLibTracksCache:pdfLibBooksCache).find(x=>x.id===id);
+  if(!item)return;
+  document.getElementById('edit-item-title').textContent=kind==='audio'?'✏️ Modifier l\'audio':'✏️ Modifier le texte';
+  document.getElementById('edit-item-name').value=item.title||'';
+  document.getElementById('edit-item-url').value=item.url||'';
+  document.getElementById('edit-item-type').value=item.type||'livre';
+  document.getElementById('edit-item-type-row').style.display=kind==='audio'?'block':'none'; // type géré seulement pour les audios
+  document.getElementById('edit-item-lang').value=item.lang||'fr';
+  document.getElementById('edit-item-category-new').value='';
+  document.getElementById('edit-item-category-new').style.display='none';
+  const srcPin=document.getElementById(kind==='audio'?'audio-lib-pin':'manage-pdf-pin');
+  document.getElementById('edit-item-pin').value=(srcPin&&srcPin.value)||'';
+  document.getElementById('edit-item-status').textContent='';
+  showOv('ov-edit-item');
+  const sel=document.getElementById('edit-item-category-select');
+  let cats=[];
+  try{
+    const res=await fetch(API_BASE+(kind==='audio'?'/audio-categories':'/pdf-categories'));
+    const data=await res.json();
+    cats=data.categories||[];
+  }catch(e){}
+  if(item.category&&!cats.includes(item.category))cats.push(item.category);
+  cats.sort();
+  sel.innerHTML=cats.map(c=>'<option value="'+c+'">'+c+'</option>').join('')+'<option value="__new__">➕ Nouvelle catégorie…</option>';
+  sel.value=item.category||(cats[0]||'__new__');
+  onEditItemCategoryChange();
+}
+
+function onEditItemCategoryChange(){
+  const sel=document.getElementById('edit-item-category-select');
+  document.getElementById('edit-item-category-new').style.display=sel.value==='__new__'?'block':'none';
+}
+
+async function confirmEditItem(){
+  const statusEl=document.getElementById('edit-item-status');
+  const title=document.getElementById('edit-item-name').value.trim();
+  const url=document.getElementById('edit-item-url').value.trim();
+  const type=editItemKind==='audio'?document.getElementById('edit-item-type').value:undefined;
+  const lang=document.getElementById('edit-item-lang').value;
+  const sel=document.getElementById('edit-item-category-select');
+  const category=sel.value==='__new__'?document.getElementById('edit-item-category-new').value.trim():sel.value;
+  const pin=document.getElementById('edit-item-pin').value.trim();
+  if(!title||!url||!category){statusEl.textContent='❌ Titre, lien et catégorie requis';statusEl.style.color='var(--red-text)';return;}
+  if(!pin){statusEl.textContent='❌ Code PIN requis';statusEl.style.color='var(--red-text)';return;}
+  statusEl.textContent='⏳ …';statusEl.style.color='var(--muted)';
+  try{
+    const res=await fetch(API_BASE+(editItemKind==='audio'?'/audio-update':'/pdf-update'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:editItemId,title,url,type,lang,category,pin})});
+    const data=await res.json();
+    if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
+    statusEl.textContent='✅ Fiche enregistrée';statusEl.style.color='var(--green-text)';
+    setTimeout(()=>hideOv('ov-edit-item'),700);
+    if(editItemKind==='audio')await openAudioLibrary();else await loadManagePdfList();
+  }catch(e){statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';}
+}
+
 async function promptRenamePdf(bookId){
   const book=pdfLibBooksCache.find(b=>b.id===bookId);
   if(!book)return;
@@ -3880,7 +3996,7 @@ function renderAudioLibraryList(){
       +'<button class="cs-btn" style="flex:1;text-align:left;display:flex;align-items:center;gap:8px" onclick="playAudioTrack(\''+tr.url.replace(/'/g,"\\'")+'\',\''+tr.title.replace(/'/g,"\\'")+'\')">'
       +'<span>'+(typeIcons[tr.type||'livre'])+'</span><span>'+(langFlags[tr.lang]||'🏳️')+'</span><span>'+tr.title+'</span>'
       +'</button>'
-      +(S.adminUnlocked?'<button class="cs-btn" style="padding:4px 8px;font-size:11px" onclick="promptRenameAudio(\''+tr.id+'\')">✏️</button>'
+      +(S.adminUnlocked?'<button class="cs-btn" style="padding:4px 8px;font-size:11px" onclick="openEditItem(\'audio\',\''+tr.id+'\')">✏️</button>'
       +'<button class="cs-btn" style="padding:4px 8px;font-size:11px;background:#FFE0E3;color:#C0002A" onclick="confirmDeleteAudio(\''+tr.id+'\')">🗑</button>':'')
       +'</div>'
     ).join('')
