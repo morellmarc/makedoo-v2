@@ -1056,13 +1056,14 @@ input:focus{border-color:var(--blue)}
   </div>
 </div>
 
-<div id="embed-viewer" style="display:none;position:fixed;inset:0;z-index:400;background:#fff;flex-direction:column">
-  <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#D9E7FF;border-bottom:1px solid #C7D5FF;flex-shrink:0">
+<div id="embed-viewer" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;height:100vh;height:100dvh;max-width:480px;margin:0 auto;z-index:9000;background:#fff;flex-direction:column;overflow:hidden">
+  <div style="display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;background:#D9E7FF;border-bottom:1px solid #C7D5FF;flex-shrink:0;position:relative;z-index:2">
     <button class="cs-btn" onclick="closeEmbedViewer()" style="flex-shrink:0">← <span id="embed-viewer-back">Retour</span></button>
     <div id="embed-viewer-title" style="flex:1;font-weight:800;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center"></div>
-    <a id="embed-viewer-ext" href="#" target="_blank" rel="noopener" class="cs-btn" style="flex-shrink:0;text-decoration:none;font-size:11px">↗</a>
+    <a id="embed-viewer-ext" href="#" target="_blank" rel="noopener" class="cs-btn" style="flex-shrink:0;text-decoration:none;font-size:13px">↗</a>
+    <button class="cs-btn" onclick="closeEmbedViewer()" style="flex-shrink:0;font-size:15px;font-weight:800" aria-label="Fermer">✕</button>
   </div>
-  <iframe id="embed-viewer-frame" style="flex:1;width:100%;border:none;background:#fff" src="" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+  <iframe id="embed-viewer-frame" style="flex:1;min-height:0;width:100%;border:none;background:#fff" src="" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
 </div>
 
 <div class="overlay" id="ov-admin-pin" style="display:none">
@@ -3666,9 +3667,8 @@ function openPdfReader(url){
     window.open(url,'_blank');
     return;
   }
-  document.getElementById('pdf-reader-frame').src=url;
-  document.getElementById('pdf-main-list-view').style.display='none';
-  document.getElementById('pdf-reader-view').style.display='flex';
+  const b=(pdfLibBooksCache||[]).find(x=>x.url===url);
+  openEmbedViewer(url,b?b.title:'',url);
 }
 
 function closePdfReader(){
