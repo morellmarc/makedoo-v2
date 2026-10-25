@@ -622,6 +622,14 @@ input:focus{border-color:var(--blue)}
         <input type="password" id="yt-link-pin" placeholder="Code PIN" style="margin-bottom:6px">
         <button class="setting-btn" style="background:linear-gradient(135deg,#FF3B30,#C4281C)" onclick="saveYtLink()">💾 Enregistrer ce lien</button>
         <div id="yt-link-status" style="font-size:12px;color:var(--muted);margin-top:6px;text-align:center"></div>
+        <div style="border-top:1px solid var(--border);margin:14px 0 10px"></div>
+        <div class="setting-label">📄 Tuto PDF (par langue)</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Livre de la bibliothèque de textes ouvert par le bouton "PDF Tuto" (langue choisie ci-dessus, même code PIN)</div>
+        <select id="pdf-tuto-book" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;margin-bottom:6px">
+          <option value="">— aucun (pas de bouton) —</option>
+        </select>
+        <button class="setting-btn" style="background:linear-gradient(135deg,#8A5FE0,#5B3DB8)" onclick="savePdfTuto()">💾 Enregistrer ce livre</button>
+        <div id="pdf-tuto-status" style="font-size:12px;color:var(--muted);margin-top:6px;text-align:center"></div>
       </div>
     </div>
   </div>
@@ -1046,6 +1054,15 @@ input:focus{border-color:var(--blue)}
     <button class="setting-btn" onclick="confirmEditItem()">💾 Enregistrer</button>
     <div id="edit-item-status" style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center"></div>
   </div>
+</div>
+
+<div id="embed-viewer" style="display:none;position:fixed;inset:0;z-index:400;background:#fff;flex-direction:column">
+  <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#D9E7FF;border-bottom:1px solid #C7D5FF;flex-shrink:0">
+    <button class="cs-btn" onclick="closeEmbedViewer()" style="flex-shrink:0">← <span id="embed-viewer-back">Retour</span></button>
+    <div id="embed-viewer-title" style="flex:1;font-weight:800;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center"></div>
+    <a id="embed-viewer-ext" href="#" target="_blank" rel="noopener" class="cs-btn" style="flex-shrink:0;text-decoration:none;font-size:11px">↗</a>
+  </div>
+  <iframe id="embed-viewer-frame" style="flex:1;width:100%;border:none;background:#fff" src="" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
 </div>
 
 <div class="overlay" id="ov-admin-pin" style="display:none">
@@ -4299,11 +4316,7 @@ function populateWelcomeIntro(showStartBtn,startLabel){
   if(!el)return;
   const lines=getInfoLines();
   let html=lines.filter(l=>l.trim()).map(l=>'<div style="margin-bottom:16px">'+l.replace(/</g,'&lt;')+'</div>').join('');
-  const yt=customInfoText&&customInfoText.youtubeLinks;
-  const ytUrl=yt&&(yt[S.uiLang]||yt['en']);
-  if(ytUrl){
-    html+='<button class="setting-btn" style="background:linear-gradient(135deg,#00C48C,#00A878);width:auto;padding:7px 16px;font-size:12px;margin-top:8px" onclick="window.open(\''+ytUrl.replace(/'/g,"\\'")+'\',\'_blank\')">▶️ Youtube Tuto</button>';
-  }
+  html+=tutoButtonsHtml();
   html+='<button id="welcome-login-btn" class="setting-btn" style="background:linear-gradient(135deg,#F5A623,#E65100);width:auto;padding:7px 16px;font-size:12px;margin-top:8px;margin-left:8px;box-shadow:0 2px 8px rgba(230,81,0,0.4);display:'+(S.hasAccess?'none':'inline-block')+'" onclick="event.stopPropagation();showOv(\'ov-setup\')">🔑 '+t('createAccount')+'</button>';
   if(showStartBtn){
     html+='<div style="padding:20px 0"><button class="action-btn green solid" onclick="event.stopPropagation();startSession()">▶ '+startLabel+'</button></div>';
@@ -4360,11 +4373,7 @@ function togglePlusPresentation(){
     const lines=getInfoLines();
     const el=document.getElementById('plus-pres-content');
     let html=lines.filter(l=>l.trim()).map(l=>'<div style="margin-bottom:16px">'+l.replace(/</g,'&lt;')+'</div>').join('');
-    const yt=customInfoText&&customInfoText.youtubeLinks;
-    const ytUrl=yt&&(yt[S.uiLang]||yt['en']);
-    if(ytUrl){
-      html+='<button class="setting-btn" style="background:linear-gradient(135deg,#00C48C,#00A878);width:auto;padding:7px 16px;font-size:12px;margin-top:8px" onclick="window.open(\''+ytUrl.replace(/'/g,"\\'")+'\',\'_blank\')">▶️ Youtube Tuto</button>';
-    }
+    html+=tutoButtonsHtml();
     html+='<button id="pres-login-btn" class="setting-btn" style="background:linear-gradient(135deg,#F5A623,#E65100);width:auto;padding:7px 16px;font-size:12px;margin-top:8px;margin-left:8px;box-shadow:0 2px 8px rgba(230,81,0,0.4);display:'+(S.hasAccess?'none':'inline-block')+'" onclick="event.stopPropagation();showOv(\'ov-setup\')">🔑 '+t('createAccount')+'</button>';
     if(el)el.innerHTML=html;
     const scrollWrap=el&&el.parentElement;
@@ -4756,6 +4765,7 @@ async function loadInfoText(){
     const res=await fetch(API_BASE+'/info-text');
     const data=await res.json();
     customInfoText=data;
+    initTutoAdmin();
     const frData=data.byLang&&data.byLang.fr;
     const serverEmpty=!frData||!frData.text;
     const backupRaw=localStorage.getItem('makedoo_v3_infotext_backup');
@@ -4804,11 +4814,120 @@ async function saveInfoText(){
   }
 }
 
+// ── Tuto : lecteur intégré (YouTube / PDF) — on reste dans l'application ──
+function youtubeEmbedUrl(url){
+  try{
+    const u=new URL(url);
+    const host=u.hostname.replace(/^www\./,'').replace(/^m\./,'');
+    let id='';
+    if(host==='youtu.be')id=u.pathname.slice(1).split('/')[0];
+    else if(host==='youtube.com'||host==='music.youtube.com'||host==='youtube-nocookie.com'){
+      if(u.pathname==='/watch')id=u.searchParams.get('v')||'';
+      else{const m=u.pathname.match(/^\/(embed|shorts|live|v)\/([^/?]+)/);if(m)id=m[2];}
+      if(!id&&u.searchParams.get('list'))return 'https://www.youtube.com/embed/videoseries?list='+encodeURIComponent(u.searchParams.get('list'));
+    }
+    if(!id)return null;
+    const t=u.searchParams.get('t')||u.searchParams.get('start');
+    return 'https://www.youtube.com/embed/'+encodeURIComponent(id)+'?rel=0&playsinline=1'+(t&&/^\d+/.test(t)?'&start='+parseInt(t,10):'');
+  }catch(e){return null;}
+}
+
+function openEmbedViewer(src,title,extUrl){
+  const frame=document.getElementById('embed-viewer-frame');
+  document.getElementById('embed-viewer-title').textContent=title||'';
+  document.getElementById('embed-viewer-back').textContent=t('back').replace('← ','')||'Retour';
+  const ext=document.getElementById('embed-viewer-ext');
+  ext.href=extUrl||src;
+  frame.src=src;
+  document.getElementById('embed-viewer').style.display='flex';
+}
+
+function closeEmbedViewer(){
+  const frame=document.getElementById('embed-viewer-frame');
+  frame.src='about:blank'; // arrête la vidéo
+  document.getElementById('embed-viewer').style.display='none';
+}
+
+function tutoLinkForLang(map){
+  return map&&(map[S.uiLang]||map['en'])||'';
+}
+
+function tutoButtonsHtml(){
+  let html='';
+  const ytUrl=tutoLinkForLang(customInfoText&&customInfoText.youtubeLinks);
+  const pdfId=tutoLinkForLang(customInfoText&&customInfoText.pdfLinks);
+  const base='setting-btn" style="width:auto;padding:7px 16px;font-size:12px;margin-top:8px;margin-right:8px;';
+  if(ytUrl)html+='<button class="'+base+'background:linear-gradient(135deg,#00C48C,#00A878)" onclick="event.stopPropagation();openYoutubeTuto()">▶️ Youtube Tuto</button>';
+  if(pdfId)html+='<button class="'+base+'background:linear-gradient(135deg,#8A5FE0,#5B3DB8)" onclick="event.stopPropagation();openPdfTuto()">📄 PDF Tuto</button>';
+  return html;
+}
+
+function openYoutubeTuto(){
+  const url=tutoLinkForLang(customInfoText&&customInfoText.youtubeLinks);
+  if(!url)return;
+  const embed=youtubeEmbedUrl(url);
+  if(embed)openEmbedViewer(embed,'Youtube Tuto',url);
+  else window.open(url,'_blank'); // lien non reconnu : ouverture classique
+}
+
+async function openPdfTuto(){
+  const bookId=tutoLinkForLang(customInfoText&&customInfoText.pdfLinks);
+  if(!bookId)return;
+  try{
+    if(!pdfLibBooksCache.length){
+      const res=await fetch(API_BASE+'/pdf-manifest');
+      const data=await res.json();
+      pdfLibBooksCache=data.books||[];
+    }
+  }catch(e){showToast(t('loadError'));return;}
+  const book=pdfLibBooksCache.find(b=>b.id===bookId);
+  if(!book){showToast(t('noBookAvailable'));return;}
+  if(/iPad|iPhone|iPod/.test(navigator.userAgent)){window.open(book.url,'_blank');return;}
+  openEmbedViewer(book.url,book.title,book.url);
+}
+
+// ── Admin : choix du livre "PDF Tuto" ──
+async function initTutoAdmin(){
+  const sel=document.getElementById('pdf-tuto-book');
+  if(!sel)return;
+  try{
+    if(!pdfLibBooksCache.length){
+      const res=await fetch(API_BASE+'/pdf-manifest');
+      const data=await res.json();
+      pdfLibBooksCache=data.books||[];
+    }
+  }catch(e){}
+  const flags={fr:'🇫🇷',mk:'🇲🇰',en:'🇬🇧',es:'🇪🇸',de:'🇩🇪',it:'🇮🇹',tr:'🇹🇷',sq:'🇦🇱',sr:'🇷🇸',bg:'🇧🇬',el:'🇬🇷',pt:'🇵🇹',ro:'🇷🇴',hu:'🇭🇺',pl:'🇵🇱',nl:'🇳🇱',ru:'🇷🇺'};
+  const books=[...pdfLibBooksCache].sort((a,b)=>(a.category+a.title).localeCompare(b.category+b.title));
+  sel.innerHTML='<option value="">— aucun (pas de bouton) —</option>'+books.map(b=>'<option value="'+b.id+'">'+(flags[b.lang]||'')+' '+b.title.replace(/</g,'&lt;')+' ('+b.category+')</option>').join('');
+  loadYtLinkForLang();
+}
+
+async function savePdfTuto(){
+  const lang=document.getElementById('yt-link-lang').value;
+  const bookId=document.getElementById('pdf-tuto-book').value;
+  const pin=document.getElementById('yt-link-pin').value.trim();
+  const statusEl=document.getElementById('pdf-tuto-status');
+  if(!pin){statusEl.textContent='❌ Code PIN requis (champ ci-dessus)';statusEl.style.color='var(--red-text)';return;}
+  statusEl.textContent='⏳ …';statusEl.style.color='var(--muted)';
+  try{
+    const res=await fetch(API_BASE+'/info-pdf-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lang,bookId,pin})});
+    const data=await res.json();
+    if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
+    if(!customInfoText)customInfoText={};
+    customInfoText.pdfLinks=data.pdfLinks;
+    document.getElementById('yt-link-pin').value='';
+    statusEl.textContent=bookId?'✅ Livre enregistré':'✅ Bouton retiré';statusEl.style.color='var(--green-text)';
+  }catch(e){statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';}
+}
+
 function loadYtLinkForLang(){
   const lang=document.getElementById('yt-link-lang').value;
   const url=(customInfoText&&customInfoText.youtubeLinks&&customInfoText.youtubeLinks[lang])||'';
   document.getElementById('yt-link-url').value=url;
   document.getElementById('yt-link-status').textContent='';
+  const pdfSel=document.getElementById('pdf-tuto-book');
+  if(pdfSel){pdfSel.value=(customInfoText&&customInfoText.pdfLinks&&customInfoText.pdfLinks[lang])||'';document.getElementById('pdf-tuto-status').textContent='';}
 }
 
 async function saveYtLink(){
