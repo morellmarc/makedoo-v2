@@ -3667,8 +3667,9 @@ function openPdfReader(url){
     window.open(url,'_blank');
     return;
   }
-  const b=(pdfLibBooksCache||[]).find(x=>x.url===url);
-  openEmbedViewer(url,b?b.title:'',url);
+  document.getElementById('pdf-reader-frame').src=url;
+  document.getElementById('pdf-main-list-view').style.display='none';
+  document.getElementById('pdf-reader-view').style.display='flex';
 }
 
 function closePdfReader(){
@@ -4873,17 +4874,10 @@ function openYoutubeTuto(){
 async function openPdfTuto(){
   const bookId=tutoLinkForLang(customInfoText&&customInfoText.pdfLinks);
   if(!bookId)return;
-  try{
-    if(!pdfLibBooksCache.length){
-      const res=await fetch(API_BASE+'/pdf-manifest');
-      const data=await res.json();
-      pdfLibBooksCache=data.books||[];
-    }
-  }catch(e){showToast(t('loadError'));return;}
-  const book=pdfLibBooksCache.find(b=>b.id===bookId);
+  await openPdfEntry(); // même écran et même lecteur que la bibliothèque
+  const book=(pdfLibBooksCache||[]).find(b=>b.id===bookId);
   if(!book){showToast(t('noBookAvailable'));return;}
-  if(/iPad|iPhone|iPod/.test(navigator.userAgent)){window.open(book.url,'_blank');return;}
-  openEmbedViewer(book.url,book.title,book.url);
+  openPdfReader(book.url);
 }
 
 // ── Admin : choix du livre "PDF Tuto" ──
