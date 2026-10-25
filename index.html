@@ -3670,9 +3670,22 @@ function openPdfReader(url){
   document.getElementById('pdf-reader-frame').src=url;
   document.getElementById('pdf-main-list-view').style.display='none';
   document.getElementById('pdf-reader-view').style.display='flex';
+  try{history.pushState({mkReader:'pdf'},'');pdfReaderHistory=true;}catch(e){}
 }
 
+let pdfReaderHistory=false,embedViewerHistory=false;
 function closePdfReader(){
+  // le bouton passe par l'historique pour rester cohérent avec le retour Android
+  if(pdfReaderHistory){history.back();return;}
+  closePdfReaderUI();
+}
+window.addEventListener('popstate',function(){
+  const ev=document.getElementById('embed-viewer');
+  if(embedViewerHistory&&ev&&ev.style.display!=='none'){embedViewerHistory=false;closeEmbedViewerUI();return;}
+  const rv=document.getElementById('pdf-reader-view');
+  if(pdfReaderHistory&&rv&&rv.style.display!=='none'){pdfReaderHistory=false;closePdfReaderUI();}
+});
+function closePdfReaderUI(){
   document.getElementById('pdf-reader-frame').src='';
   document.getElementById('pdf-reader-view').style.display='none';
   document.getElementById('pdf-main-list-view').style.display='flex';
@@ -4841,9 +4854,15 @@ function openEmbedViewer(src,title,extUrl){
   ext.href=extUrl||src;
   frame.src=src;
   document.getElementById('embed-viewer').style.display='flex';
+  try{history.pushState({mkReader:'embed'},'');embedViewerHistory=true;}catch(e){}
 }
 
 function closeEmbedViewer(){
+  if(embedViewerHistory){history.back();return;}
+  closeEmbedViewerUI();
+}
+
+function closeEmbedViewerUI(){
   const frame=document.getElementById('embed-viewer-frame');
   frame.src='about:blank'; // arrête la vidéo
   document.getElementById('embed-viewer').style.display='none';
