@@ -1060,9 +1060,12 @@ input:focus{border-color:var(--blue)}
   <div style="display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;background:#D9E7FF;border-bottom:1px solid #C7D5FF;flex-shrink:0;position:relative;z-index:2">
     <button class="cs-btn" onclick="closeEmbedViewer()" style="flex-shrink:0">← <span id="embed-viewer-back">Retour</span></button>
     <div id="embed-viewer-title" style="flex:1;font-weight:800;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center"></div>
+    <button id="embed-zoom-out" class="cs-btn" onclick="pdfZoomBy(-0.25)" style="display:none;flex-shrink:0;font-size:15px;font-weight:800" aria-label="Zoom -">−</button>
+    <button id="embed-zoom-in" class="cs-btn" onclick="pdfZoomBy(0.25)" style="display:none;flex-shrink:0;font-size:15px;font-weight:800" aria-label="Zoom +">+</button>
     <a id="embed-viewer-ext" href="#" target="_blank" rel="noopener" class="cs-btn" style="flex-shrink:0;text-decoration:none;font-size:13px">↗</a>
     <button class="cs-btn" onclick="closeEmbedViewer()" style="flex-shrink:0;font-size:15px;font-weight:800" aria-label="Fermer">✕</button>
   </div>
+  <div id="embed-viewer-pdf" style="display:none;flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;background:#8b8f9c;padding:6px 0"></div>
   <iframe id="embed-viewer-frame" style="flex:1;min-height:0;width:100%;border:none;background:#fff" src="" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
 </div>
 
@@ -3667,11 +3670,8 @@ function openPdfReader(url){
     window.open(url,'_blank');
     return;
   }
-  document.getElementById('pdf-main-list-view').style.display='none';
-  document.getElementById('pdf-reader-view').style.display='flex';
-  try{history.pushState({mkReader:'pdf'},'');pdfReaderHistory=true;}catch(e){}
-  // replace : le chargement du PDF ne doit pas ajouter d'entrée d'historique
-  try{document.getElementById('pdf-reader-frame').contentWindow.location.replace(url);}catch(e){document.getElementById('pdf-reader-frame').src=url;}
+  const b=(pdfLibBooksCache||[]).find(x=>x.url===url);
+  openEmbedViewer(url,b?b.title:'',url,{pdf:true});
 }
 
 let pdfReaderHistory=false,embedViewerHistory=false;
@@ -4830,6 +4830,128 @@ async function saveInfoText(){
 }
 
 // ── Tuto : lecteur intégré (YouTube / PDF) — on reste dans l'application ──
+// ── Lecteur PDF intégré (PDF.js) : indépendant du lecteur PDF du navigateur ──
+let pdfjsPromise=null,pdfViewToken=0,pdfViewDoc=null,pdfViewZoom=1,pdfViewObserver=null;
+function loadPdfJs(){
+  if(window.pdfjsLib)return Promise.resolve();
+  if(!pdfjsPromise)pdfjsPromise=new Promise((ok,ko)=>{
+    const sc=document.createElement('script');
+    sc.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    sc.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';ok();};
+    sc.onerror=()=>{pdfjsPromise=null;ko(new Error('pdfjs'));};
+    document.head.appendChild(sc);
+  });
+  return pdfjsPromise;
+}
+
+function pdfViewMsg(txt){
+  const box=document.getElementById('embed-viewer-pdf');
+  box.innerHTML='<div style="color:#fff;text-align:center;padding:30px 16px;font-size:14px">'+txt+'</div>';
+}
+
+async function startPdfViewer(url){
+  const token=++pdfViewToken;
+  pdfViewZoom=1;
+  pdfViewMsg('⏳ …');
+  try{
+    await loadPdfJs();
+    let buf;
+    try{
+      const r=await fetch(url);
+      if(!r.ok)throw new Error('http');
+      buf=await r.arrayBuffer();
+    }catch(e){
+      // pCloud n'autorise pas toujours la lecture directe depuis le navigateur : on passe par le serveur
+      const r=await fetch(API_BASE+'/pdf-proxy?url='+encodeURIComponent(url));
+      if(!r.ok)throw new Error('proxy');
+      buf=await r.arrayBuffer();
+    }
+    if(token!==pdfViewToken)return;
+    const doc=await pdfjsLib.getDocument({data:buf}).promise;
+    if(token!==pdfViewToken){doc.destroy();return;}
+    pdfViewDoc=doc;
+    buildPdfPages();
+  }catch(e){
+    if(token===pdfViewToken)pdfViewMsg('❌ '+t('loadError')+'<br><br><a href="'+url+'" target="_blank" rel="noopener" style="color:#fff;font-weight:700">↗</a>');
+  }
+}
+
+function stopPdfViewer(){
+  pdfViewToken++;
+  if(pdfViewObserver){pdfViewObserver.disconnect();pdfViewObserver=null;}
+  if(pdfViewDoc){try{pdfViewDoc.destroy();}catch(e){}pdfViewDoc=null;}
+  const box=document.getElementById('embed-viewer-pdf');
+  if(box)box.innerHTML='';
+}
+
+async function buildPdfPages(){
+  const box=document.getElementById('embed-viewer-pdf');
+  const doc=pdfViewDoc;
+  if(!doc)return;
+  const token=pdfViewToken;
+  if(pdfViewObserver){pdfViewObserver.disconnect();pdfViewObserver=null;}
+  box.innerHTML='';
+  const cssW=Math.round((box.clientWidth-8)*pdfViewZoom);
+  const p1=await doc.getPage(1);
+  if(token!==pdfViewToken)return;
+  const v1=p1.getViewport({scale:1});
+  const ratio=v1.height/v1.width;
+  const holder=document.createElement('div');
+  holder.style.cssText='width:'+cssW+'px;margin:0 auto';
+  box.appendChild(holder);
+  pdfViewObserver=new IntersectionObserver(entries=>{
+    entries.forEach(en=>{
+      const el=en.target;
+      if(en.isIntersecting)renderPdfPage(el,cssW,token);
+      else releasePdfPage(el);
+    });
+  },{root:box,rootMargin:'1200px 0px'});
+  for(let i=1;i<=doc.numPages;i++){
+    const d=document.createElement('div');
+    d.dataset.n=i;
+    d.style.cssText='width:'+cssW+'px;height:'+Math.round(cssW*ratio)+'px;background:#fff;margin:0 0 6px;position:relative';
+    holder.appendChild(d);
+    pdfViewObserver.observe(d);
+  }
+}
+
+async function renderPdfPage(el,cssW,token){
+  if(el.dataset.done||el.dataset.busy)return;
+  el.dataset.busy='1';
+  try{
+    const page=await pdfViewDoc.getPage(parseInt(el.dataset.n,10));
+    if(token!==pdfViewToken)return;
+    const scale=cssW/page.getViewport({scale:1}).width;
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    const vp=page.getViewport({scale:scale*dpr});
+    const c=document.createElement('canvas');
+    c.width=Math.floor(vp.width);c.height=Math.floor(vp.height);
+    c.style.cssText='width:'+cssW+'px;height:'+Math.round(vp.height/dpr)+'px;display:block';
+    await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+    if(token!==pdfViewToken||el.dataset.released){return;}
+    el.style.height=Math.round(vp.height/dpr)+'px';
+    el.innerHTML='';el.appendChild(c);el.dataset.done='1';
+  }catch(e){}
+  finally{delete el.dataset.busy;delete el.dataset.released;}
+}
+
+function releasePdfPage(el){
+  if(el.dataset.busy)el.dataset.released='1';
+  const c=el.querySelector('canvas');
+  if(c){c.width=0;c.height=0;c.remove();}
+  delete el.dataset.done;
+}
+
+function pdfZoomBy(d){
+  const box=document.getElementById('embed-viewer-pdf');
+  if(!pdfViewDoc)return;
+  const z=Math.min(3,Math.max(1,pdfViewZoom+d));
+  if(z===pdfViewZoom)return;
+  const frac=box.scrollHeight?box.scrollTop/box.scrollHeight:0;
+  pdfViewZoom=z;
+  buildPdfPages().then(()=>{box.scrollTop=frac*box.scrollHeight;});
+}
+
 function youtubeEmbedUrl(url){
   try{
     const u=new URL(url);
@@ -4847,14 +4969,20 @@ function youtubeEmbedUrl(url){
   }catch(e){return null;}
 }
 
-function openEmbedViewer(src,title,extUrl){
+function openEmbedViewer(src,title,extUrl,opts){
   const frame=document.getElementById('embed-viewer-frame');
   document.getElementById('embed-viewer-title').textContent=title||'';
   document.getElementById('embed-viewer-back').textContent=t('back').replace('← ','')||'Retour';
   const ext=document.getElementById('embed-viewer-ext');
   ext.href=extUrl||src;
-  frame.src=src;
+  const isPdf=!!(opts&&opts.pdf);
+  document.getElementById('embed-viewer-pdf').style.display=isPdf?'block':'none';
+  frame.style.display=isPdf?'none':'block';
+  document.getElementById('embed-zoom-in').style.display=isPdf?'':'none';
+  document.getElementById('embed-zoom-out').style.display=isPdf?'':'none';
+  if(!isPdf)frame.src=src;
   document.getElementById('embed-viewer').style.display='flex';
+  if(isPdf)startPdfViewer(src);
   try{history.pushState({mkReader:'embed'},'');embedViewerHistory=true;}catch(e){}
 }
 
@@ -4864,6 +4992,7 @@ function closeEmbedViewer(){
 }
 
 function closeEmbedViewerUI(){
+  stopPdfViewer();
   const frame=document.getElementById('embed-viewer-frame');
   frame.src='about:blank'; // arrête la vidéo
   document.getElementById('embed-viewer').style.display='none';
@@ -4894,10 +5023,17 @@ function openYoutubeTuto(){
 async function openPdfTuto(){
   const bookId=tutoLinkForLang(customInfoText&&customInfoText.pdfLinks);
   if(!bookId)return;
-  await openPdfEntry(); // même écran et même lecteur que la bibliothèque
-  const book=(pdfLibBooksCache||[]).find(b=>b.id===bookId);
+  try{
+    if(!pdfLibBooksCache.length){
+      const res=await fetch(API_BASE+'/pdf-manifest');
+      const data=await res.json();
+      pdfLibBooksCache=data.books||[];
+    }
+  }catch(e){showToast(t('loadError'));return;}
+  const book=pdfLibBooksCache.find(b=>b.id===bookId);
   if(!book){showToast(t('noBookAvailable'));return;}
-  openPdfReader(book.url);
+  if(/iPad|iPhone|iPod/.test(navigator.userAgent)){window.open(book.url,'_blank');return;}
+  openEmbedViewer(book.url,book.title,book.url,{pdf:true});
 }
 
 // ── Admin : choix du livre "PDF Tuto" ──
