@@ -3667,10 +3667,11 @@ function openPdfReader(url){
     window.open(url,'_blank');
     return;
   }
-  document.getElementById('pdf-reader-frame').src=url;
   document.getElementById('pdf-main-list-view').style.display='none';
   document.getElementById('pdf-reader-view').style.display='flex';
   try{history.pushState({mkReader:'pdf'},'');pdfReaderHistory=true;}catch(e){}
+  // replace : le chargement du PDF ne doit pas ajouter d'entrée d'historique
+  try{document.getElementById('pdf-reader-frame').contentWindow.location.replace(url);}catch(e){document.getElementById('pdf-reader-frame').src=url;}
 }
 
 let pdfReaderHistory=false,embedViewerHistory=false;
