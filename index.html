@@ -182,6 +182,7 @@ input:focus{border-color:var(--blue)}
   <div style="display:flex;gap:6px;align-items:center">
     <button class="info-card-top" id="pdf-top-icon" style="background:#E3D9FF;color:#5B3DB8" onclick="openPdfEntry()">📚</button>
     <button class="info-card-top" id="audio-top-icon" style="background:#FFE9CC;color:#B36A00" onclick="openAudioEntry()">🎧</button>
+    <button class="info-card-top" id="video-top-icon" style="background:#FFDDE3;color:#C0002A" onclick="openVideoEntry()" title="Vidéos">🎬</button>
     <button class="info-card-top" id="mp3-import-top-icon" style="background:#D9F2E3;color:#0A8F4C" onclick="soloOpenMp3Picker()" title="Importer un enregistrement">🎙️</button>
     <input type="file" id="mp3-import-input" accept="audio/*" style="display:none" onchange="soloMp3FileSelected(event)">
     <button class="info-card-top" id="info-top-icon" onclick="togglePlusPresentation()">ℹ️</button>
@@ -581,6 +582,12 @@ input:focus{border-color:var(--blue)}
         <button class="setting-btn" style="background:linear-gradient(135deg,#5B8DEF,#3B6FE0);margin-bottom:8px" onclick="openPublishAudio()">📤 Publier un audio</button>
         <button class="setting-btn" style="background:linear-gradient(135deg,#E0A030,#B87D1A)" onclick="openManageCategories('audio')">🏷️ Gérer les catégories</button>
       </div>
+      <div class="setting-row" style="background:#FFE3E8;border-radius:12px;padding:12px;margin-top:14px;text-align:center">
+        <div class="setting-label" style="text-align:center">🎬 Vidéothèque Makedoo</div>
+        <button class="setting-btn" style="background:linear-gradient(135deg,#F0566E,#C0002A);margin-bottom:8px" onclick="openVideoLibrary()">🗂️ Gérer les vidéos</button>
+        <button class="setting-btn" style="background:linear-gradient(135deg,#5B8DEF,#3B6FE0);margin-bottom:8px" onclick="openPublishVideo()">📤 Publier une vidéo</button>
+        <button class="setting-btn" style="background:linear-gradient(135deg,#E0A030,#B87D1A)" onclick="openManageCategories('video')">🏷️ Gérer les catégories</button>
+      </div>
       <div class="setting-row" style="background:#E3D9FF;border-radius:12px;padding:12px;margin-top:14px;text-align:center">
         <div class="setting-label" style="text-align:center">📚 Bibliothèque de textes (PDF)</div>
         <button class="setting-btn" style="background:linear-gradient(135deg,#8A5FE0,#5B3DB8);margin-bottom:8px" onclick="openManagePdf()">🗂️ Gérer les textes</button>
@@ -872,6 +879,56 @@ input:focus{border-color:var(--blue)}
   </div>
 </div>
 
+<div class="overlay" id="ov-video-library" style="display:none">
+  <div class="overlay-card" style="max-height:80vh;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch">
+    <button class="overlay-close" onclick="hideOv('ov-video-library')">×</button>
+    <div class="overlay-title">🎬 <span id="video-lib-title">Vidéos</span></div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <select id="video-lib-filter-lang" onchange="renderVideoLibraryList()" style="flex:1;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit"></select>
+      <select id="video-lib-filter-cat" onchange="renderVideoLibraryList()" style="flex:1;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit"></select>
+    </div>
+    <div id="video-lib-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div id="video-lib-pin-row" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+      <div class="setting-label">Code PIN (pour supprimer/modifier)</div>
+      <input type="password" id="video-lib-pin" placeholder="Code PIN" style="margin-bottom:6px">
+      <div id="video-lib-status" style="font-size:12px;color:var(--muted);text-align:center"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ov-publish-video" style="display:none">
+  <div class="overlay-card" style="max-height:85vh;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch">
+    <button class="overlay-close" onclick="hideOv('ov-publish-video')">×</button>
+    <div class="overlay-title">📤 Publier une vidéo</div>
+    <div class="setting-row">
+      <div class="setting-label">Lien de la vidéo</div>
+      <input type="url" id="publish-video-url" placeholder="https://...">
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">Lien YouTube ou Vimeo, ou lien direct vers un fichier vidéo (MP4…) hébergé sur pCloud</div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Titre</div>
+      <input type="text" id="publish-video-title" placeholder="Visite d'Ohrid">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Langue</div>
+      <select id="publish-video-lang" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);font-size:14px;font-family:inherit"></select>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Catégorie</div>
+      <select id="publish-video-category-select" onchange="onPublishVideoCategoryChange()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);font-size:14px;font-family:inherit">
+        <option value="">Chargement…</option>
+      </select>
+      <input type="text" id="publish-video-category" placeholder="Nouvelle catégorie (ex: ohrid)" style="margin-top:6px;display:none">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Code PIN</div>
+      <input type="password" id="publish-video-pin" placeholder="Code PIN">
+    </div>
+    <button class="setting-btn" onclick="confirmPublishVideo()">📤 Publier</button>
+    <div id="publish-video-status" style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center"></div>
+  </div>
+</div>
+
 <div class="overlay" id="ov-publish-audio" style="display:none">
   <div class="overlay-card">
     <button class="overlay-close" onclick="hideOv('ov-publish-audio')">×</button>
@@ -1066,6 +1123,7 @@ input:focus{border-color:var(--blue)}
     <button class="cs-btn" onclick="closeEmbedViewer()" style="flex-shrink:0;font-size:15px;font-weight:800" aria-label="Fermer">✕</button>
   </div>
   <div id="embed-viewer-pdf" style="display:none;flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;background:#8b8f9c;padding:6px 0"></div>
+  <video id="embed-viewer-video" controls playsinline style="display:none;flex:1;min-height:0;width:100%;background:#000"></video>
   <iframe id="embed-viewer-frame" style="flex:1;min-height:0;width:100%;border:none;background:#fff" src="" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
 </div>
 
@@ -3432,6 +3490,12 @@ function updateAudioIconState(){
     btn.style.opacity=busy?'0.4':'1';
     btn.style.cursor=busy?'default':'pointer';
   }
+  const videoBtn=document.getElementById('video-top-icon');
+  if(videoBtn){
+    videoBtn.disabled=busy;
+    videoBtn.style.opacity=busy?'0.4':'1';
+    videoBtn.style.cursor=busy?'default':'pointer';
+  }
   const pdfBtn=document.getElementById('pdf-top-icon');
   if(pdfBtn){
     pdfBtn.disabled=busy;
@@ -3784,14 +3848,14 @@ function getManagePdfPin(){
 // ── Gestion des catégories (commune audio + PDF) ──────────────────
 let manageCategoriesKind='pdf'; // 'audio' ou 'pdf'
 
-function categoriesEndpointBase(){return manageCategoriesKind==='audio'?'/audio-categories':'/pdf-categories';}
-function categoriesCreateEndpoint(){return manageCategoriesKind==='audio'?'/audio-category-create':'/pdf-category-create';}
-function categoriesRenameEndpoint(){return manageCategoriesKind==='audio'?'/audio-category-rename':'/pdf-category-rename';}
-function categoriesDeleteEndpoint(){return manageCategoriesKind==='audio'?'/audio-category-delete':'/pdf-category-delete';}
+function categoriesEndpointBase(){return '/'+manageCategoriesKind+'-categories';}
+function categoriesCreateEndpoint(){return '/'+manageCategoriesKind+'-category-create';}
+function categoriesRenameEndpoint(){return '/'+manageCategoriesKind+'-category-rename';}
+function categoriesDeleteEndpoint(){return '/'+manageCategoriesKind+'-category-delete';}
 
 async function openManageCategories(kind){
   manageCategoriesKind=kind;
-  document.getElementById('manage-categories-title').textContent=kind==='audio'?'🏷️ Catégories audio':'🏷️ Catégories des textes';
+  document.getElementById('manage-categories-title').textContent=kind==='audio'?'🏷️ Catégories audio':(kind==='video'?'🏷️ Catégories vidéo':'🏷️ Catégories des textes');
   document.getElementById('new-category-name').value='';
   document.getElementById('manage-categories-pin').value='';
   document.getElementById('manage-categories-status').textContent='';
@@ -3879,9 +3943,9 @@ let editItemId=null;
 
 async function openEditItem(kind,id){
   editItemKind=kind;editItemId=id;
-  const item=(kind==='audio'?audioLibTracksCache:pdfLibBooksCache).find(x=>x.id===id);
+  const item=(kind==='audio'?audioLibTracksCache:(kind==='video'?videoLibCache:pdfLibBooksCache)).find(x=>x.id===id);
   if(!item)return;
-  document.getElementById('edit-item-title').textContent=kind==='audio'?'✏️ Modifier l\'audio':'✏️ Modifier le texte';
+  document.getElementById('edit-item-title').textContent=kind==='audio'?'✏️ Modifier l\'audio':(kind==='video'?'✏️ Modifier la vidéo':'✏️ Modifier le texte');
   document.getElementById('edit-item-name').value=item.title||'';
   document.getElementById('edit-item-url').value=item.url||'';
   document.getElementById('edit-item-type').value=item.type||'livre';
@@ -3889,14 +3953,14 @@ async function openEditItem(kind,id){
   document.getElementById('edit-item-lang').value=item.lang||'fr';
   document.getElementById('edit-item-category-new').value='';
   document.getElementById('edit-item-category-new').style.display='none';
-  const srcPin=document.getElementById(kind==='audio'?'audio-lib-pin':'manage-pdf-pin');
+  const srcPin=document.getElementById(kind==='audio'?'audio-lib-pin':(kind==='video'?'video-lib-pin':'manage-pdf-pin'));
   document.getElementById('edit-item-pin').value=(srcPin&&srcPin.value)||'';
   document.getElementById('edit-item-status').textContent='';
   showOv('ov-edit-item');
   const sel=document.getElementById('edit-item-category-select');
   let cats=[];
   try{
-    const res=await fetch(API_BASE+(kind==='audio'?'/audio-categories':'/pdf-categories'));
+    const res=await fetch(API_BASE+'/'+kind+'-categories');
     const data=await res.json();
     cats=data.categories||[];
   }catch(e){}
@@ -3925,12 +3989,12 @@ async function confirmEditItem(){
   if(!pin){statusEl.textContent='❌ Code PIN requis';statusEl.style.color='var(--red-text)';return;}
   statusEl.textContent='⏳ …';statusEl.style.color='var(--muted)';
   try{
-    const res=await fetch(API_BASE+(editItemKind==='audio'?'/audio-update':'/pdf-update'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:editItemId,title,url,type,lang,category,pin})});
+    const res=await fetch(API_BASE+'/'+editItemKind+'-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:editItemId,title,url,type,lang,category,pin})});
     const data=await res.json();
     if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
     statusEl.textContent='✅ Fiche enregistrée';statusEl.style.color='var(--green-text)';
     setTimeout(()=>hideOv('ov-edit-item'),700);
-    if(editItemKind==='audio')await openAudioLibrary();else await loadManagePdfList();
+    if(editItemKind==='audio')await openAudioLibrary();else if(editItemKind==='video')await openVideoLibrary();else await loadManagePdfList();
   }catch(e){statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';}
 }
 
@@ -4145,6 +4209,143 @@ async function confirmPublishAudio(){
     statusEl.textContent='✅ Publié !';statusEl.style.color='var(--green-text)';
     showToast('🎧 Audio publié');
     setTimeout(()=>hideOv('ov-publish-audio'),1200);
+  }catch(e){statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';}
+}
+
+// ── Vidéothèque Makedoo (vidéos YouTube/Vimeo ou fichiers directs, catalogue sur le serveur) ──
+let videoLibCache=[];
+const VIDEO_TITLES={fr:'Vidéos',en:'Videos',mk:'Видеа',es:'Vídeos',de:'Videos',it:'Video',pt:'Vídeos',nl:'Video\'s',tr:'Videolar',sq:'Video',sr:'Видео',bg:'Видеа',el:'Βίντεο',ro:'Videoclipuri',hu:'Videók',pl:'Filmy',ru:'Видео'};
+
+function langOptionsHtml(allLabel){
+  return (allLabel?'<option value="">'+allLabel+'</option>':'')+LANGS.map(l=>'<option value="'+l.code+'">'+l.flag+' '+l.label+'</option>').join('');
+}
+
+function openVideoEntry(){
+  if(!checkAccessOrBlock())return;
+  if(isConversationOpen())return;
+  openVideoLibrary();
+}
+
+async function openVideoLibrary(){
+  showOv('ov-video-library');
+  document.getElementById('video-lib-title').textContent=VIDEO_TITLES[S.uiLang]||VIDEO_TITLES.en;
+  document.getElementById('video-lib-status').textContent='';
+  document.getElementById('video-lib-pin-row').style.display=S.adminUnlocked?'block':'none';
+  const langSel=document.getElementById('video-lib-filter-lang');
+  const prevLang=langSel.value;
+  langSel.innerHTML=langOptionsHtml(t('allLangsOpt')||'Toutes langues');
+  langSel.value=prevLang;
+  const listEl=document.getElementById('video-lib-list');
+  listEl.innerHTML='<div style="text-align:center;color:var(--muted);font-size:13px">'+t('loadingDots')+'</div>';
+  try{
+    const res=await fetch(API_BASE+'/video-manifest');
+    const data=await res.json();
+    videoLibCache=data.videos||[];
+    const cats=[...new Set(videoLibCache.map(v=>v.category))].sort();
+    const catSel=document.getElementById('video-lib-filter-cat');
+    const prevCat=catSel.value;
+    catSel.innerHTML='<option value="">'+(t('allCatsOpt')||'Toutes catégories')+'</option>'+cats.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+    catSel.value=cats.includes(prevCat)?prevCat:'';
+    renderVideoLibraryList();
+  }catch(e){
+    listEl.innerHTML='<div style="text-align:center;color:var(--red-text);font-size:13px">'+t('loadError')+'</div>';
+  }
+}
+
+function renderVideoLibraryList(){
+  const listEl=document.getElementById('video-lib-list');
+  const langFilter=document.getElementById('video-lib-filter-lang').value;
+  const catFilter=document.getElementById('video-lib-filter-cat').value;
+  const flags={};LANGS.forEach(l=>flags[l.code]=l.flag);
+  let vids=videoLibCache;
+  if(langFilter)vids=vids.filter(v=>v.lang===langFilter);
+  if(catFilter)vids=vids.filter(v=>v.category===catFilter);
+  const esc=x=>String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+  const byCategory={};
+  vids.forEach(v=>{(byCategory[v.category]=byCategory[v.category]||[]).push(v);});
+  listEl.innerHTML=Object.keys(byCategory).sort().map(cat=>
+    '<div style="font-weight:800;font-size:13px;margin-top:8px;text-transform:capitalize">'+esc(cat)+'</div>'
+    +byCategory[cat].map(v=>
+      '<div style="display:flex;align-items:center;gap:6px">'
+      +'<button class="cs-btn" style="flex:1;text-align:left;display:flex;align-items:center;gap:8px" onclick="playVideoById(\''+v.id+'\')">'
+      +'<span>▶️</span><span>'+(flags[v.lang]||'🏳️')+'</span><span>'+esc(v.title)+'</span>'
+      +'</button>'
+      +(S.adminUnlocked?'<button class="cs-btn" style="padding:4px 8px;font-size:11px" onclick="openEditItem(\'video\',\''+v.id+'\')">✏️</button>'
+      +'<button class="cs-btn" style="padding:4px 8px;font-size:11px;background:#FFE0E3;color:#C0002A" onclick="confirmDeleteVideo(\''+v.id+'\')">🗑</button>':'')
+      +'</div>'
+    ).join('')
+  ).join('')||'<div style="text-align:center;color:var(--muted);font-size:13px">—</div>';
+}
+
+function playVideoById(id){
+  const v=videoLibCache.find(x=>x.id===id);
+  if(!v)return;
+  openEmbedViewer(v.url,v.title,v.url,{video:true});
+}
+
+async function confirmDeleteVideo(id){
+  const v=videoLibCache.find(x=>x.id===id);
+  if(!v)return;
+  if(!confirm('Supprimer "'+v.title+'" du catalogue ?\n(la vidéo elle-même n\'est pas supprimée, seule l\'entrée Makedoo est retirée)'))return;
+  const statusEl=document.getElementById('video-lib-status');
+  const pin=document.getElementById('video-lib-pin').value.trim();
+  if(!pin){statusEl.textContent='❌ Code PIN requis';statusEl.style.color='var(--red-text)';return;}
+  statusEl.textContent='⏳ Suppression…';statusEl.style.color='var(--muted)';
+  try{
+    const res=await fetch(API_BASE+'/video-delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,pin})});
+    const data=await res.json();
+    if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
+    await openVideoLibrary();
+    statusEl.textContent='✅ Supprimé';statusEl.style.color='var(--green-text)';
+  }catch(e){statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';}
+}
+
+async function openPublishVideo(){
+  ['publish-video-url','publish-video-title','publish-video-category','publish-video-pin'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('publish-video-category').style.display='none';
+  document.getElementById('publish-video-status').textContent='';
+  const langSel=document.getElementById('publish-video-lang');
+  langSel.innerHTML=langOptionsHtml('');
+  langSel.value=S.uiLang||'fr';
+  showOv('ov-publish-video');
+  const sel=document.getElementById('publish-video-category-select');
+  sel.innerHTML='<option value="">Chargement…</option>';
+  try{
+    const res=await fetch(API_BASE+'/video-categories');
+    const data=await res.json();
+    const cats=data.categories||[];
+    sel.innerHTML=cats.map(c=>'<option value="'+c+'">'+c+'</option>').join('')+'<option value="__new__">➕ Nouvelle catégorie…</option>';
+    if(!cats.length)sel.value='__new__';
+  }catch(e){
+    sel.innerHTML='<option value="__new__">➕ Nouvelle catégorie…</option>';
+  }
+  onPublishVideoCategoryChange();
+}
+
+function onPublishVideoCategoryChange(){
+  const sel=document.getElementById('publish-video-category-select');
+  document.getElementById('publish-video-category').style.display=sel.value==='__new__'?'block':'none';
+}
+
+async function confirmPublishVideo(){
+  const url=document.getElementById('publish-video-url').value.trim();
+  const title=document.getElementById('publish-video-title').value.trim();
+  const lang=document.getElementById('publish-video-lang').value;
+  const sel=document.getElementById('publish-video-category-select');
+  const category=sel.value==='__new__'?document.getElementById('publish-video-category').value.trim():sel.value;
+  const pin=document.getElementById('publish-video-pin').value.trim();
+  const statusEl=document.getElementById('publish-video-status');
+  if(!url){statusEl.textContent='❌ Lien de la vidéo requis';statusEl.style.color='var(--red-text)';return;}
+  if(!title||!category){statusEl.textContent='❌ Titre et catégorie requis';statusEl.style.color='var(--red-text)';return;}
+  if(!pin){statusEl.textContent='❌ Code PIN requis';statusEl.style.color='var(--red-text)';return;}
+  statusEl.textContent='⏳ …';statusEl.style.color='var(--muted)';
+  try{
+    const res=await fetch(API_BASE+'/publish-video',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,lang,category,url,pin})});
+    const data=await res.json();
+    if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
+    statusEl.textContent='✅ Publié !';statusEl.style.color='var(--green-text)';
+    showToast('🎬 Vidéo publiée');
+    setTimeout(()=>hideOv('ov-publish-video'),1200);
   }catch(e){statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';}
 }
 
@@ -4976,11 +5177,27 @@ function openEmbedViewer(src,title,extUrl,opts){
   const ext=document.getElementById('embed-viewer-ext');
   ext.href=extUrl||src;
   const isPdf=!!(opts&&opts.pdf);
+  // vidéo : YouTube / Vimeo -> iframe d'intégration ; sinon fichier vidéo direct -> lecteur <video>
+  const vid=document.getElementById('embed-viewer-video');
+  let directVideo=false;
+  if(opts&&opts.video){
+    const yt=youtubeEmbedUrl(src);
+    const vm=src.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    if(yt)src=yt;
+    else if(vm)src='https://player.vimeo.com/video/'+vm[1];
+    else directVideo=true;
+  }
   document.getElementById('embed-viewer-pdf').style.display=isPdf?'block':'none';
-  frame.style.display=isPdf?'none':'block';
+  frame.style.display=(isPdf||directVideo)?'none':'block';
+  vid.style.display=directVideo?'block':'none';
+  if(directVideo){
+    vid.src=src;
+    vid.onerror=function(){ if(vid.getAttribute('src'))showToast(t('loadError')); };
+    const pr=vid.play();if(pr&&pr.catch)pr.catch(()=>{});
+  }
   document.getElementById('embed-zoom-in').style.display=isPdf?'':'none';
   document.getElementById('embed-zoom-out').style.display=isPdf?'':'none';
-  if(!isPdf)frame.src=src;
+  if(!isPdf&&!directVideo)frame.src=src;
   document.getElementById('embed-viewer').style.display='flex';
   if(isPdf)startPdfViewer(src);
   try{history.pushState({mkReader:'embed'},'');embedViewerHistory=true;}catch(e){}
@@ -4993,6 +5210,8 @@ function closeEmbedViewer(){
 
 function closeEmbedViewerUI(){
   stopPdfViewer();
+  const vidEl=document.getElementById('embed-viewer-video');
+  if(vidEl){vidEl.onerror=null;vidEl.pause();vidEl.removeAttribute('src');vidEl.load();vidEl.style.display='none';}
   const frame=document.getElementById('embed-viewer-frame');
   frame.src='about:blank'; // arrête la vidéo
   document.getElementById('embed-viewer').style.display='none';
