@@ -409,6 +409,16 @@ input:focus{border-color:var(--blue)}
   <audio id="audio-main-player" controls style="width:100%;margin-top:10px;flex-shrink:0"></audio>
 </div>
 
+<!-- ÉCRAN VIDÉOTHÈQUE (accessible depuis n'importe quel mode) -->
+<div id="video-main-screen" style="display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;position:relative;background:#CFE1FF;padding:12px;box-sizing:border-box">
+  <div id="video-inventory-title" style="flex-shrink:0;text-align:center;font-size:16px;font-weight:700;color:var(--text);margin-bottom:10px"></div>
+  <div style="flex-shrink:0">
+    <select id="video-main-filter-lang" onchange="renderVideoMainList()" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;background:#fff;margin-bottom:6px"></select>
+    <select id="video-main-filter-cat" onchange="renderVideoMainList()" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;background:#fff;margin-bottom:8px"></select>
+  </div>
+  <div id="video-main-list" style="display:flex;flex-direction:column;gap:8px;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;flex:1;min-height:0"></div>
+</div>
+
 <!-- ÉCRAN BIBLIOTHÈQUE PDF (accessible depuis n'importe quel mode) -->
 <div id="pdf-main-screen" style="display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;position:relative;background:#CFE1FF;padding:12px;box-sizing:border-box">
   <div id="pdf-main-list-view" style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">
@@ -1547,6 +1557,7 @@ function execLP(a){
 // ── Mode ───────────────────────────────────────────────────────
 function setMode(mode){
   if(!checkAccessOrBlock())return;
+  closeVideoScreenIfOpen();
   const audioScreen=document.getElementById('audio-main-screen');
   if(audioScreen&&audioScreen.style.display==='flex'){
     const player=document.getElementById('audio-main-player');
@@ -3525,6 +3536,7 @@ async function openAudioEntry(){
   if(mainLayoutEl)mainLayoutEl.style.display='none';
   const pdfScreen=document.getElementById('pdf-main-screen');
   if(pdfScreen){pdfScreen.style.display='none';document.getElementById('pdf-reader-frame').src='';}
+  const vs=document.getElementById('video-main-screen');if(vs)vs.style.display='none';
   const audioScreen=document.getElementById('audio-main-screen');
   audioScreen.style.display='flex';
   document.getElementById('audio-main-filter-type').value='';
@@ -3675,6 +3687,7 @@ async function openPdfEntry(){
   const mainLayoutEl=document.getElementById('main-layout-el');
   if(mainLayoutEl)mainLayoutEl.style.display='none';
   document.getElementById('audio-main-screen').style.display='none';
+  const vs=document.getElementById('video-main-screen');if(vs)vs.style.display='none';
   const pdfScreen=document.getElementById('pdf-main-screen');
   pdfScreen.style.display='flex';
   document.getElementById('pdf-reader-view').style.display='none';
@@ -4227,10 +4240,74 @@ function langOptionsHtml(allLabel){
   return (allLabel?'<option value="">'+allLabel+'</option>':'')+LANGS.map(l=>'<option value="'+l.code+'">'+l.flag+' '+l.label+'</option>').join('');
 }
 
-function openVideoEntry(){
+let videoMainScreenPrevious=null;
+
+function closeVideoScreenIfOpen(){
+  const vs=document.getElementById('video-main-screen');
+  if(vs&&vs.style.display==='flex'){vs.style.display='none';return true;}
+  return false;
+}
+
+// Inventaire des vidéos (comme l'inventaire des textes et des audios) : lecture seule, sans gestion
+async function openVideoEntry(){
   if(!checkAccessOrBlock())return;
   if(isConversationOpen())return;
-  openVideoLibrary();
+  const pres=document.getElementById('plus-presentation');
+  if(pres&&pres.style.display==='flex')pres.style.display='none';
+  const welcomeIntroV=document.getElementById('welcome-intro');
+  const wasWelcomeV=welcomeIntroV&&welcomeIntroV.style.display==='flex';
+  if(wasWelcomeV)welcomeIntroV.style.display='none';
+  const mainLayoutEl=document.getElementById('main-layout-el');
+  videoMainScreenPrevious=wasWelcomeV?'welcome':(S.plusScreenActive?'plus':(mainLayoutEl&&mainLayoutEl.style.display!=='none'?'main':'plus'));
+  document.getElementById('plus-screen').style.display='none';
+  if(mainLayoutEl)mainLayoutEl.style.display='none';
+  const pdfScreen=document.getElementById('pdf-main-screen');
+  if(pdfScreen){pdfScreen.style.display='none';document.getElementById('pdf-reader-frame').src='';}
+  const audioScreen=document.getElementById('audio-main-screen');
+  if(audioScreen){
+    const player=document.getElementById('audio-main-player');
+    if(player){player.pause();player.src='';}
+    audioScreen.style.display='none';
+  }
+  document.getElementById('video-main-screen').style.display='flex';
+  document.getElementById('video-inventory-title').textContent='🎬 '+(VIDEO_TITLES[S.uiLang]||VIDEO_TITLES.en);
+  const langSel=document.getElementById('video-main-filter-lang');
+  langSel.innerHTML=langOptionsHtml(t('allLangsOpt')||'Toutes langues');
+  langSel.value='';
+  const listEl=document.getElementById('video-main-list');
+  listEl.innerHTML='<div style="text-align:center;color:var(--muted);font-size:13px">'+t('loadingDots')+'</div>';
+  try{
+    const res=await fetch(API_BASE+'/video-manifest');
+    const data=await res.json();
+    videoLibCache=data.videos||[];
+    const cats=[...new Set(videoLibCache.map(v=>v.category))].sort();
+    const catSel=document.getElementById('video-main-filter-cat');
+    catSel.innerHTML='<option value="">'+(t('allCatsOpt')||'Toutes catégories')+'</option>'+cats.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+    renderVideoMainList();
+  }catch(e){
+    listEl.innerHTML='<div style="text-align:center;color:var(--red-text);font-size:13px">'+t('loadError')+'</div>';
+  }
+}
+
+function renderVideoMainList(){
+  const listEl=document.getElementById('video-main-list');
+  const langFilter=document.getElementById('video-main-filter-lang').value;
+  const catFilter=document.getElementById('video-main-filter-cat').value;
+  const flags={};LANGS.forEach(l=>flags[l.code]=l.flag);
+  const esc=x=>String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+  let vids=videoLibCache;
+  if(langFilter)vids=vids.filter(v=>v.lang===langFilter);
+  if(catFilter)vids=vids.filter(v=>v.category===catFilter);
+  const byCategory={};
+  vids.forEach(v=>{(byCategory[v.category]=byCategory[v.category]||[]).push(v);});
+  listEl.innerHTML=Object.keys(byCategory).sort().map(cat=>
+    '<div style="font-weight:800;font-size:13px;margin-top:8px;text-transform:capitalize">'+esc(cat)+'</div>'
+    +byCategory[cat].map(v=>
+      '<button class="cs-btn" style="width:100%;text-align:left;display:flex;align-items:center;gap:8px" onclick="playVideoById(\''+v.id+'\')">'
+      +'<span>▶️</span><span>'+(flags[v.lang]||'🏳️')+'</span><span>'+esc(v.title)+'</span>'
+      +'</button>'
+    ).join('')
+  ).join('')||'<div style="text-align:center;color:var(--muted);font-size:13px">—</div>';
 }
 
 async function openVideoLibrary(){
@@ -4560,6 +4637,7 @@ function togglePlusPresentation(){
   const welcomeIntro=document.getElementById('welcome-intro');
   const pdfScreen=document.getElementById('pdf-main-screen');
   const audioScreen=document.getElementById('audio-main-screen');
+  const videoScreen=document.getElementById('video-main-screen');
   if(showing){
     pres.style.display='none';
     if(presPreviousScreen==='plus'){
@@ -4570,6 +4648,8 @@ function togglePlusPresentation(){
       if(pdfScreen)pdfScreen.style.display='flex';
     } else if(presPreviousScreen==='audio'){
       if(audioScreen)audioScreen.style.display='flex';
+    } else if(presPreviousScreen==='video'){
+      if(videoScreen)videoScreen.style.display='flex';
     } else {
       if(mainLayoutEl)mainLayoutEl.style.display='flex';
     }
@@ -4586,6 +4666,9 @@ function togglePlusPresentation(){
       const player=document.getElementById('audio-main-player');
       if(player){player.pause();player.src='';}
       audioScreen.style.display='none';
+    } else if(videoScreen&&videoScreen.style.display==='flex'){
+      presPreviousScreen='video';
+      videoScreen.style.display='none';
     } else if(welcomeIntro&&welcomeIntro.style.display==='flex'){
       presPreviousScreen='welcome';
       welcomeIntro.style.display='none';
@@ -4621,6 +4704,7 @@ function ensureMicStream(){
 function showPlusScreen(markActive){
   if(markActive===undefined)markActive=true;
   if(markActive&&!checkAccessOrBlock())return;
+  closeVideoScreenIfOpen();
   const audioScreen=document.getElementById('audio-main-screen');
   if(audioScreen&&audioScreen.style.display==='flex'){
     const player=document.getElementById('audio-main-player');
@@ -4829,6 +4913,7 @@ let mp3ImportSessionId=null;
 function soloOpenMp3Picker(){
   if(!checkAccessOrBlock())return;
   if(mp3ImportSessionId){showToast('Un import est déjà en cours');return;}
+  closeVideoScreenIfOpen();
   // Ferme tout écran plein cadre qui masquerait le mode normal (bibliothèque PDF/audio,
   // présentation +) — setMode() seul ne referme pas ces écrans-là ni ne réaffiche main-layout
   const audioScreen=document.getElementById('audio-main-screen');
