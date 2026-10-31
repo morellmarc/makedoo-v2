@@ -604,9 +604,9 @@ input:focus{border-color:var(--blue)}
         <div id="info-text-status" style="font-size:12px;color:var(--muted);margin-top:6px;text-align:center"></div>
         <div style="font-size:11px;color:var(--muted);margin-top:4px;text-align:center">Laissez vide pour revenir au texte par défaut</div>
         <div style="border-top:1px solid var(--border);margin:14px 0 10px"></div>
-        <div class="setting-label">🎬 Tuto YouTube (par langue)</div>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Si un lien existe pour la langue affichée, un bouton "Youtube Tuto" apparaît en bas de l'écran de présentation</div>
-        <select id="yt-link-lang" onchange="loadYtLinkForLang()" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;margin-bottom:6px">
+        <div class="setting-label">🏠 Sélection de l'écran d'accueil (par langue)</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Pour la langue choisie, un texte (📚), un audio (🎧) et une vidéo (🎬) de la bibliothèque s'affichent en boutons en bas de l'écran de présentation. Un bouton n'apparaît que si un choix est enregistré pour la langue affichée.</div>
+        <select id="yt-link-lang" onchange="loadHomeLinksForLang()" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;margin-bottom:6px">
           <option value="fr">🇫🇷 Français</option>
           <option value="mk">🇲🇰 Македонски</option>
           <option value="en">🇬🇧 English</option>
@@ -625,18 +625,25 @@ input:focus{border-color:var(--blue)}
           <option value="nl">🇳🇱 Nederlands</option>
           <option value="ru">🇷🇺 Русский</option>
         </select>
-        <input type="text" id="yt-link-url" placeholder="https://youtube.com/... (vide = aucun bouton)" style="margin-bottom:6px">
         <input type="password" id="yt-link-pin" placeholder="Code PIN" style="margin-bottom:6px">
-        <button class="setting-btn" style="background:linear-gradient(135deg,#FF3B30,#C4281C)" onclick="saveYtLink()">💾 Enregistrer ce lien</button>
-        <div id="yt-link-status" style="font-size:12px;color:var(--muted);margin-top:6px;text-align:center"></div>
-        <div style="border-top:1px solid var(--border);margin:14px 0 10px"></div>
-        <div class="setting-label">📄 Tuto PDF (par langue)</div>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Livre de la bibliothèque de textes ouvert par le bouton "PDF Tuto" (langue choisie ci-dessus, même code PIN)</div>
-        <select id="pdf-tuto-book" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;margin-bottom:6px">
+        <div class="setting-label" style="margin-top:8px">📚 Texte</div>
+        <select id="home-pdf-select" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;margin-bottom:6px">
           <option value="">— aucun (pas de bouton) —</option>
         </select>
-        <button class="setting-btn" style="background:linear-gradient(135deg,#8A5FE0,#5B3DB8)" onclick="savePdfTuto()">💾 Enregistrer ce livre</button>
-        <div id="pdf-tuto-status" style="font-size:12px;color:var(--muted);margin-top:6px;text-align:center"></div>
+        <button class="setting-btn" style="background:linear-gradient(135deg,#8A5FE0,#5B3DB8)" onclick="saveHomeLink('pdf')">💾 Enregistrer accueil texte</button>
+        <div id="home-pdf-status" style="font-size:12px;color:var(--muted);margin:6px 0 8px;text-align:center"></div>
+        <div class="setting-label" style="margin-top:8px">🎧 Audio</div>
+        <select id="home-audio-select" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;margin-bottom:6px">
+          <option value="">— aucun (pas de bouton) —</option>
+        </select>
+        <button class="setting-btn" style="background:linear-gradient(135deg,#FFA94D,#FF8C1A)" onclick="saveHomeLink('audio')">💾 Enregistrer accueil audio</button>
+        <div id="home-audio-status" style="font-size:12px;color:var(--muted);margin:6px 0 8px;text-align:center"></div>
+        <div class="setting-label" style="margin-top:8px">🎬 Vidéo</div>
+        <select id="home-video-select" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;margin-bottom:6px">
+          <option value="">— aucun (pas de bouton) —</option>
+        </select>
+        <button class="setting-btn" style="background:linear-gradient(135deg,#F0566E,#C0002A)" onclick="saveHomeLink('video')">💾 Enregistrer accueil vidéo</button>
+        <div id="home-video-status" style="font-size:12px;color:var(--muted);margin:6px 0 8px;text-align:center"></div>
       </div>
     </div>
   </div>
@@ -5222,101 +5229,106 @@ function tutoLinkForLang(map){
 }
 
 function tutoButtonsHtml(){
+  const L=customInfoText||{};
+  const pdfId=tutoLinkForLang(L.pdfLinks);
+  const audioId=tutoLinkForLang(L.audioLinks);
+  const videoId=tutoLinkForLang(L.videoLinks);
+  const ytLegacy=tutoLinkForLang(L.youtubeLinks); // ancien lien YouTube libre : conservé tant qu'aucune vidéo n'est choisie
+  const btn=(icon,bg,fg,fn,title)=>'<button title="'+title+'" onclick="event.stopPropagation();'+fn+'" style="width:46px;height:46px;border:none;border-radius:14px;background:'+bg+';color:'+fg+';font-size:22px;cursor:pointer;margin:10px 6px 0;box-shadow:0 2px 8px rgba(0,0,0,0.12)">'+icon+'</button>';
   let html='';
-  const ytUrl=tutoLinkForLang(customInfoText&&customInfoText.youtubeLinks);
-  const pdfId=tutoLinkForLang(customInfoText&&customInfoText.pdfLinks);
-  const base='setting-btn" style="width:auto;padding:7px 16px;font-size:12px;margin-top:8px;margin-right:8px;';
-  if(ytUrl)html+='<button class="'+base+'background:linear-gradient(135deg,#00C48C,#00A878)" onclick="event.stopPropagation();openYoutubeTuto()">▶️ Youtube Tuto</button>';
-  if(pdfId)html+='<button class="'+base+'background:linear-gradient(135deg,#8A5FE0,#5B3DB8)" onclick="event.stopPropagation();openPdfTuto()">📄 PDF Tuto</button>';
-  return html;
+  if(pdfId)html+=btn('📚','#E3D9FF','#5B3DB8','openHomeText()','Texte');
+  if(audioId)html+=btn('🎧','#FFE9CC','#B36A00','openHomeAudio()','Audio');
+  if(videoId||ytLegacy)html+=btn('🎬','#FFDDE3','#C0002A','openHomeVideo()','Vidéo');
+  return html?'<div style="display:flex;justify-content:center">'+html+'</div>':'';
 }
 
-function openYoutubeTuto(){
-  const url=tutoLinkForLang(customInfoText&&customInfoText.youtubeLinks);
-  if(!url)return;
-  const embed=youtubeEmbedUrl(url);
-  if(embed)openEmbedViewer(embed,'Youtube Tuto',url);
-  else window.open(url,'_blank'); // lien non reconnu : ouverture classique
+async function homeCatalog(kind){
+  // kind : 'pdf' | 'audio' | 'video' -> liste des fiches de la bibliothèque correspondante
+  const cfg={pdf:['/pdf-manifest','books'],audio:['/audio-manifest','tracks'],video:['/video-manifest','videos']}[kind];
+  const res=await fetch(API_BASE+cfg[0]);
+  const data=await res.json();
+  return data[cfg[1]]||[];
 }
 
-async function openPdfTuto(){
-  const bookId=tutoLinkForLang(customInfoText&&customInfoText.pdfLinks);
-  if(!bookId)return;
+async function openHomeText(){
+  const id=tutoLinkForLang(customInfoText&&customInfoText.pdfLinks);
+  if(!id)return;
   try{
-    if(!pdfLibBooksCache.length){
-      const res=await fetch(API_BASE+'/pdf-manifest');
-      const data=await res.json();
-      pdfLibBooksCache=data.books||[];
-    }
+    if(!pdfLibBooksCache.length)pdfLibBooksCache=await homeCatalog('pdf');
   }catch(e){showToast(t('loadError'));return;}
-  const book=pdfLibBooksCache.find(b=>b.id===bookId);
+  const book=pdfLibBooksCache.find(b=>b.id===id);
   if(!book){showToast(t('noBookAvailable'));return;}
   if(/iPad|iPhone|iPod/.test(navigator.userAgent)){window.open(book.url,'_blank');return;}
   openEmbedViewer(book.url,book.title,book.url,{pdf:true});
 }
 
-// ── Admin : choix du livre "PDF Tuto" ──
-async function initTutoAdmin(){
-  const sel=document.getElementById('pdf-tuto-book');
-  if(!sel)return;
-  try{
-    if(!pdfLibBooksCache.length){
-      const res=await fetch(API_BASE+'/pdf-manifest');
-      const data=await res.json();
-      pdfLibBooksCache=data.books||[];
-    }
-  }catch(e){}
-  const flags={fr:'🇫🇷',mk:'🇲🇰',en:'🇬🇧',es:'🇪🇸',de:'🇩🇪',it:'🇮🇹',tr:'🇹🇷',sq:'🇦🇱',sr:'🇷🇸',bg:'🇧🇬',el:'🇬🇷',pt:'🇵🇹',ro:'🇷🇴',hu:'🇭🇺',pl:'🇵🇱',nl:'🇳🇱',ru:'🇷🇺'};
-  const books=[...pdfLibBooksCache].sort((a,b)=>(a.category+a.title).localeCompare(b.category+b.title));
-  sel.innerHTML='<option value="">— aucun (pas de bouton) —</option>'+books.map(b=>'<option value="'+b.id+'">'+(flags[b.lang]||'')+' '+b.title.replace(/</g,'&lt;')+' ('+b.category+')</option>').join('');
-  loadYtLinkForLang();
+async function openHomeAudio(){
+  const id=tutoLinkForLang(customInfoText&&customInfoText.audioLinks);
+  if(!id)return;
+  let list;
+  try{list=await homeCatalog('audio');}catch(e){showToast(t('loadError'));return;}
+  const tr=list.find(x=>x.id===id);
+  if(!tr){showToast(t('noAudioAvailable'));return;}
+  openEmbedViewer(tr.url,tr.title,tr.url,{video:true}); // le lecteur intégré lit aussi bien l'audio
 }
 
-async function savePdfTuto(){
+async function openHomeVideo(){
+  const id=tutoLinkForLang(customInfoText&&customInfoText.videoLinks);
+  if(id){
+    let list;
+    try{list=await homeCatalog('video');}catch(e){showToast(t('loadError'));return;}
+    const v=list.find(x=>x.id===id);
+    if(!v){showToast(t('loadError'));return;}
+    openEmbedViewer(v.url,v.title,v.url,{video:true});
+    return;
+  }
+  const url=tutoLinkForLang(customInfoText&&customInfoText.youtubeLinks);
+  if(url)openEmbedViewer(url,'',url,{video:true});
+}
+
+// ── Admin : sélection de l'écran d'accueil ──
+async function initTutoAdmin(){
+  if(!document.getElementById('home-pdf-select'))return;
+  const flags={};LANGS.forEach(l=>flags[l.code]=l.flag);
+  const fill=async(kind,label)=>{
+    const sel=document.getElementById('home-'+kind+'-select');
+    let items=[];
+    try{items=await homeCatalog(kind);}catch(e){}
+    if(kind==='pdf')pdfLibBooksCache=items;
+    items=[...items].sort((a,b)=>((a.category||'')+a.title).localeCompare((b.category||'')+b.title));
+    sel.innerHTML='<option value="">— aucun (pas de bouton) —</option>'+items.map(b=>'<option value="'+b.id+'">'+(flags[b.lang]||'')+' '+String(b.title).replace(/</g,'&lt;')+' ('+(b.category||'')+')</option>').join('');
+  };
+  await Promise.all([fill('pdf'),fill('audio'),fill('video')]);
+  loadHomeLinksForLang();
+}
+
+function loadHomeLinksForLang(){
   const lang=document.getElementById('yt-link-lang').value;
-  const bookId=document.getElementById('pdf-tuto-book').value;
+  const L=customInfoText||{};
+  const map={pdf:L.pdfLinks,audio:L.audioLinks,video:L.videoLinks};
+  ['pdf','audio','video'].forEach(k=>{
+    const sel=document.getElementById('home-'+k+'-select');
+    if(sel)sel.value=(map[k]&&map[k][lang])||'';
+    const st=document.getElementById('home-'+k+'-status');
+    if(st)st.textContent='';
+  });
+}
+
+async function saveHomeLink(kind){
+  const lang=document.getElementById('yt-link-lang').value;
+  const id=document.getElementById('home-'+kind+'-select').value;
   const pin=document.getElementById('yt-link-pin').value.trim();
-  const statusEl=document.getElementById('pdf-tuto-status');
+  const statusEl=document.getElementById('home-'+kind+'-status');
   if(!pin){statusEl.textContent='❌ Code PIN requis (champ ci-dessus)';statusEl.style.color='var(--red-text)';return;}
   statusEl.textContent='⏳ …';statusEl.style.color='var(--muted)';
   try{
-    const res=await fetch(API_BASE+'/info-pdf-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lang,bookId,pin})});
+    const res=await fetch(API_BASE+'/info-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,lang,id,pin})});
     const data=await res.json();
     if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
     if(!customInfoText)customInfoText={};
-    customInfoText.pdfLinks=data.pdfLinks;
-    document.getElementById('yt-link-pin').value='';
-    statusEl.textContent=bookId?'✅ Livre enregistré':'✅ Bouton retiré';statusEl.style.color='var(--green-text)';
+    customInfoText[{pdf:'pdfLinks',audio:'audioLinks',video:'videoLinks'}[kind]]=data.links;
+    statusEl.textContent=id?'✅ Enregistré':'✅ Bouton retiré';statusEl.style.color='var(--green-text)';
   }catch(e){statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';}
-}
-
-function loadYtLinkForLang(){
-  const lang=document.getElementById('yt-link-lang').value;
-  const url=(customInfoText&&customInfoText.youtubeLinks&&customInfoText.youtubeLinks[lang])||'';
-  document.getElementById('yt-link-url').value=url;
-  document.getElementById('yt-link-status').textContent='';
-  const pdfSel=document.getElementById('pdf-tuto-book');
-  if(pdfSel){pdfSel.value=(customInfoText&&customInfoText.pdfLinks&&customInfoText.pdfLinks[lang])||'';document.getElementById('pdf-tuto-status').textContent='';}
-}
-
-async function saveYtLink(){
-  const lang=document.getElementById('yt-link-lang').value;
-  const url=document.getElementById('yt-link-url').value.trim();
-  const pin=document.getElementById('yt-link-pin').value.trim();
-  const statusEl=document.getElementById('yt-link-status');
-  if(!pin){statusEl.textContent='❌ Code PIN requis';statusEl.style.color='var(--red-text)';return;}
-  statusEl.textContent='⏳ …';statusEl.style.color='var(--muted)';
-  try{
-    const res=await fetch(API_BASE+'/info-youtube-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lang,url,pin})});
-    const data=await res.json();
-    if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
-    if(!customInfoText)customInfoText={};
-    customInfoText.youtubeLinks=data.youtubeLinks;
-    document.getElementById('yt-link-pin').value='';
-    statusEl.textContent=url?'✅ Lien enregistré':'✅ Lien retiré';statusEl.style.color='var(--green-text)';
-  }catch(e){
-    statusEl.textContent='❌ Erreur de connexion';statusEl.style.color='var(--red-text)';
-  }
 }
 
 // Retourne le texte à afficher : personnalisé si présent, sinon traduction par défaut
