@@ -3947,14 +3947,25 @@ async function loadManagePdfList(){
     const res=await fetch(API_BASE+'/pdf-manifest');
     const data=await res.json();
     pdfLibBooksCache=data.books||[];
-    const langFlags={fr:'🇫🇷',mk:'🇲🇰',en:'🇬🇧',es:'🇪🇸',de:'🇩🇪',it:'🇮🇹',tr:'🇹🇷',sq:'🇦🇱',sr:'🇷🇸',bg:'🇧🇬',el:'🇬🇷',pt:'🇵🇹',ro:'🇷🇴',hu:'🇭🇺',pl:'🇵🇱',nl:'🇳🇱',ru:'🇷🇺'};
-    listEl.innerHTML=pdfLibBooksCache.map(b=>
-      '<div style="display:flex;align-items:center;gap:6px;border:1.5px solid var(--border);border-radius:10px;padding:8px 10px">'
-      +'<div style="font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(langFlags[b.lang]||'🏳️')+' '+b.title+'</div>'
-      +'<button class="cs-btn" style="padding:4px 8px;font-size:11px" onclick="openEditItem(\'pdf\',\''+b.id+'\')">✏️</button>'
-      +'<button class="cs-btn" style="padding:4px 8px;font-size:11px;background:#FFE0E3;color:#C0002A" onclick="confirmDeletePdf(\''+b.id+'\')">🗑</button>'
-      +'</div>'
-    ).join('')||'<div style="text-align:center;color:var(--muted);font-size:13px">Aucun livre</div>';
+    // Liste classée par langue (noms de langue par ordre alphabétique), puis titres par ordre alphabétique
+    const loc=S.uiLang||'fr';
+    const cmp=(a,b)=>String(a||'').localeCompare(String(b||''),loc,{sensitivity:'base'});
+    const langInfo={};LANGS.forEach(l=>langInfo[l.code]=l);
+    const esc=x=>String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+    const byLang={};
+    pdfLibBooksCache.forEach(b=>{(byLang[b.lang||'?']=byLang[b.lang||'?']||[]).push(b);});
+    const langName=c=>(langInfo[c]?langInfo[c].label:c);
+    listEl.innerHTML=Object.keys(byLang).sort((a,b)=>cmp(langName(a),langName(b))).map(code=>{
+      const books=byLang[code].sort((a,b)=>cmp(a.title,b.title));
+      return '<div style="font-weight:800;font-size:13px;margin-top:8px">'+(langInfo[code]?langInfo[code].flag:'🏳️')+' '+esc(langName(code))+' <span style="font-weight:600;color:var(--muted);font-size:11px">('+books.length+')</span></div>'
+      +books.map(b=>
+        '<div style="display:flex;align-items:center;gap:6px;border:1.5px solid var(--border);border-radius:10px;padding:8px 10px">'
+        +'<div style="font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(b.title)+(b.category?' <span style="color:var(--muted);font-size:10px">· '+esc(b.category)+'</span>':'')+'</div>'
+        +'<button class="cs-btn" style="padding:4px 8px;font-size:11px" onclick="openEditItem(\'pdf\',\''+b.id+'\')">✏️</button>'
+        +'<button class="cs-btn" style="padding:4px 8px;font-size:11px;background:#FFE0E3;color:#C0002A" onclick="confirmDeletePdf(\''+b.id+'\')">🗑</button>'
+        +'</div>'
+      ).join('');
+    }).join('')||'<div style="text-align:center;color:var(--muted);font-size:13px">Aucun livre</div>';
   }catch(e){
     listEl.innerHTML='<div style="text-align:center;color:var(--red-text);font-size:13px">'+t('loadError')+'</div>';
   }
