@@ -423,7 +423,6 @@ input:focus{border-color:var(--blue)}
 <div id="pdf-main-screen" style="display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;position:relative;background:#CFE1FF;padding:12px;box-sizing:border-box">
   <div id="pdf-main-list-view" style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">
     <div id="pdf-inventory-title" style="flex-shrink:0;text-align:center;font-size:16px;font-weight:700;color:var(--text);margin-bottom:10px"></div>
-    <a id="amazon-books-btn" target="_blank" rel="noopener noreferrer" style="display:none;flex-shrink:0;box-sizing:border-box;text-align:center;text-decoration:none;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#FFB84D,#E58A00);padding:9px 12px;border-radius:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(229,138,0,0.35)"></a>
     <div style="flex-shrink:0">
       <select id="pdf-main-filter-lang" onchange="renderPdfMainList()" style="width:100%;padding:8px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;background:#fff;margin-bottom:6px">
         <option id="pdf-main-filter-lang-all" value="">Toutes langues</option>
@@ -455,6 +454,7 @@ input:focus{border-color:var(--blue)}
       </select>
     </div>
     <div id="pdf-main-list" style="display:flex;flex-direction:column;gap:8px;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;flex:1;min-height:0"></div>
+    <a id="amazon-books-btn" target="_blank" rel="noopener noreferrer" style="display:none;flex-shrink:0;align-self:center;box-sizing:border-box;text-align:center;text-decoration:none;font-size:11px;font-weight:600;color:#B36A00;background:#FFF3E0;border:1px solid #F2C98A;padding:5px 12px;border-radius:10px;margin-top:8px"></a>
   </div>
   <div id="pdf-reader-view" style="display:none;flex:1;flex-direction:column;min-height:0">
     <button class="cs-btn" onclick="closePdfReader()" style="align-self:flex-start;margin-bottom:8px">← Liste des livres</button>
