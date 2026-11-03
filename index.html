@@ -896,6 +896,17 @@ input:focus{border-color:var(--blue)}
   </div>
 </div>
 
+<div class="overlay" id="ov-book-sheet" style="display:none">
+  <div class="overlay-card" style="max-height:85vh;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch">
+    <button class="overlay-close" onclick="hideOv('ov-book-sheet')">×</button>
+    <div id="book-sheet-title" style="font-size:18px;font-weight:800;margin-bottom:6px;padding-right:28px"></div>
+    <div id="book-sheet-meta" style="font-size:13px;color:var(--muted);margin-bottom:12px"></div>
+    <div id="book-sheet-desc" style="font-size:14px;line-height:1.5;margin-bottom:16px;white-space:pre-line"></div>
+    <button class="setting-btn" id="book-sheet-read" style="background:linear-gradient(135deg,#8A5FE0,#5B3DB8);margin-bottom:8px">📖 Lire le PDF</button>
+    <a id="book-sheet-amazon" class="setting-btn" target="_blank" rel="noopener noreferrer" style="display:none;text-align:center;text-decoration:none;background:linear-gradient(135deg,#FFB84D,#E58A00);margin-bottom:0;box-sizing:border-box">🛒 Amazon</a>
+  </div>
+</div>
+
 <div class="overlay" id="ov-video-library" style="display:none">
   <div class="overlay-card" style="max-height:80vh;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch">
     <button class="overlay-close" onclick="hideOv('ov-video-library')">×</button>
@@ -1005,7 +1016,7 @@ input:focus{border-color:var(--blue)}
 </div>
 
 <div class="overlay" id="ov-publish-pdf" style="display:none">
-  <div class="overlay-card">
+  <div class="overlay-card" style="max-height:85vh;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch">
     <button class="overlay-close" onclick="hideOv('ov-publish-pdf')">×</button>
     <div class="overlay-title">📤 Publier un texte (PDF)</div>
     <div class="setting-row">
@@ -1023,6 +1034,22 @@ input:focus{border-color:var(--blue)}
     <div class="setting-row">
       <div class="setting-label">Titre</div>
       <input type="text" id="publish-pdf-title" placeholder="Titre du livre">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Auteur</div>
+      <input type="text" id="publish-pdf-author" placeholder="Nom de l'auteur">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Année</div>
+      <input type="text" id="publish-pdf-year" inputmode="numeric" maxlength="4" placeholder="2026">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Descriptif court</div>
+      <textarea id="publish-pdf-description" maxlength="1200" placeholder="Quelques lignes de présentation du livre" style="width:100%;min-height:90px;border-radius:10px;border:1.5px solid var(--border);padding:8px 10px;font-size:13px;font-family:inherit;resize:vertical"></textarea>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Lien Amazon</div>
+      <input type="url" id="publish-pdf-amazon" placeholder="https://www.amazon.fr/...">
     </div>
     <div class="setting-row">
       <div class="setting-label">Langue</div>
@@ -1086,6 +1113,24 @@ input:focus{border-color:var(--blue)}
     <div class="setting-row">
       <div class="setting-label">Lien direct pCloud</div>
       <input type="url" id="edit-item-url" placeholder="https://...">
+    </div>
+    <div id="edit-item-sheet-block" style="display:none">
+    <div class="setting-row">
+      <div class="setting-label">Auteur</div>
+      <input type="text" id="edit-item-author" placeholder="Nom de l'auteur">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Année</div>
+      <input type="text" id="edit-item-year" inputmode="numeric" maxlength="4" placeholder="2026">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Descriptif court</div>
+      <textarea id="edit-item-description" maxlength="1200" placeholder="Quelques lignes de présentation du livre" style="width:100%;min-height:90px;border-radius:10px;border:1.5px solid var(--border);padding:8px 10px;font-size:13px;font-family:inherit;resize:vertical"></textarea>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Lien Amazon</div>
+      <input type="url" id="edit-item-amazon" placeholder="https://www.amazon.fr/...">
+    </div>
     </div>
     <div class="setting-row" id="edit-item-type-row">
       <div class="setting-label">Type</div>
@@ -3749,11 +3794,28 @@ function renderPdfMainList(){
   listEl.innerHTML=Object.keys(byCategory).map(cat=>
     '<div style="font-weight:800;font-size:13px;margin-top:8px;text-transform:capitalize">'+cat+'</div>'
     +byCategory[cat].map(b=>
-      '<button class="cs-btn" style="width:100%;text-align:left;display:flex;align-items:center;gap:8px" onclick="openPdfReader(\''+b.url.replace(/'/g,"\\'")+'\')">'
-      +'<span>'+(typeIcons[b.type||'livre'])+'</span><span>'+(langFlags[b.lang]||'🏳️')+'</span><span>'+b.title+'</span>'
+      '<button class="cs-btn" style="width:100%;text-align:left;display:flex;align-items:center;gap:8px" onclick="openBookSheet(\''+b.id+'\')">'
+      +'<span>'+(typeIcons[b.type||'livre'])+'</span><span>'+(langFlags[b.lang]||'🏳️')+'</span><span>'+b.title+(b.author?' <span style="color:var(--muted);font-weight:400">— '+String(b.author).replace(/</g,'&lt;')+'</span>':'')+'</span>'
       +'</button>'
     ).join('')
   ).join('')||'<div style="text-align:center;color:var(--muted);font-size:13px">'+t('noBookAvailable')+'</div>';
+}
+
+// Fiche d'un livre : titre, auteur, année, descriptif, lecture du PDF, lien Amazon
+function openBookSheet(id){
+  const b=(pdfLibBooksCache||[]).find(x=>x.id===id);
+  if(!b)return;
+  document.getElementById('book-sheet-title').textContent=b.title||'';
+  const meta=[b.author,b.year].filter(Boolean).join(' · ');
+  const metaEl=document.getElementById('book-sheet-meta');
+  metaEl.textContent=meta;metaEl.style.display=meta?'block':'none';
+  const descEl=document.getElementById('book-sheet-desc');
+  descEl.textContent=b.description||'';descEl.style.display=b.description?'block':'none';
+  document.getElementById('book-sheet-read').onclick=function(){openPdfReader(b.url);};
+  const am=document.getElementById('book-sheet-amazon');
+  if(b.amazon&&/^https?:\/\//i.test(b.amazon)){am.href=b.amazon;am.style.display='block';}
+  else{am.removeAttribute('href');am.style.display='none';}
+  showOv('ov-book-sheet');
 }
 
 function openPdfReader(url){
@@ -3786,6 +3848,7 @@ function closePdfReaderUI(){
 
 let pdfMainPacksCache=null;
 async function openPublishPdf(){
+  ['author','year','description','amazon'].forEach(k=>{const e=document.getElementById('publish-pdf-'+k);if(e)e.value='';});
   document.getElementById('publish-pdf-url').value='';
   document.getElementById('publish-pdf-title').value='';
   document.getElementById('publish-pdf-type').value='livre';
@@ -3820,6 +3883,10 @@ async function confirmPublishPdf(){
   const title=document.getElementById('publish-pdf-title').value.trim();
   const lang=document.getElementById('publish-pdf-lang').value;
   const type=document.getElementById('publish-pdf-type').value;
+  const author=document.getElementById('publish-pdf-author').value.trim();
+  const year=document.getElementById('publish-pdf-year').value.trim();
+  const description=document.getElementById('publish-pdf-description').value.trim();
+  const amazon=document.getElementById('publish-pdf-amazon').value.trim();
   const sel=document.getElementById('publish-pdf-category-select');
   const category=sel.value==='__new__'?document.getElementById('publish-pdf-category').value.trim():sel.value;
   const pin=document.getElementById('publish-pdf-pin').value.trim();
@@ -3829,7 +3896,7 @@ async function confirmPublishPdf(){
   if(!pin){statusEl.textContent='❌ Code PIN requis';statusEl.style.color='var(--red-text)';return;}
   statusEl.textContent='⏳ …';statusEl.style.color='var(--muted)';
   try{
-    const res=await fetch(API_BASE+'/publish-pdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,lang,type,category,url,pin})});
+    const res=await fetch(API_BASE+'/publish-pdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,lang,type,category,url,author,year,description,amazon,pin})});
     const data=await res.json();
     if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
     statusEl.textContent='✅ Publié !';statusEl.style.color='var(--green-text)';
@@ -3979,6 +4046,8 @@ async function openEditItem(kind,id){
   document.getElementById('edit-item-type').value=item.type||'livre';
   document.getElementById('edit-item-type-row').style.display=kind==='audio'?'block':'none'; // type géré seulement pour les audios
   document.getElementById('edit-item-lang').value=item.lang||'fr';
+  document.getElementById('edit-item-sheet-block').style.display=kind==='pdf'?'block':'none'; // fiche (auteur, année, descriptif, Amazon) : textes seulement
+  ['author','year','description','amazon'].forEach(k=>{document.getElementById('edit-item-'+k).value=item[k]||'';});
   document.getElementById('edit-item-category-new').value='';
   document.getElementById('edit-item-category-new').style.display='none';
   const srcPin=document.getElementById(kind==='audio'?'audio-lib-pin':(kind==='video'?'video-lib-pin':'manage-pdf-pin'));
@@ -4017,7 +4086,7 @@ async function confirmEditItem(){
   if(!pin){statusEl.textContent='❌ Code PIN requis';statusEl.style.color='var(--red-text)';return;}
   statusEl.textContent='⏳ …';statusEl.style.color='var(--muted)';
   try{
-    const res=await fetch(API_BASE+'/'+editItemKind+'-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:editItemId,title,url,type,lang,category,pin})});
+    const res=await fetch(API_BASE+'/'+editItemKind+'-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({id:editItemId,title,url,type,lang,category,pin},editItemKind==='pdf'?{author:document.getElementById('edit-item-author').value.trim(),year:document.getElementById('edit-item-year').value.trim(),description:document.getElementById('edit-item-description').value.trim(),amazon:document.getElementById('edit-item-amazon').value.trim()}:{}))});
     const data=await res.json();
     if(!res.ok){statusEl.textContent='❌ '+(data.error||'Erreur');statusEl.style.color='var(--red-text)';return;}
     statusEl.textContent='✅ Fiche enregistrée';statusEl.style.color='var(--green-text)';
@@ -5351,8 +5420,7 @@ async function openHomeText(){
   }catch(e){showToast(t('loadError'));return;}
   const book=pdfLibBooksCache.find(b=>b.id===id);
   if(!book){showToast(t('noBookAvailable'));return;}
-  if(/iPad|iPhone|iPod/.test(navigator.userAgent)){window.open(book.url,'_blank');return;}
-  openEmbedViewer(book.url,book.title,book.url,{pdf:true});
+  openBookSheet(book.id);
 }
 
 async function openHomeAudio(){
