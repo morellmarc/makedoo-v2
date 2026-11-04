@@ -3809,7 +3809,7 @@ function renderPdfMainList(){
     '<div style="font-weight:800;font-size:13px;margin-top:8px;text-transform:capitalize">'+cat+'</div>'
     +byCategory[cat].map(b=>
       '<button class="cs-btn" style="width:100%;text-align:left;display:flex;align-items:center;gap:8px" onclick="openBookSheet(\''+b.id+'\')">'
-      +'<span>'+(typeIcons[b.type||'livre'])+'</span><span>'+(langFlags[b.lang]||'🏳️')+'</span><span>'+b.title+(b.author?' <span style="color:var(--muted);font-weight:400">— '+String(b.author).replace(/</g,'&lt;')+'</span>':'')+'</span>'
+      +'<span>'+(typeIcons[b.type||'livre'])+'</span><span>'+(langFlags[b.lang]||'🏳️')+'</span><span>'+b.title+((b.author||b.year)?' <span style="color:var(--muted);font-weight:400">— '+[b.author,b.year].filter(Boolean).map(x=>String(x).replace(/</g,'&lt;')).join(', ')+'</span>':'')+'</span>'
       +'</button>'
     ).join('')
   ).join('')||'<div style="text-align:center;color:var(--muted);font-size:13px">'+t('noBookAvailable')+'</div>';
