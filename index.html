@@ -176,6 +176,7 @@ input:focus{border-color:var(--blue)}
 <div class="top-bar" id="top-bar">
   <div id="solo-top-flags" style="display:none;gap:6px;align-items:center">
     <button id="solo-flag-a-small" onclick="openLangPicker('from')" style="background:none;border:none;font-size:26px;cursor:pointer;padding:2px 4px;line-height:1">🏳️</button>
+    <button id="swap-langs-btn" onclick="swapTopLangs()" title="⇄" style="background:none;border:none;font-size:20px;color:var(--text,#555);cursor:pointer;padding:2px 2px;line-height:1">⇄</button>
     <button id="solo-flag-b-small" onclick="openLangPicker('to')" style="background:none;border:none;font-size:26px;cursor:pointer;padding:2px 4px;line-height:1">🏳️</button>
   </div>
   <div style="flex:1"></div>
@@ -1672,6 +1673,19 @@ function setMode(mode){
   }
 }
 
+function swapTopLangs(){
+  if(typeof plusRecordingSide!=='undefined'&&plusRecordingSide)return;
+  if(S.plusBusy)return;
+  if(isLearn()){if(S.screen===1){showToast('⇄ …');return;}handleArrowClick();updateSoloFlagsDisplay();return;}
+  const tmp=S.langFrom;S.langFrom=S.langTo;S.langTo=tmp;
+  localStorage.setItem('makedoo_v3_langFrom',S.langFrom);
+  localStorage.setItem('makedoo_v3_langTo',S.langTo);
+  const supported=['fr','en','mk','es','de','it','tr','sq','sr','bg','el','pt','ro','hu','pl','nl','ru'];
+  if(supported.includes(S.langFrom)&&!localStorage.getItem('makedoo_v3_uilang_manual')){
+    S.uiLang=S.langFrom;localStorage.setItem('makedoo_v3_uilang',S.langFrom);
+  }
+  updateDisplay();updateUILabels();updateSoloFlagsDisplay();
+}
 // ── Arrow ──────────────────────────────────────────────────────
 function handleArrowClick(){
   if(isLearn()){
