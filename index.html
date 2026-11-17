@@ -5508,9 +5508,9 @@ function tutoButtonsHtml(){
   const audioId=tutoLinkForLang(L.audioLinks);
   const videoId=tutoLinkForLang(L.videoLinks);
   const ytLegacy=tutoLinkForLang(L.youtubeLinks); // ancien lien YouTube libre : conservé tant qu'aucune vidéo n'est choisie
-  const btn=(icon,bg,fg,fn,title)=>'<button title="'+title+'" onclick="event.stopPropagation();'+fn+'" style="width:46px;height:46px;border:none;border-radius:14px;background:'+bg+';color:'+fg+';font-size:22px;cursor:pointer;margin:10px 6px 0;box-shadow:0 2px 8px rgba(0,0,0,0.12)">'+icon+'</button>';
+  const btn=(icon,bg,fg,fn,title)=>'<button title="'+title+'" onclick="event.stopPropagation();'+fn+'" style="width:34px;height:34px;border:none;border-radius:11px;background:'+bg+';color:'+fg+';font-size:18px;line-height:1;padding:0;cursor:pointer;margin:10px 6px 0;box-shadow:0 2px 8px rgba(0,0,0,0.12)">'+icon+'</button>';
   let html='';
-  if(pdfId)html+=btn('📚','#E3D9FF','#5B3DB8','openHomeText()','Texte').replace('font-size:22px','font-size:32px;line-height:1;padding:0');
+  if(pdfId)html+=btn('📚','#E3D9FF','#5B3DB8','openHomeText()','Texte').replace('font-size:18px','font-size:25px');
   if(audioId)html+=btn('🎧','#FFE9CC','#B36A00','openHomeAudio()','Audio');
   if(videoId||ytLegacy)html+=btn('🎬','#FFDDE3','#C0002A','openHomeVideo()','Vidéo');
   return html?'<div style="display:flex;justify-content:center">'+html+'</div>':'';
